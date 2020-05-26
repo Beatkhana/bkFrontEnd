@@ -1,1 +1,258 @@
 /* You can add global styles to this file, and also import other style files */
+
+* {
+    margin: 0;
+}
+
+@font-face {
+    font-family: 'Leixo';
+    src: url('/assets/fonts/LEIXO-DEMO.ttf');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'TomatoRound';
+    src: url('/assets/fonts/TomatoRoundCondensed.ttf');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Roboto';
+    src: url('/assets/Fonts/Roboto-Regular.ttf');
+    font-weight: normal;
+    font-style: normal;
+}
+
+nav {
+    background-color: #202124;
+    padding: 15px 15px;
+    font-family: 'Leixo';
+    font-weight: 700;
+    border-bottom: 1px solid rgb(200, 130, 90);
+    margin-bottom: 40px;
+}
+
+.navContainer {
+    display: block;
+    width: 80vw;
+    margin: auto;
+}
+
+.banner {
+    margin-right: 30px;
+}
+
+nav div {
+    display: inline-block;
+}
+
+nav ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+nav ul li {
+    float: left;
+    height: 50px;
+    margin: auto 0px;
+}
+
+.navLink {
+    color: rgba(255, 255, 255, .5);
+    height: 20px;
+    padding: 15px 15px;
+    font-weight: normal;
+    width: auto;
+    display: inline-block;
+    text-align: center;
+    vertical-align: middle;
+    text-decoration: none;
+    transition: all 400ms;
+}
+
+.active.navLink {
+    background-color: #2a2a2a;
+    color: #fff;
+}
+
+.navLink:hover {
+    background-color: #2a2a2a;
+    color: rgba(255, 255, 255, .75);
+}
+
+.navLink.noHover:hover {
+    color: rgba(255, 255, 255, .5);
+    background-color: #202124;
+}
+
+.icon svg {
+    fill: rgba(255, 255, 255, .5);
+    width: 30px;
+    height: 30px;
+    transition: fill 400ms;
+}
+
+.icon:hover svg {
+    fill: rgba(255, 255, 255, .75);
+}
+
+body {
+    background-color: #0a0a0a;
+}
+
+
+/* Main stuff */
+
+.container {
+    margin: auto;
+}
+
+nav .container {
+    width: 100%;
+    display: block;
+}
+
+.grid {
+    display: grid;
+    gap: 4rem;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    --stagger-delay: 70ms;
+}
+
+@keyframes cardEntrance {
+    from {
+        opacity: 0;
+        transform: scale(0.3);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+
+/* Card */
+
+.card {
+    display: flex;
+    flex-direction: column;
+    /* justify-content: center; */
+    /* align-items: center; */
+    background: #202124;
+    font-size: 2rem;
+    color: #fff;
+    box-shadow: rgba(3, 8, 20, 0.1) 0px 0.15rem 0.5rem, rgba(2, 8, 20, 0.1) 0px 0.075rem 0.175rem;
+    height: 100%;
+    width: 100%;
+    border-radius: 4px;
+    transition: all 500ms;
+    overflow: hidden;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    animation: cardEntrance 550ms ease-out;
+    animation-fill-mode: backwards;
+}
+
+.card img {
+    border: 2px solid rgb(200, 130, 90);
+}
+
+.card-img-top {
+    width: 99%;
+    /* border: 2px solid rgb(200, 130, 90); */
+    margin-bottom: 15px;
+}
+
+.card-title {
+    font-family: 'TomatoRound', sans-serif;
+    font-weight: 500;
+    padding: 10px;
+    color: #fff;
+}
+
+.card a {
+    text-decoration: none;
+}
+
+.card-text {
+    font-family: 'Roboto', sans-serif;
+    font-weight: 500;
+    font-size: 1.2rem;
+    color: #fff;
+    padding: 10px;
+}
+
+.card-text a {
+    color: rgb(0, 170, 200);
+    text-decoration: none;
+    background-color: transparent;
+}
+
+.card:not(.noHover):hover {
+    box-shadow: rgba(2, 8, 20, 0.1) 0px 0.35em 1.175em, rgba(2, 8, 20, 0.08) 0px 0.175em 0.5em;
+    transform: scale(1.03);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    color: white;
+    font-family: 'TomatoRound' !important;
+    font-weight: 500 !important;
+}
+
+
+/* media queries */
+
+@media (min-width: 576px) {
+    .container {
+        max-width: 550px;
+    }
+}
+
+@media (min-width: 768px) {
+    .container {
+        max-width: 756px;
+    }
+}
+
+@media (min-width: 992px) {
+    .container {
+        max-width: 980px;
+    }
+}
+
+@media screen and (min-width: 1024px) {
+    .container {
+        max-width: 1000px;
+    }
+}
+
+@media screen and (min-width: 1216px) {
+    .container {
+        max-width: 1202px;
+    }
+}
+
+@media screen and (min-width: 1408px) {
+    .container {
+        max-width: 1392px;
+    }
+}
+
+footer {
+    padding: 3rem 1.5rem 6rem;
+}
+
+footer p {
+    text-align: center;
+    color: white;
+    font-family: 'Leixo', sans-serif;
+}

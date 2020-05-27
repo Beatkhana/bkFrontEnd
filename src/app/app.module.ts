@@ -5,16 +5,21 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { TournamentsComponent } from './tournaments/tournaments.component';
 
+import { HttpClientModule } from '@angular/common/http';
+import { TournamentComponent } from './tournament/tournament.component';
+
 @NgModule({
-  declarations: [
-    AppComponent,
-    TournamentsComponent
-  ],
-  imports: [
-    BrowserModule,
-    AppRoutingModule
-  ],
-  providers: [],
-  bootstrap: [AppComponent]
+    declarations: [
+        AppComponent,
+        TournamentsComponent,
+        TournamentComponent
+    ],
+    imports: [
+        BrowserModule,
+        AppRoutingModule,
+        HttpClientModule
+    ],
+    providers: [],
+    bootstrap: [AppComponent]
 })
 export class AppModule { }

@@ -1,0 +1,37 @@
+<!-- <p>tournament works!</p> -->
+<div *ngFor="let tournament of tournaments" class="container">
+    <!-- <div class="card">
+        <img class="tourneyImg" src="\{{tournament.image}}" alt="">
+        <h1>{{tournament.name}}</h1>
+        <br>
+        <p>
+            Date: {{tournament.date}} <br> Time: {{tournament.time}} <br> Prize pool: {{tournament.prize}} <br>
+
+        </p>
+    </div> -->
+    <div class="card noHover">
+        <div class="card-body">
+            <img class="tourneyImg" src="\{{ tournament.image | lowercase }}" alt="" />
+            <h1>{{ tournament.name }}</h1>
+            <br />
+            <p class="card-text">
+                <span *ngIf="tournament.archived == 1">
+                    <b>Archived <br /></b>
+                </span>
+                <span *ngIf="tournament.info != null">
+                    <b>{{ tournament.info }} <br /></b>
+                </span> Date: {{ tournament.date }} <br /> Time: {{ tournament.time }} <br />
+                <span *ngIf="tournament.info != null; else noPrize">
+                    Prize pool: {{ tournament.prize }} <br />
+                </span>
+                <ng-template #noPrize>Prize Pool: Not announced yet <br></ng-template>
+                <span *ngIf="tournament.signup != null">
+                    Signup: {{ tournament.signup }} <br />
+                </span>
+                <span *ngIf="tournament.twitchLink != null">
+                    <a href="{{ tournament.twitchLink }}" target="new">Twitch</a> <br />
+                </span>
+            </p>
+        </div>
+    </div>
+</div>

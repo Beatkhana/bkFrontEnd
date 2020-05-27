@@ -1,1 +1,14 @@
-<p>tournaments works!</p>
+<div class="container grid">
+    <div class="card" *ngFor="let tournament of tournaments">
+        <a [title]="tournament.name" [routerLink]="['/tournament',tournament.id]" class="btn-reload">
+            <img src="\{{tournament.image | lowercase}}" class="card-img-top">
+            <h5 class="card-title">
+                {{tournament.name}}
+            </h5>
+        </a>
+        <p class="card-text">
+            Date: {{tournament.date}} <br> Time: {{tournament.time}} <br> Signup: {{tournament.signup}} <br>
+            <a href="<?= $tournament->signup ?>">Discord</a><br>
+        </p>
+    </div>
+</div>

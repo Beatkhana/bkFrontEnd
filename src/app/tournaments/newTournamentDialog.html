@@ -1,0 +1,56 @@
+<h1 mat-dialog-title>Create New Tournament</h1>
+<form [formGroup]="tournamentForm" novalidate (ngSubmit)="onSubmit()">
+    <!-- Value: {{ tournamentForm.value | json }} -->
+
+    <mat-form-field class="fill">
+        <input matInput placeholder="Tournament Name" formControlName="name">
+    </mat-form-field>
+    <br>
+    <mat-form-field class="fill">
+        <input matInput type="date" formControlName="date">
+    </mat-form-field>
+    <br>
+    <mat-form-field class="fill">
+        <input matInput type="time" formControlName="time">
+    </mat-form-field>
+
+    <br>
+    <mat-form-field class="fill">
+        <input matInput placeholder="Discord Link" formControlName="discord">
+        <mat-error *ngIf="discord.invalid && discord.touched">
+            Please enter a valid link
+        </mat-error>
+    </mat-form-field>
+
+    <br>
+    <mat-form-field class="fill">
+        <input matInput placeholder="Owner" formControlName="owner">
+    </mat-form-field>
+
+    <br>
+    <mat-form-field class="fill">
+        <input matInput placeholder="Twitch Link" formControlName="twitchLink">
+    </mat-form-field>
+
+    <br>
+    <mat-form-field class="fill">
+        <input matInput placeholder="Prize Pool" formControlName="prize">
+    </mat-form-field>
+
+    <br>
+    <mat-form-field class="fill">
+        <textarea matInput placeholder="Tournament Info" formControlName="info"></textarea>
+    </mat-form-field>
+
+    <br>
+    <!-- <mat-form-field class="fill"> -->
+    <!-- <input matInput placeholder="Image (soonTM)" formControlName="image" [disabled]="true"> -->
+    <input type="file" (change)="onFileChanged($event)" #fileInput>
+    <!-- </mat-form-field> -->
+
+    <div mat-dialog-actions>
+        <button mat-raised-button color="warn" mat-dialog-close>Close</button>
+        <button mat-raised-button color="primary" type="submit" mat-dialog-close [disabled]="tournamentForm.invalid">Add
+            Tournament</button>
+    </div>
+</form>

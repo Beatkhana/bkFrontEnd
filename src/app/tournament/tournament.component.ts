@@ -14,6 +14,7 @@ export class TournamentComponent extends AppComponent implements OnInit {
     private url = '/api/tournament';
     public tournaments = [];
     private tourneyId: string;
+    loading = true;
 
     ngOnInit(): void {
         this.route.paramMap.subscribe(params => {
@@ -22,10 +23,12 @@ export class TournamentComponent extends AppComponent implements OnInit {
             this.getTournaments()
                 .subscribe(data => {
                     this.tournaments = data;
-                    console.log(data);
+                    this.loading = false;
                     this.setTitle(this.tournaments[0].name + ' | ' + this.title);
                 });
         });
+
+        // console.log(this.user);
     }
 
     public getTournaments(): Observable<ITournament[]> {

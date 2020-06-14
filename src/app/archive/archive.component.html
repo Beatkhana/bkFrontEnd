@@ -1,0 +1,45 @@
+<div class="container gridArchive">
+    <div *ngIf="loading else loaded">
+        <div class="sk-folding-cube">
+            <div class="sk-cube1 sk-cube"></div>
+            <div class="sk-cube2 sk-cube"></div>
+            <div class="sk-cube4 sk-cube"></div>
+            <div class="sk-cube3 sk-cube"></div>
+        </div>
+    </div>
+    <ng-template #loaded>
+        <div class="card archiveCard" *ngFor="let tournament of tournaments">
+            <a [title]="tournament.name" [routerLink]="['/tournament',tournament.id]">
+                <div>
+                    <img src="\{{tournament.image | lowercase}}" class="card-img">
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title">
+                        {{tournament.name}}
+                    </h5>
+                    <p class="card-text">
+                        1# {{tournament.first}} | #2 {{tournament.second}} | #3 {{tournament.third}}
+                    </p>
+                </div>
+                <div class="card-body cardLeft">
+                    <p class="card-text">{{tournament.date | date: 'dd/MM/yyyy'}}</p>
+                </div>
+            </a>
+        </div>
+    </ng-template>
+
+
+    <ng-template #noArchive>
+        <a>
+            <div>
+            </div>
+            <div class="card-body">
+                <h5 class="card-title">
+                    No Archived Tournaments
+                </h5>
+            </div>
+            <div class="card-body cardLeft">
+            </div>
+        </a>
+    </ng-template>
+</div>

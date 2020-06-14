@@ -1,14 +1,38 @@
 <div class="container grid">
-    <div class="card" *ngFor="let tournament of tournaments">
-        <a [title]="tournament.name" [routerLink]="['/tournament',tournament.id]" class="btn-reload">
-            <img src="\{{tournament.image | lowercase}}" class="card-img-top">
-            <h5 class="card-title">
-                {{tournament.name}}
-            </h5>
-        </a>
-        <p class="card-text">
-            Date: {{tournament.date}} <br> Time: {{tournament.time}} <br> Signup: {{tournament.signup}} <br>
-            <a href="<?= $tournament->signup ?>">Discord</a><br>
-        </p>
+    <div *ngIf="loading else loaded">
+        <div class="sk-folding-cube">
+            <div class="sk-cube1 sk-cube"></div>
+            <div class="sk-cube2 sk-cube"></div>
+            <div class="sk-cube4 sk-cube"></div>
+            <div class="sk-cube3 sk-cube"></div>
+        </div>
     </div>
+
+    <ng-template #loaded>
+        <div class="card" *ngFor="let tournament of tournaments">
+            <a [title]="tournament.name" [routerLink]="['/tournament',tournament.id]">
+                <img src="\{{tournament.image | lowercase}}" class="card-img-top">
+                <h5 class="card-title">
+                    {{tournament.name}}
+                </h5>
+            </a>
+            <p class="card-text">
+                Date: {{tournament.date | date: 'dd/MM/yyyy'}} <br> Time: {{tournament.time}} <br> Signup: {{tournament.signup}} <br>
+                <a href="<?= $tournament->signup ?>">Discord</a><br>
+            </p>
+            <p *ngIf="user && user['roleIds'].includes('1')" class="card-text">
+                <button mat-button color="primary" (click)="archive(tournament.id)">Archive Tournament</button>
+            </p>
+        </div>
+
+        <div *ngIf="user && user['roleIds'].includes('1')" class="card">
+            <a (click)="openDialog()" style="cursor: pointer;">
+                <i class="fas fa-plus-circle card-img-top" style="font-size: 200px;border: 2px solid #c8825a; text-align: center;"></i>
+                <h5 class="card-title">
+                    Add new tournament
+                </h5>
+            </a>
+            <!-- <button mat-button (click)="openDialog()">Launch dialog</button> -->
+        </div>
+    </ng-template>
 </div>

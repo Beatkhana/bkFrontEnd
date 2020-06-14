@@ -1,3 +1,25 @@
+// Custom Theming for Angular Material
+// For more information: https://material.angular.io/guide/theming
+@import '~@angular/material/theming';
+// Plus imports for other components in your app.
+// Include the common styles for Angular Material. We include this here so that you only
+// have to load a single css file for Angular Material in your app.
+// Be sure that you only ever include this mixin once!
+@include mat-core();
+// Define the palettes for your theme using the Material Design palettes available in palette.scss
+// (imported above). For each palette, you can optionally specify a default, lighter, and darker
+// hue. Available color palettes: https://material.io/design/color/
+$app-primary: mat-palette($mat-indigo);
+$app-accent: mat-palette($mat-pink, A200, A100, A400);
+// The warn palette is optional (defaults to red).
+$app-warn: mat-palette($mat-red);
+// Create the theme object (a Sass map containing all of the palettes).
+$app-theme: mat-light-theme($app-primary, $app-accent, $app-warn);
+// Include theme styles for core and each component used in your app.
+// Alternatively, you can import and @include the theme mixins for each component
+// that you are using.
+@include angular-material-theme($app-theme);
+
 /* You can add global styles to this file, and also import other style files */
 
 * {
@@ -26,68 +48,193 @@
 }
 
 nav {
-    background-color: #202124;
-    padding: 15px 15px;
-    font-family: 'Leixo';
-    font-weight: 700;
+    // height: 80px;
+    width: 100%;
+    color: white;
+    background: #202124;
     border-bottom: 1px solid rgb(200, 130, 90);
     margin-bottom: 40px;
+    .container {
+        display: grid;
+        grid-template-columns: 1fr 8fr 2fr;
+        padding: 15px;
+    }
 }
 
-.navContainer {
-    display: block;
-    width: 80vw;
-    margin: auto;
-}
-
-.banner {
-    margin-right: 30px;
-}
-
-nav div {
-    display: inline-block;
-}
-
-nav ul {
+.navbar-nav {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    height: 100%;
     list-style-type: none;
-    margin: 0;
-    padding: 0;
+    .nav-item {
+        text-decoration: none;
+        padding: 15px 20px;
+        color: rgba(255, 255, 255, .5);
+        font-family: 'Leixo';
+        &.active {
+            background-color: #2a2a2a;
+            color: #fff;
+        }
+        &:hover:not(.noHover) {
+            background-color: #2a2a2a;
+            color: rgba(255, 255, 255, .75);
+        }
+    }
 }
 
-nav ul li {
-    float: left;
-    height: 50px;
-    margin: auto 0px;
-}
-
-.navLink {
+.icon {
     color: rgba(255, 255, 255, .5);
-    height: 20px;
-    padding: 15px 15px;
-    font-weight: normal;
-    width: auto;
+    font-size: larger;
+    &:hover {
+        color: white;
+    }
+    &:last-child {
+        margin-right: 10px;
+    }
+}
+
+.dropdown {
+    position: absolute;
+    width: 150px;
+    display: none;
+    opacity: 0;
+    z-index: 2;
+    background-color: #161616;
+    // display: flex;
+    padding: 10px 0;
+    align-items: left;
+    justify-content: space-around;
+    flex-direction: column;
+    list-style: none;
+    border-radius: 5px;
+    transition: opacity 0.5s ease-out;
+    .dropdown-item {
+        padding: 10px 15px;
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+        &:hover {
+            background-color: #2a2a2a;
+            color: rgba(255, 255, 255, .75);
+        }
+    }
+}
+
+.dropdown-toggle {
     display: inline-block;
-    text-align: center;
-    vertical-align: middle;
-    text-decoration: none;
-    transition: all 400ms;
+    width: 50px;
+    cursor: pointer;
+    border: 0;
+    padding: 0;
+    background-color: transparent;
+    &::after {
+        color: rgba(255, 255, 255, 0.5);
+        transform: translate(0, -10px);
+        display: inline-block;
+        margin-left: .255em;
+        vertical-align: .255em;
+        content: "";
+        border-top: .3em solid;
+        border-right: .3em solid transparent;
+        border-bottom: 0;
+        border-left: .3em solid transparent;
+        transition: 50ms;
+    }
 }
 
-.active.navLink {
-    background-color: #2a2a2a;
-    color: #fff;
+.has-dropdown:focus-within {
+    .dropdown {
+        display: flex;
+        opacity: 1;
+        // pointer-events: auto;
+        animation: fadeInFromNone 0.25s ease-out;
+    }
+    .dropdown-toggle::after {
+        transform: translate(0, -5px);
+    }
 }
 
-.navLink:hover {
-    background-color: #2a2a2a;
-    color: rgba(255, 255, 255, .75);
+@keyframes fadeInFromNone {
+    0% {
+        display: none;
+        opacity: 0;
+    }
+    1% {
+        display: flex;
+        opacity: 0;
+    }
+    100% {
+        display: flex;
+        opacity: 1;
+    }
 }
 
-.navLink.noHover:hover {
-    color: rgba(255, 255, 255, .5);
-    background-color: #202124;
+.userImg {
+    height: 36px;
+    width: auto;
+    border-radius: 50%;
 }
 
+// nav {
+//     background-color: #202124;
+//     padding: 15px 15px;
+//     font-family: 'Leixo';
+//     font-weight: 700;
+//     border-bottom: 1px solid rgb(200, 130, 90);
+//     margin-bottom: 40px;
+// }
+// .navContainer {
+//     display: block;
+//     width: 80vw;
+//     margin: auto;
+// }
+// .banner {
+//     margin-right: 30px;
+// }
+// nav div {
+//     display: inline-block;
+// }
+// nav ul {
+//     list-style-type: none;
+//     margin: 0;
+//     padding: 0;
+// }
+// nav ul li {
+//     float: left;
+//     height: 50px;
+//     margin: auto 0px;
+// }
+// .navLink {
+//     color: rgba(255, 255, 255, .5);
+//     height: 20px;
+//     padding: 15px 15px;
+//     font-weight: normal;
+//     width: auto;
+//     display: inline-block;
+//     text-align: center;
+//     vertical-align: middle;
+//     text-decoration: none;
+//     transition: all 400ms;
+// }
+// .nav-link {
+//     padding: 0.5rem 0.5rem 0.25rem 0.5rem !important;
+//     display: inline-block !important;
+//     width: auto !important;
+// }
+// .active.navLink {
+//     background-color: #2a2a2a;
+//     color: #fff;
+// }
+// .navLink:hover {
+//     background-color: #2a2a2a;
+//     color: rgba(255, 255, 255, .75);
+// }
+// .navLink.noHover:hover {
+//     color: rgba(255, 255, 255, .5);
+//     background-color: #202124;
+// }
 .icon svg {
     fill: rgba(255, 255, 255, .5);
     width: 30px;
@@ -110,11 +257,10 @@ body {
     margin: auto;
 }
 
-nav .container {
-    width: 100%;
-    display: block;
-}
-
+// nav .container {
+//     width: 100%;
+//     display: block;
+// }
 .grid {
     display: grid;
     gap: 4rem;
@@ -155,6 +301,16 @@ nav .container {
     background-repeat: no-repeat;
     animation: cardEntrance 550ms ease-out;
     animation-fill-mode: backwards;
+}
+
+// Mat styles
+.mat-dialog-container {
+    background: #202124;
+    width: 80%;
+}
+
+.mat-form-field {
+    width: 100%;
 }
 
 .card img {
@@ -208,6 +364,11 @@ h6 {
     font-weight: 500 !important;
 }
 
+.card-title {
+    font-size: .83em !important;
+    line-height: 0.9em;
+}
+
 
 /* media queries */
 
@@ -255,4 +416,131 @@ footer p {
     text-align: center;
     color: white;
     font-family: 'Leixo', sans-serif;
+}
+
+// Loading Icon
+.sk-folding-cube {
+    margin: 20px auto;
+    width: 40px;
+    height: 40px;
+    position: relative;
+    -webkit-transform: rotateZ(45deg);
+    transform: rotateZ(45deg);
+}
+
+.sk-folding-cube .sk-cube {
+    float: left;
+    width: 50%;
+    height: 50%;
+    position: relative;
+    -webkit-transform: scale(1.1);
+    -ms-transform: scale(1.1);
+    transform: scale(1.1);
+}
+
+.sk-folding-cube .sk-cube:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #fff;
+    -webkit-animation: sk-foldCubeAngle 2.4s infinite linear both;
+    animation: sk-foldCubeAngle 2.4s infinite linear both;
+    -webkit-transform-origin: 100% 100%;
+    -ms-transform-origin: 100% 100%;
+    transform-origin: 100% 100%;
+}
+
+.sk-folding-cube .sk-cube2 {
+    -webkit-transform: scale(1.1) rotateZ(90deg);
+    transform: scale(1.1) rotateZ(90deg);
+}
+
+.sk-folding-cube .sk-cube3 {
+    -webkit-transform: scale(1.1) rotateZ(180deg);
+    transform: scale(1.1) rotateZ(180deg);
+}
+
+.sk-folding-cube .sk-cube4 {
+    -webkit-transform: scale(1.1) rotateZ(270deg);
+    transform: scale(1.1) rotateZ(270deg);
+}
+
+.sk-folding-cube .sk-cube2:before {
+    -webkit-animation-delay: 0.3s;
+    animation-delay: 0.3s;
+}
+
+.sk-folding-cube .sk-cube3:before {
+    -webkit-animation-delay: 0.6s;
+    animation-delay: 0.6s;
+}
+
+.sk-folding-cube .sk-cube4:before {
+    -webkit-animation-delay: 0.9s;
+    animation-delay: 0.9s;
+}
+
+@-webkit-keyframes sk-foldCubeAngle {
+    0%,
+    10% {
+        -webkit-transform: perspective(140px) rotateX(-180deg);
+        transform: perspective(140px) rotateX(-180deg);
+        opacity: 0;
+    }
+    25%,
+    75% {
+        -webkit-transform: perspective(140px) rotateX(0deg);
+        transform: perspective(140px) rotateX(0deg);
+        opacity: 1;
+    }
+    90%,
+    100% {
+        -webkit-transform: perspective(140px) rotateY(180deg);
+        transform: perspective(140px) rotateY(180deg);
+        opacity: 0;
+    }
+}
+
+@keyframes sk-foldCubeAngle {
+    0%,
+    10% {
+        -webkit-transform: perspective(140px) rotateX(-180deg);
+        transform: perspective(140px) rotateX(-180deg);
+        opacity: 0;
+    }
+    25%,
+    75% {
+        -webkit-transform: perspective(140px) rotateX(0deg);
+        transform: perspective(140px) rotateX(0deg);
+        opacity: 1;
+    }
+    90%,
+    100% {
+        -webkit-transform: perspective(140px) rotateY(180deg);
+        transform: perspective(140px) rotateY(180deg);
+        opacity: 0;
+    }
+}
+
+html,
+body {
+    height: 100%;
+}
+
+body {
+    margin: 0;
+    font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+html,
+body {
+    height: 100%;
+}
+
+body {
+    margin: 0;
+    font-family: Roboto, "Helvetica Neue", sans-serif;
 }

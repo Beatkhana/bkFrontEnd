@@ -1,0 +1,40 @@
+.archiveCard,
+.archiveCard .row,
+.archiveCard .col {
+    height: 70px;
+    width: auto;
+}
+
+.archiveCard img {
+    height: 66px;
+    width: auto;
+}
+
+.archiveCard a {
+    display: grid;
+    grid-template-columns: 1fr 7fr 2fr;
+}
+
+.card-body {
+    padding: 0.75rem;
+}
+
+.archiveCard {
+    p {
+        font-size: 0.75rem;
+        padding: 0;
+    }
+    .card-title {
+        font-size: 1.25rem !important;
+        padding: 0px !important;
+        margin-bottom: 0.75rem !important;
+    }
+    .cardLeft {
+        background-color: #161616;
+    }
+}
+
+.gridArchive {
+    display: grid;
+    gap: 2rem;
+}

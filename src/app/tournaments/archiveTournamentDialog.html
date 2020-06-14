@@ -1,0 +1,23 @@
+<h1 mat-dialog-title>Archive Tournament</h1>
+<form [formGroup]="archiveForm" novalidate (ngSubmit)="onSubmit()">
+    Value: {{ archiveForm.value | json }}
+
+    <mat-form-field class="fill">
+        <input matInput placeholder="First" formControlName="first">
+    </mat-form-field>
+    <br>
+    <mat-form-field class="fill">
+        <input matInput placeholder="Second" formControlName="second">
+    </mat-form-field>
+    <br>
+    <mat-form-field class="fill">
+        <input matInput placeholder="Third" formControlName="third">
+    </mat-form-field>
+
+
+    <div mat-dialog-actions>
+        <button mat-raised-button color="warn" mat-dialog-close>Close</button>
+        <button mat-raised-button color="primary" type="submit" mat-dialog-close [disabled]="archiveForm.invalid">Archive
+            Tournament</button>
+    </div>
+</form>

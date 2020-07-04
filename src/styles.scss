@@ -303,6 +303,10 @@ body {
     animation-fill-mode: backwards;
 }
 
+.card-body {
+    padding: 1.25rem;
+}
+
 // Mat styles
 .mat-dialog-container {
     background: #202124;
@@ -335,8 +339,8 @@ body {
 }
 
 .card-text {
-    font-family: 'Roboto', sans-serif;
-    font-weight: 500;
+    font-family: Roboto, sans-serif;
+    // font-weight: 500;
     font-size: 1.2rem;
     color: #fff;
     padding: 10px;

@@ -56,7 +56,7 @@
                 <ul class="navbar-nav">
                     <li><a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact:true}" class="nav-item">Home</a></li>
                     <li><a routerLink="/archive" routerLinkActive="active" class="nav-item">Archive</a></li>
-                    <li><a routerLink="/rankings" routerLinkActive="active" class="nav-item">Rankings</a></li>
+                    <li><a routerLink="/ranking" routerLinkActive="active" class="nav-item">Rankings</a></li>
                     <li><a routerLink="/team" routerLinkActive="active" class="nav-item">Team</a></li>
                 </ul>
             </div>
@@ -79,7 +79,7 @@
                         </button>
                         <ul class="dropdown">
                             <li class="dropdown-item">
-                                <a href="profile">View Profile</a>
+                                <a routerLink="/profile">View Profile</a>
                             </li>
                             <li class="dropdown-item">
                                 <a href="/api/logout">Logout</a>
@@ -91,8 +91,15 @@
                         </div> -->
                     </li>
                     <li *ngIf="!user">
+                        <!-- BSL -->
                         <!-- <a href="https://discord.com/api/oauth2/authorize?client_id=670442368385810452&redirect_uri=http%3A%2F%2Flocalhost%3A4200%2Fapi%2FdiscordAuth&response_type=code&scope=identify" class="nav-item">Login</a> -->
-                        <a href="https://discord.com/api/oauth2/authorize?client_id=670442368385810452&redirect_uri=https%3A%2F%2Fbeatkhanatest.herokuapp.com%2Fapi%2FdiscordAuth&response_type=code&scope=identify" class="nav-item">Login</a>
+                        <!-- <a href="https://discord.com/api/oauth2/authorize?client_id=670442368385810452&redirect_uri=https%3A%2F%2Fbeatkhanatest.herokuapp.com%2Fapi%2FdiscordAuth&response_type=code&scope=identify" class="nav-item">Login</a> -->
+
+                        <!-- BeatKhana -->
+                        <a href="https://discord.com/api/oauth2/authorize?client_id=721696709331386398&redirect_uri=http%3A%2F%2Flocalhost%3A4200%2Fapi%2FdiscordAuth&response_type=code&scope=identify" class="nav-item">Login</a>
+                        <!-- <a href="https://discord.com/api/oauth2/authorize?client_id=721696709331386398&redirect_uri=https%3A%2F%2Fbeatkhanatest.herokuapp.com%2Fapi%2FdiscordAuth&response_type=code&scope=identify" class="nav-item">Login</a> -->
+                        <!-- <a href="https://discord.com/api/oauth2/authorize?client_id=721696709331386398&redirect_uri=https%3A%2F%2Fbeatkhana.com%2Fapi%2FdiscordAuth&response_type=code&scope=identify" class="nav-item">Login</a> -->
+
                     </li>
                 </ul>
             </div>

@@ -1,0 +1,43 @@
+.playerGrid {
+    display: grid;
+    gap: 2rem;
+}
+
+.playerCard,
+.playerCard .row,
+.playerCard .col {
+    height: 70px;
+    width: 100%;
+}
+
+.playerCard img {
+    height: 66px;
+    width: auto;
+}
+
+.playerCard a {
+    display: grid;
+    grid-template-columns: 0.6fr 0.5fr 9fr 1fr;
+    .rank {
+        background-color: #161616;
+    }
+}
+
+.card-body {
+    padding: 0.75rem;
+}
+
+.playerCard {
+    p {
+        font-size: 0.75rem;
+        padding: 0;
+    }
+    .card-title {
+        font-size: 1.25rem !important;
+        padding: 0px !important;
+        margin-bottom: 0.75rem !important;
+    }
+    .cardLeft {
+        background-color: #161616;
+    }
+}

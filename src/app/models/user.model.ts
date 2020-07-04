@@ -9,4 +9,6 @@ export class User {
     country: string;
     tourneyRank: number;
     TR: number;
+    roleIds: string[];
+    roleNames: string[];
 }

@@ -4,6 +4,7 @@ exports.userAuth = void 0;
 var database_1 = require("./database");
 var fetch = require('node-fetch');
 var FormData = require('form-data');
+var request = require('request');
 var userAuth = /** @class */ (function () {
     function userAuth() {
         this.user = {};
@@ -12,11 +13,16 @@ var userAuth = /** @class */ (function () {
     userAuth.prototype.sendCode = function (code, callback) {
         var _this = this;
         var data = new FormData();
-        data.append('client_id', '670442368385810452');
-        data.append('client_secret', 'akUcvbwH4mIo3scebnz8qE15huReD6l9');
+        // bsl
+        // data.append('client_id', '670442368385810452');
+        // data.append('client_secret', 'akUcvbwH4mIo3scebnz8qE15huReD6l9');
+        // beatkhana
+        data.append('client_id', '721696709331386398');
+        data.append('client_secret', 'LdOyEZhrU6uW_5yBAn7f8g2nvTJ_13Y6');
         data.append('grant_type', 'authorization_code');
-        data.append('redirect_uri', 'http://localhost:4200/api/discordAuth');
+        // data.append('redirect_uri', 'http://localhost:4200/api/discordAuth');
         // data.append('redirect_uri', 'https://beatkhanatest.herokuapp.com/api/discordAuth');
+        data.append('redirect_uri', 'https://beatkhana.com/api/discordAuth');
         data.append('scope', 'identify');
         data.append('code', code);
         fetch('https://discordapp.com/api/oauth2/token', {
@@ -25,7 +31,6 @@ var userAuth = /** @class */ (function () {
         })
             .then(function (discordRes) { return discordRes.json(); })
             .then(function (info) {
-            // console.log(info);
             return info;
         })
             .then(function (info) { return fetch('https://discordapp.com/api/users/@me', {
@@ -35,13 +40,8 @@ var userAuth = /** @class */ (function () {
         }); })
             .then(function (userRes) { return userRes.json(); })
             .then(function (data) {
-            // this.userId = data.id;
-            // this.userName = data.username;
-            // this.avatar = data.avatar;
-            // console.log('Success:', data);
-            _this.checkuser(data.id, function (userRes) {
-                // console.log(userRes);
-                callback(userRes);
+            _this.checkuser(data.id, function (userRes, newUser) {
+                callback(userRes, newUser);
             });
         })
             .catch(function (error) {
@@ -50,15 +50,65 @@ var userAuth = /** @class */ (function () {
     };
     userAuth.prototype.checkuser = function (discordId, callback) {
         if (discordId) {
-            // console.log(discordId)
-            var res = this.db.query("SELECT GROUP_CONCAT(DISTINCT ra.roleId SEPARATOR ', ') as roleIds, users.*, GROUP_CONCAT(DISTINCT r.roleName SEPARATOR ', ') as roleNames\n            FROM users\n            LEFT JOIN roleassignment ra ON ra.userId = users.discordId\n            LEFT JOIN roles r ON r.roleId = ra.roleId\n            WHERE users.discordId = " + discordId + "\n            GROUP BY users.discordId", function (result) {
+            var res = this.db.query("SELECT GROUP_CONCAT(DISTINCT ra.roleId SEPARATOR ', ') as roleIds, users.*, GROUP_CONCAT(DISTINCT r.roleName SEPARATOR ', ') as roleNames\n            FROM users\n            LEFT JOIN roleassignment ra ON ra.userId = users.discordId\n            LEFT JOIN roles r ON r.roleId = ra.roleId\n            WHERE users.discordId = " + discordId + "\n            GROUP BY users.discordId", function (err, result) {
                 if (result.length > 0) {
+                    result[0].discordId = discordId.toString();
                     result[0].roleIds = result[0].roleIds.split(', ');
                     result[0].roleNames = result[0].roleNames.split(', ');
                     callback(result);
                 }
+                else {
+                    result = [{
+                            discordId: discordId.toString()
+                        }];
+                    callback(result, true);
+                }
             });
         }
+    };
+    userAuth.prototype.newUser = function (data, callback) {
+        var _this = this;
+        // console.log(data);
+        this.getSSData(data.links.scoreSaber.split('u/')[1], function (ssData) {
+            var user = {
+                discordId: data.discordId,
+                ssId: ssData.playerInfo.playerId,
+                name: ssData.playerInfo.playerName,
+                twitchName: data.links.twitch.split('twitch.tv/')[1],
+                avatar: ssData.playerInfo.avatar,
+                globalRank: ssData.playerInfo.rank,
+                localRank: ssData.playerInfo.countryRank,
+                country: ssData.playerInfo.country
+            };
+            console.log(user);
+            var result = _this.db.preparedQuery("INSERT INTO users SET ?", [user], function (err, result) {
+                console.log(result);
+                console.log(err);
+                var loggedUser = user;
+                loggedUser.roleIds = [];
+                loggedUser.roleNames = [];
+                return callback([user]);
+            });
+        });
+    };
+    userAuth.prototype.getSSData = function (id, callback) {
+        // console.log(`https://new.scoresaber.com/api/player/${id}/basic`);
+        // https.get(`https://new.scoresaber.com/api/player/${id}/basic`, (resp) => {
+        //     let data = '';
+        //     resp.on('end', () => {
+        //         console.log(JSON.parse(data).explanation);
+        //     });
+        // }).on("error", (err) => {
+        //     console.log("Error: " + err.message);
+        // });
+        request("https://new.scoresaber.com/api/player/" + id + "/basic", { json: true }, function (err, res, body) {
+            if (err) {
+                return console.log(err);
+            }
+            // console.log(body.url);
+            // console.log(body);
+            callback(body);
+        });
     };
     userAuth.prototype.getUser = function () {
         if (this.user != {}) {

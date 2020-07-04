@@ -6,8 +6,11 @@ import { AppComponent } from './app.component';
 import { TournamentsComponent, newTournamentDialog, archiveTournamentDialog } from './tournaments/tournaments.component';
 
 import { HttpClientModule } from '@angular/common/http';
-import { TournamentComponent } from './tournament/tournament.component';
+import { TournamentComponent, editTournament } from './tournament/tournament.component';
 import { ArchiveComponent } from './archive/archive.component';
+import { RankingsComponent } from './rankings/rankings.component';
+import { ProfileComponent } from './profile/profile.component';
+import { UserComponent } from './user/user.component';
 
 
 import { ReactiveFormsModule } from "@angular/forms";
@@ -18,7 +21,14 @@ import { MatSelectModule } from "@angular/material/select";
 import { MatButtonModule } from "@angular/material/button";
 import { MatCheckboxModule } from "@angular/material/checkbox";
 import { MatDialogModule } from '@angular/material/dialog';
-import { RankingsComponent } from './rankings/rankings.component';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+
+import { CKEditorModule } from 'ckeditor4-angular';
+import { ConfirmDialogComponent } from './confirm-dialog/confirm-dialog.component';
+import { SignUpComponent } from './sign-up/sign-up.component';
+import { CalendarComponent } from './calendar/calendar.component';
 
 @NgModule({
     declarations: [
@@ -28,7 +38,13 @@ import { RankingsComponent } from './rankings/rankings.component';
         ArchiveComponent,
         newTournamentDialog,
         archiveTournamentDialog,
-        RankingsComponent
+        editTournament,
+        RankingsComponent,
+        ProfileComponent,
+        UserComponent,
+        ConfirmDialogComponent,
+        SignUpComponent,
+        CalendarComponent
     ],
     imports: [
         BrowserModule,
@@ -40,7 +56,11 @@ import { RankingsComponent } from './rankings/rankings.component';
         MatSelectModule,
         MatButtonModule,
         MatCheckboxModule,
-        MatDialogModule
+        MatDialogModule,
+        MatDatepickerModule,
+        MatNativeDateModule,
+        MatAutocompleteModule,
+        CKEditorModule
     ],
     providers: [],
     bootstrap: [AppComponent]

@@ -1,0 +1,32 @@
+<div *ngIf="!curUser else loaded">
+    <div class="sk-folding-cube">
+        <div class="sk-cube1 sk-cube"></div>
+        <div class="sk-cube2 sk-cube"></div>
+        <div class="sk-cube4 sk-cube"></div>
+        <div class="sk-cube3 sk-cube"></div>
+    </div>
+</div>
+
+<ng-template #loaded>
+    <div class="container">
+        <div class="card noHover">
+            <div class="card-body">
+                <img class="profileImg" src="https://new.scoresaber.com{{ curUser.avatar }}" />
+                <h1>
+                    {{ curUser.name }}
+                    <img class="countryImg" src="\assets/flags/{{curUser.country | uppercase}}.png" alt="">
+                </h1>
+                <!-- <p class="card-text" *ngIf="curUser.roleNames.length > 0">
+                    <b>Roles:</b> {{curUser.roleNames.join(', ')}}
+                </p> -->
+                <p class="card-text">
+                    <b>Global Rank:</b> #{{curUser.globalRank}} <br>
+                    <b>Regional Rank:</b> #{{curUser.localRank}} <br>
+                    <b>Tournament Rank:</b> #{{curUser.tourneyRank}} <br>
+                    <a href="https://scoresaber.com/u/{{curUser.ssId}}" target="_blank">Scoresaber</a> <br>
+                    <a href="https://twitch.tv/{{curUser.twitchName}}" target="_blank">Twitch</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</ng-template>

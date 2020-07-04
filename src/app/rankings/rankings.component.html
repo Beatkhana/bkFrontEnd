@@ -1,1 +1,49 @@
-<p>rankings works!</p>
+<div class="container playerGrid">
+    <div *ngIf="loading else loaded">
+        <div class="sk-folding-cube">
+            <div class="sk-cube1 sk-cube"></div>
+            <div class="sk-cube2 sk-cube"></div>
+            <div class="sk-cube4 sk-cube"></div>
+            <div class="sk-cube3 sk-cube"></div>
+        </div>
+    </div>
+
+    <ng-template #loaded>
+        <div *ngFor="let user of users">
+            <div class="card playerCard">
+                <a class="tourneyLink" routerLink="/user/{{user.discordId}}">
+                    <div class="card-body rank">
+                        <p class="card-text">#{{user.tourneyRank}}</p>
+                    </div>
+                    <div>
+                        <img src="https://new.scoresaber.com{{user.avatar}}" class="card-img" alt="...">
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">{{user.name}}</p>
+                    </div>
+                    <div class="cardLeft card-body">
+                        <p class="card-text">+{{user.TR}} TR</p>
+                    </div>
+                    <!-- <div class="col-lg-1 playerRank col">
+                        <div class="card-body">
+                            <p class="card-text">#{{user.tourneyRank}}</p>
+                        </div>
+                    </div>
+                    <div class="col-lg-1 col playerImg">
+                        <img src="https://new.scoresaber.com{{user.avatar}}" class="card-img" alt="...">
+                    </div>
+                    <div class="col-lg-9 col playerName">
+                        <div class="card-body">
+                            <h5 class="card-title">{{user.name}}</h5>
+                        </div>
+                    </div>
+                    <div class="col-lg-1 cardLeft col">
+                        <div class="card-body">
+                            <p class="card-text">+20TR</p>
+                        </div>
+                    </div> -->
+                </a>
+            </div>
+        </div>
+    </ng-template>
+</div>

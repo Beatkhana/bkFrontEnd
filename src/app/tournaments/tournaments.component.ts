@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { AppComponent } from '../app.component';
 import { Observable } from 'rxjs';
 import { ITournament } from '../interfaces/tournament';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 
@@ -70,7 +70,14 @@ export class TournamentsComponent extends AppComponent implements OnInit {
 export class newTournamentDialog implements OnInit {
     tournamentForm: FormGroup;
 
-    constructor(private fb: FormBuilder, public http: HttpClient, private router: Router,) { }
+    users = [];
+
+    constructor(private fb: FormBuilder, public http: HttpClient, private router: Router,) { 
+        this.getUsers()
+            .subscribe(data => {
+                this.users = data;
+            });
+    }
 
     ngOnInit() {
         this.tournamentForm = this.fb.group({
@@ -101,7 +108,7 @@ export class newTournamentDialog implements OnInit {
             imgName: ['', [
                 Validators.required
             ]]
-        })
+        });
     }
 
     get discord() {
@@ -120,6 +127,10 @@ export class newTournamentDialog implements OnInit {
                     console.log(data);
                 }
             });
+    }
+
+    getUsers(): Observable<any> {
+        return this.http.get('/api/users');
     }
 
     addTournament(tournament: ITournament): Observable<ITournament> {
@@ -186,8 +197,8 @@ export class archiveTournamentDialog implements OnInit {
             });
     }
 
-    public addTournament(id: number): Observable<ITournament[]> {
-        return this.http.put<ITournament[]>('/api/archiveTournament', { 'id': id });
+    public addTournament(data: any): Observable<ITournament[]> {
+        return this.http.put<ITournament[]>('/api/archiveTournament', data);
     }
     
 }

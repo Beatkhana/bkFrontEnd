@@ -3,9 +3,11 @@ import { database } from './database';
 const fetch = require('node-fetch');
 const FormData = require('form-data');
 
+const request = require('request');
+
 export class userAuth {
 
-    userId: number;
+    userId: string;
     userName: string;
     avatar: string;
 
@@ -18,11 +20,20 @@ export class userAuth {
     sendCode(code: string, callback: Function) {
         const data = new FormData();
 
-        data.append('client_id', '670442368385810452');
-        data.append('client_secret', 'akUcvbwH4mIo3scebnz8qE15huReD6l9');
+        // bsl
+        // data.append('client_id', '670442368385810452');
+        // data.append('client_secret', 'akUcvbwH4mIo3scebnz8qE15huReD6l9');
+
+        // beatkhana
+        data.append('client_id', '721696709331386398');
+        data.append('client_secret', 'LdOyEZhrU6uW_5yBAn7f8g2nvTJ_13Y6');
+
         data.append('grant_type', 'authorization_code');
+
+
         // data.append('redirect_uri', 'http://localhost:4200/api/discordAuth');
-        data.append('redirect_uri', 'https://beatkhanatest.herokuapp.com/api/discordAuth');
+        // data.append('redirect_uri', 'https://beatkhanatest.herokuapp.com/api/discordAuth');
+        data.append('redirect_uri', 'https://beatkhana.com/api/discordAuth');
         data.append('scope', 'identify');
         data.append('code', code);
 
@@ -32,7 +43,6 @@ export class userAuth {
         })
             .then(discordRes => discordRes.json())
             .then(info => {
-                // console.log(info);
                 return info;
             })
             .then(info => fetch('https://discordapp.com/api/users/@me', {
@@ -42,13 +52,8 @@ export class userAuth {
             }))
             .then(userRes => userRes.json())
             .then(data => {
-                // this.userId = data.id;
-                // this.userName = data.username;
-                // this.avatar = data.avatar;
-                // console.log('Success:', data);
-                this.checkuser(data.id, (userRes) => {
-                    // console.log(userRes);
-                    callback(userRes);
+                this.checkuser(data.id, (userRes, newUser) => {
+                    callback(userRes, newUser);
                 });
             })
             .catch((error) => {
@@ -58,20 +63,70 @@ export class userAuth {
 
     checkuser(discordId, callback) {
         if (discordId) {
-            // console.log(discordId)
             const res = this.db.query(`SELECT GROUP_CONCAT(DISTINCT ra.roleId SEPARATOR ', ') as roleIds, users.*, GROUP_CONCAT(DISTINCT r.roleName SEPARATOR ', ') as roleNames
             FROM users
             LEFT JOIN roleassignment ra ON ra.userId = users.discordId
             LEFT JOIN roles r ON r.roleId = ra.roleId
             WHERE users.discordId = ${discordId}
-            GROUP BY users.discordId`, (result: any) => {
+            GROUP BY users.discordId`, (err, result: any) => {
                 if (result.length > 0) {
+                    result[0].discordId = discordId.toString();
                     result[0].roleIds = result[0].roleIds.split(', ');
                     result[0].roleNames = result[0].roleNames.split(', ');
                     callback(result);
+                } else {
+                    result = [{
+                        discordId: discordId.toString()
+                    }];
+                    callback(result, true);
                 }
             });
         }
+    }
+
+    newUser(data, callback: Function) {
+        // console.log(data);
+        this.getSSData(data.links.scoreSaber.split('u/')[1], (ssData)=> {
+            let user = {
+                discordId: data.discordId,
+                ssId: ssData.playerInfo.playerId,
+                name: ssData.playerInfo.playerName,
+                twitchName: data.links.twitch.split('twitch.tv/')[1],
+                avatar: ssData.playerInfo.avatar,
+                globalRank: ssData.playerInfo.rank,
+                localRank: ssData.playerInfo.countryRank,
+                country: ssData.playerInfo.country
+            };
+            console.log(user);
+            const result = this.db.preparedQuery(`INSERT INTO users SET ?`, [user], (err, result: any) => {
+                console.log(result);
+                console.log(err);
+                let loggedUser: any = user;
+                loggedUser.roleIds = [];
+                loggedUser.roleNames = [];
+
+                return callback([user]);
+            });
+        });
+    }
+
+    getSSData(id, callback: Function) {
+        // console.log(`https://new.scoresaber.com/api/player/${id}/basic`);
+        // https.get(`https://new.scoresaber.com/api/player/${id}/basic`, (resp) => {
+        //     let data = '';
+        //     resp.on('end', () => {
+        //         console.log(JSON.parse(data).explanation);
+        //     });
+
+        // }).on("error", (err) => {
+        //     console.log("Error: " + err.message);
+        // });
+        request(`https://new.scoresaber.com/api/player/${id}/basic`, { json: true }, (err, res, body) => {
+            if (err) { return console.log(err); }
+            // console.log(body.url);
+            // console.log(body);
+            callback(body);
+        });
     }
 
     getUser() {

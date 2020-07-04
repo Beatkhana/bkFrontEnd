@@ -1,0 +1,62 @@
+<h1 mat-dialog-title>Edit Tournament</h1>
+<form [formGroup]="tournamentForm" novalidate (ngSubmit)="onSubmit()">
+    <!-- Value: {{ tournamentForm.value | json }} -->
+
+
+    <mat-form-field class="fill">
+        <input matInput placeholder="Tournament Name" formControlName="name">
+    </mat-form-field>
+    <br>
+    <mat-form-field>
+        <mat-label>Date</mat-label>
+        <input matInput [matDatepicker]="dp3" readonly formControlName="date" (focus)="dp3.open()" (click)="dp3.open()">
+        <mat-datepicker-toggle matSuffix [for]="dp3"></mat-datepicker-toggle>
+        <mat-datepicker #dp3 disabled="false"></mat-datepicker>
+    </mat-form-field>
+    <br>
+    <mat-form-field class="fill">
+        <input matInput type="time" formControlName="time">
+    </mat-form-field>
+
+    <br>
+    <mat-form-field class="fill">
+        <input matInput placeholder="Discord Link" formControlName="discord">
+        <mat-error *ngIf="discord.invalid && discord.touched">
+            Please enter a valid link
+        </mat-error>
+    </mat-form-field>
+
+    <br>
+    <mat-form-field>
+        <mat-label>Owner</mat-label>
+        <mat-select formControlName="owner">
+            <mat-option *ngFor="let user of users" [value]="user.discordId">
+                {{user.name}}
+            </mat-option>
+        </mat-select>
+    </mat-form-field>
+
+
+    <br>
+    <mat-form-field class="fill">
+        <input matInput placeholder="Twitch Link" formControlName="twitchLink">
+    </mat-form-field>
+
+    <br>
+    <mat-form-field class="fill">
+        <input matInput placeholder="Prize Pool" formControlName="prize">
+    </mat-form-field>
+
+    <br>
+
+    <label class="card-text">Tournament Info:</label> <br><br>
+    <ckeditor formControlName="info"></ckeditor>
+
+    <br>
+
+    <div mat-dialog-actions>
+        <button mat-raised-button color="warn" mat-dialog-close>Close</button>
+        <button mat-raised-button color="primary" type="submit" [disabled]="tournamentForm.invalid">Update
+            Tournament</button>
+    </div>
+</form>

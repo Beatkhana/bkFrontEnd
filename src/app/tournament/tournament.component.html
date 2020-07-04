@@ -13,13 +13,19 @@
             <div class="card-body">
                 <img class="tourneyImg" src="\{{ tournament.image | lowercase }}" alt="" />
                 <h1>{{ tournament.name }}</h1>
+
+                <p class="card-text" *ngIf="tournament.archived == 1">
+                    <b>Archived <br /></b>
+                </p>
+
+                <div class="card-text" *ngIf="tournament.info != null" [innerHTML]="tournament.info"></div>
+
                 <p class="card-text">
-                    <span *ngIf="tournament.archived == 1">
-                        <b>Archived <br /></b>
-                    </span>
-                    <span *ngIf="tournament.info != null">
-                        <b>{{ tournament.info }} <br /><br /></b>
-                    </span> Date: {{ tournament.date | date: 'dd/MM/yyyy'}} <br /> Time: {{ tournament.time }} <br />
+                    <!-- <span *ngIf="tournament.info != null">
+                        
+                    <br /><br /> -->
+                    <!-- </span> -->
+                    Date: {{ tournament.date | date: 'dd/MM/yyyy'}} <br /> Time: {{ tournament.time }} <br />
                     <span *ngIf="tournament.info != null; else noPrize">
                         Prize pool: {{ tournament.prize }} <br />
                     </span>
@@ -33,6 +39,13 @@
                 </p>
                 <p class="card-text" *ngIf="tournament.first != null">
                     <b>Tournament Results:</b> <br> #1 {{tournament.first}} <br> #2 {{tournament.second}} <br> #3 {{tournament.third}} <br>
+                </p>
+                <p *ngIf="user && tournament.owner == user.discordId && !user['roleIds'].includes('1')" class="card-text">
+                    <button mat-button color="primary" (click)="openEdit()">Edit Tournament</button>
+                </p>
+                <p *ngIf="user && user['roleIds'].includes('1')" class="card-text">
+                    <button mat-button color="primary" (click)="openEdit()">Edit Tournament</button>
+                    <button mat-button color="warn" (click)="delete()">Delete Tournament</button>
                 </p>
             </div>
         </div>

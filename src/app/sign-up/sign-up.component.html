@@ -1,0 +1,33 @@
+<div class="container">
+    <div class="card noHover">
+        <div class="card-body">
+            <h1>Sign Up</h1>
+            <p class="card-text">
+
+            </p>
+            <form [formGroup]="signUpForm" novalidate (ngSubmit)="onSubmit()" class="card-text">
+                <!-- Value: {{ archiveForm.value | json }} -->
+
+                <mat-form-field class="fill">
+                    <input matInput placeholder="Twitch Link" formControlName="twitch">
+                    <!-- <mat-error *ngIf="twitch.invalid">
+                        Please enter a valid twitch link
+                    </mat-error> -->
+                </mat-form-field>
+                <br>
+                <mat-form-field class="fill">
+                    <input matInput placeholder="Scoresaber Link" formControlName="scoreSaber">
+                    <!-- <mat-error *ngIf="twitch.invalid">
+                        Please enter a valid scoresaber url or id
+                    </mat-error> -->
+                </mat-form-field>
+
+
+                <div mat-dialog-actions>
+                    <button mat-raised-button color="warn">Cancel</button> &nbsp;
+                    <button mat-raised-button color="primary" type="submit" [disabled]="signUpForm.invalid">Sign Up</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

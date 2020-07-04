@@ -9,7 +9,7 @@
     </div>
 
     <ng-template #loaded>
-        <div class="card" *ngFor="let tournament of tournaments">
+        <div class="card tournamentCard" *ngFor="let tournament of tournaments">
             <a [title]="tournament.name" [routerLink]="['/tournament',tournament.id]">
                 <img src="\{{tournament.image | lowercase}}" class="card-img-top">
                 <h5 class="card-title">

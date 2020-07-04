@@ -21,7 +21,7 @@ export class AppComponent implements OnInit {
         public titleService: Title,
         public http: HttpClient,
         public route: ActivatedRoute,
-        private router: Router,
+        public router: Router,
         public dialog: MatDialog
     ) {
         this.logIn()

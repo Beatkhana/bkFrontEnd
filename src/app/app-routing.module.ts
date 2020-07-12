@@ -8,13 +8,19 @@ import { ProfileComponent } from './profile/profile.component';
 import { UserComponent } from './user/user.component';
 import { SignUpComponent } from './sign-up/sign-up.component';
 import { CalendarComponent } from './calendar/calendar.component';
+import { MapPoolComponent } from './map-pool/map-pool.component';
+import { BracketComponent } from './bracket/bracket.component';
 
 
 const routes: Routes = [
   {path: '', component: TournamentsComponent },
   {path: 'archive', component: ArchiveComponent },
   {path: 'ranking', component: RankingsComponent },
-  {path: 'tournament/:id', component: TournamentComponent },
+  {path: 'tournament/:id', component: TournamentComponent, children: [
+    // {path: '', component: TournamentComponent, pathMatch: 'full'},
+    {path: 'map-pool', component: MapPoolComponent},
+    {path: 'bracket', component: BracketComponent},
+  ] },
   {path: 'profile', component: ProfileComponent },
   {path: 'user/:id', component: UserComponent },
   {path: 'sign-up', component: SignUpComponent },

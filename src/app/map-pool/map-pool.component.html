@@ -1,0 +1,24 @@
+<div *ngIf="loading else loaded">
+    <img src="/assets/svg/BeatKhana Logo RGB animated.svg" style="display: block;
+        margin-left: auto;
+        margin-right: auto;
+        width: 70px; 
+        border: none;
+        padding: 15px; ">
+</div>
+<ng-template #loaded>
+    <div class="card-body">
+        <!-- <img class="tourneyImg" src="\{{ tournament.image | lowercase }}" alt="" /> -->
+        <h1>{{tournament.name}}</h1>
+        <h3>Map Pool</h3>
+
+
+        <!-- <p *ngIf="user && tournament.owner == user.discordId && !user['roleIds'].includes('1')" class="card-text">
+            <button mat-button color="primary" (click)="openEdit()">Edit Tournament</button>
+        </p> -->
+        <p *ngIf="user && user['roleIds'].includes('1')" class="card-text">
+            <button mat-stroked-button color="primary" (click)="openEdit()">Edit Tournament</button> &nbsp;
+            <button mat-stroked-button color="warn" (click)="delete()">Delete Tournament</button>
+        </p>
+    </div>
+</ng-template>

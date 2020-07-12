@@ -13,16 +13,21 @@ var userAuth = /** @class */ (function () {
     userAuth.prototype.sendCode = function (code, callback) {
         var _this = this;
         var data = new FormData();
-        // bsl
-        // data.append('client_id', '670442368385810452');
-        // data.append('client_secret', 'akUcvbwH4mIo3scebnz8qE15huReD6l9');
         // beatkhana
         data.append('client_id', '721696709331386398');
         data.append('client_secret', 'LdOyEZhrU6uW_5yBAn7f8g2nvTJ_13Y6');
         data.append('grant_type', 'authorization_code');
-        // data.append('redirect_uri', 'http://localhost:4200/api/discordAuth');
-        // data.append('redirect_uri', 'https://beatkhanatest.herokuapp.com/api/discordAuth');
-        data.append('redirect_uri', 'https://beatkhana.com/api/discordAuth');
+        var env = process.env.NODE_ENV || 'production';
+        var redirect = "";
+        if (env == 'production') {
+            redirect = 'https://beatkhana.com/api/discordAuth';
+        }
+        else {
+            redirect = 'http://localhost:4200/api/discordAuth';
+        }
+        // console.log(redirect)
+        // console.log(env)
+        data.append('redirect_uri', redirect);
         data.append('scope', 'identify');
         data.append('code', code);
         fetch('https://discordapp.com/api/oauth2/token', {
@@ -52,9 +57,16 @@ var userAuth = /** @class */ (function () {
         if (discordId) {
             var res = this.db.query("SELECT GROUP_CONCAT(DISTINCT ra.roleId SEPARATOR ', ') as roleIds, users.*, GROUP_CONCAT(DISTINCT r.roleName SEPARATOR ', ') as roleNames\n            FROM users\n            LEFT JOIN roleassignment ra ON ra.userId = users.discordId\n            LEFT JOIN roles r ON r.roleId = ra.roleId\n            WHERE users.discordId = " + discordId + "\n            GROUP BY users.discordId", function (err, result) {
                 if (result.length > 0) {
+                    // console.log(result);
                     result[0].discordId = discordId.toString();
-                    result[0].roleIds = result[0].roleIds.split(', ');
-                    result[0].roleNames = result[0].roleNames.split(', ');
+                    if (result[0].roleNames != null) {
+                        result[0].roleIds = result[0].roleIds.split(', ');
+                        result[0].roleNames = result[0].roleNames.split(', ');
+                    }
+                    else {
+                        result[0].roleIds = [];
+                        result[0].roleNames = [];
+                    }
                     callback(result);
                 }
                 else {
@@ -80,10 +92,10 @@ var userAuth = /** @class */ (function () {
                 localRank: ssData.playerInfo.countryRank,
                 country: ssData.playerInfo.country
             };
-            console.log(user);
+            // console.log(user);
             var result = _this.db.preparedQuery("INSERT INTO users SET ?", [user], function (err, result) {
-                console.log(result);
-                console.log(err);
+                // console.log(result);
+                // console.log(err);
                 var loggedUser = user;
                 loggedUser.roleIds = [];
                 loggedUser.roleNames = [];

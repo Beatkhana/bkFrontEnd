@@ -1,11 +1,13 @@
 import { Component, OnInit, HostListener, ElementRef } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Title } from '@angular/platform-browser';
+import { Title, DomSanitizer } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 
 import { User } from './models/user.model'
 import { Observable } from 'rxjs';
-import {MatDialog, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material/dialog';
+import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+
+import { NotificationService } from './services/toast.service';
 
 @Component({
     selector: 'app-root',
@@ -13,28 +15,45 @@ import {MatDialog, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material/dialog
     styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements OnInit {
+
     title = 'BeatKhana!';
 
-    user: User;
+    user: User = null;
 
     public constructor(
         public titleService: Title,
         public http: HttpClient,
         public route: ActivatedRoute,
         public router: Router,
-        public dialog: MatDialog
+        public dialog: MatDialog,
+        public sanitizer: DomSanitizer,
+        private NotificationService : NotificationService
     ) {
-        this.logIn()
-            .subscribe(data => {
-                if(data){
-                    this.user = data[0];
-                    console.log(data);
-                }
-            });
+        // console.log(this.user);
+        if (this.user == null) {
+            this.updateUser();
+        }
+
+        router.events.subscribe(() => {
+            this.burgerActive = false;
+        });
+
+        route.params.subscribe(val => {
+            this.updateUser;
+        });
     }
 
     ngOnInit(): void {
 
+    }
+
+    updateUser() {
+        this.logIn()
+            .subscribe(data => {
+                if (data) {
+                    this.user = data[0];
+                }
+            });
     }
 
     public logIn(): Observable<User[]> {
@@ -44,5 +63,27 @@ export class AppComponent implements OnInit {
 
     public setTitle(newTitle: string) {
         this.titleService.setTitle(newTitle);
+    }
+
+    burgerActive = false;
+
+    burgerClick() {
+        this.burgerActive = !this.burgerActive;
+    }
+
+    showToasterSuccess(title:string, message:string){
+        this.NotificationService.showSuccess(title, message)
+    }
+  
+    showToasterError(title:string, message:string){  
+        this.NotificationService.showError(title, message)
+    }    
+  
+    showToasterInfo(title:string, message:string){
+        this.NotificationService.showInfo(title, message)
+    }   
+  
+    showToasterWarning(title:string, message:string){
+        this.NotificationService.showWarning(title, message)
     }
 }

@@ -23,11 +23,11 @@ export class SignUpComponent implements OnInit {
 
     ngOnInit(): void {
         this.signUpForm = this.fb.group({
-            twitch:['', [
+            twitch: ['', [
                 Validators.required,
                 // Validators.pattern('^(?:https?:\/\/)?(?:www\.|go\.)?twitch\.tv\/([a-z0-9_]+)($|\?)')
             ]],
-            scoreSaber:['', [
+            scoreSaber: ['', [
                 Validators.required
             ]]
         });
@@ -36,10 +36,13 @@ export class SignUpComponent implements OnInit {
     onSubmit() {
         console.log('good job');
         this.submitData()
-            .subscribe(data => console.log(data));
+            .subscribe(data => {
+                console.log(data);
+                window.location.href = '/';
+            });
     }
 
-    submitData (): Observable<any>  {
+    submitData(): Observable<any> {
         return this.http.post(this.url, this.signUpForm.value);
     }
 

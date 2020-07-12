@@ -1,4 +1,4 @@
-import { Component, OnInit, Inject } from '@angular/core';
+import { Component, OnInit, Inject, ViewEncapsulation } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { AppComponent } from '../app.component';
 import { Observable } from 'rxjs';
@@ -11,7 +11,7 @@ import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 @Component({
     selector: 'app-tournaments',
     templateUrl: './tournaments.component.html',
-    styleUrls: ['./tournaments.component.scss']
+    styleUrls: ['./tournaments.component.scss'],
 })
 export class TournamentsComponent extends AppComponent implements OnInit {
 
@@ -29,8 +29,6 @@ export class TournamentsComponent extends AppComponent implements OnInit {
                 this.loading = false;
             });
         this.setTitle(this.title);
-        console.log(this.user)
-        // console.log(this.user)
     }
 
     public getTournaments(): Observable<ITournament[]> {
@@ -39,7 +37,8 @@ export class TournamentsComponent extends AppComponent implements OnInit {
 
     openDialog() {
         this.dialog.open(newTournamentDialog, {
-            // height: '400px',
+            height: '50vw',
+            maxHeight: '60vh',
             width: '60vw',
         });
     }
@@ -76,6 +75,7 @@ export class newTournamentDialog implements OnInit {
         this.getUsers()
             .subscribe(data => {
                 this.users = data;
+                console.log(this.users)
             });
     }
 
@@ -85,6 +85,9 @@ export class newTournamentDialog implements OnInit {
                 Validators.required
             ]],
             date: ['', [
+                Validators.required
+            ]],
+            endDate: ['', [
                 Validators.required
             ]],
             time: ['', [

@@ -1,6 +1,6 @@
 // Custom Theming for Angular Material
 // For more information: https://material.angular.io/guide/theming
-@import '~@angular/material/theming';
+@import "~@angular/material/theming";
 // Plus imports for other components in your app.
 // Include the common styles for Angular Material. We include this here so that you only
 // have to load a single css file for Angular Material in your app.
@@ -9,12 +9,13 @@
 // Define the palettes for your theme using the Material Design palettes available in palette.scss
 // (imported above). For each palette, you can optionally specify a default, lighter, and darker
 // hue. Available color palettes: https://material.io/design/color/
-$app-primary: mat-palette($mat-indigo);
-$app-accent: mat-palette($mat-pink, A200, A100, A400);
+$app-primary: mat-palette($mat-bkBlue, A100);
+$app-accent: mat-palette($mat-bkGold, A100);
 // The warn palette is optional (defaults to red).
-$app-warn: mat-palette($mat-red);
+$app-warn: mat-palette($mat-red, 900);
 // Create the theme object (a Sass map containing all of the palettes).
-$app-theme: mat-light-theme($app-primary, $app-accent, $app-warn);
+// $app-theme: mat-light-theme($app-primary, $app-accent, $app-warn);
+$app-theme: mat-dark-theme($app-primary, $app-accent, $app-warn);
 // Include theme styles for core and each component used in your app.
 // Alternatively, you can import and @include the theme mixins for each component
 // that you are using.
@@ -27,22 +28,22 @@ $app-theme: mat-light-theme($app-primary, $app-accent, $app-warn);
 }
 
 @font-face {
-    font-family: 'Leixo';
-    src: url('/assets/fonts/LEIXO-DEMO.ttf');
+    font-family: "Leixo";
+    src: url("/assets/fonts/LEIXO-DEMO.ttf");
     font-weight: normal;
     font-style: normal;
 }
 
 @font-face {
-    font-family: 'TomatoRound';
-    src: url('/assets/fonts/TomatoRoundCondensed.ttf');
+    font-family: "TomatoRound";
+    src: url("/assets/fonts/TomatoRoundCondensed.ttf");
     font-weight: normal;
     font-style: normal;
 }
 
 @font-face {
-    font-family: 'Roboto';
-    src: url('/assets/fonts/Roboto-Regular.ttf');
+    font-family: "Roboto";
+    src: url("/assets/fonts/Roboto-Regular.ttf");
     font-weight: normal;
     font-style: normal;
 }
@@ -70,21 +71,51 @@ nav {
     .nav-item {
         text-decoration: none;
         padding: 15px 20px;
-        color: rgba(255, 255, 255, .5);
-        font-family: 'Leixo';
+        color: rgba(255, 255, 255, 0.5);
+        font-family: "Leixo", "Courier New", Courier, monospace;
         &.active {
             background-color: #2a2a2a;
             color: #fff;
         }
         &:hover:not(.noHover) {
             background-color: #2a2a2a;
-            color: rgba(255, 255, 255, .75);
+            color: rgba(255, 255, 255, 0.75);
         }
+    }
+    .fab {
+        font-size: 26px;
+    }
+}
+
+.navbar-nav.mobile {
+    flex-direction: column;
+    align-items: flex-start;
+    width: 80%;
+    li:not(.dropdown-item) {
+        margin-top: 13px;
+        margin-left: -25px;
+        width: 100%;
+        display: inline-block;
+    }
+    .nav-item {
+        width: 100%;
+        display: inline-block;
+        padding: 10px 10px;
+    }
+}
+
+.mobile-nav-content {
+    grid-column: span 3;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 400ms;
+    &.mobile-show {
+        max-height: 400px;
     }
 }
 
 .icon {
-    color: rgba(255, 255, 255, .5);
+    color: rgba(255, 255, 255, 0.5);
     font-size: larger;
     &:hover {
         color: white;
@@ -117,7 +148,7 @@ nav {
         }
         &:hover {
             background-color: #2a2a2a;
-            color: rgba(255, 255, 255, .75);
+            color: rgba(255, 255, 255, 0.75);
         }
     }
 }
@@ -133,13 +164,13 @@ nav {
         color: rgba(255, 255, 255, 0.5);
         transform: translate(0, -10px);
         display: inline-block;
-        margin-left: .255em;
-        vertical-align: .255em;
+        margin-left: 0.255em;
+        vertical-align: 0.255em;
         content: "";
-        border-top: .3em solid;
-        border-right: .3em solid transparent;
+        border-top: 0.3em solid;
+        border-right: 0.3em solid transparent;
         border-bottom: 0;
-        border-left: .3em solid transparent;
+        border-left: 0.3em solid transparent;
         transition: 50ms;
     }
 }
@@ -236,18 +267,20 @@ nav {
 //     background-color: #202124;
 // }
 .icon svg {
-    fill: rgba(255, 255, 255, .5);
+    fill: rgba(255, 255, 255, 0.5);
     width: 30px;
     height: 30px;
     transition: fill 400ms;
 }
 
 .icon:hover svg {
-    fill: rgba(255, 255, 255, .75);
+    fill: rgba(255, 255, 255, 0.75);
 }
 
+html,
 body {
     background-color: #0a0a0a;
+    background-size: cover;
 }
 
 
@@ -271,7 +304,7 @@ body {
 @keyframes cardEntrance {
     from {
         opacity: 0;
-        transform: scale(0.3);
+        transform: scale(0.5);
     }
     to {
         opacity: 1;
@@ -292,15 +325,16 @@ body {
     color: #fff;
     box-shadow: rgba(3, 8, 20, 0.1) 0px 0.15rem 0.5rem, rgba(2, 8, 20, 0.1) 0px 0.075rem 0.175rem;
     height: 100%;
-    width: 100%;
+    width: 95%;
     border-radius: 4px;
-    transition: all 500ms;
+    transition: all 150ms;
     overflow: hidden;
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    animation: cardEntrance 550ms ease-out;
+    animation: cardEntrance 250ms ease-out;
     animation-fill-mode: backwards;
+    margin: auto;
 }
 
 .card-body {
@@ -328,7 +362,7 @@ body {
 }
 
 .card-title {
-    font-family: 'TomatoRound', sans-serif;
+    font-family: "TomatoRound", Arial, Helvetica, sans-serif;
     font-weight: 500;
     padding: 10px;
     color: #fff;
@@ -339,9 +373,9 @@ body {
 }
 
 .card-text {
-    font-family: Roboto, sans-serif;
+    font-family: Roboto, "Helvetica Neue", sans-serif;
     // font-weight: 500;
-    font-size: 1.2rem;
+    font-size: 1rem;
     color: #fff;
     padding: 10px;
 }
@@ -364,21 +398,28 @@ h4,
 h5,
 h6 {
     color: white;
-    font-family: 'TomatoRound' !important;
+    font-family: "TomatoRound", Arial, Helvetica, sans-serif !important;
     font-weight: 500 !important;
 }
 
 .card-title {
-    font-size: .83em !important;
+    font-size: 0.83em !important;
     line-height: 0.9em;
 }
 
 
 /* media queries */
 
+.nav-main {
+    display: none;
+}
+
 @media (min-width: 576px) {
     .container {
         max-width: 550px;
+    }
+    .nav-main {
+        display: none;
     }
 }
 
@@ -386,11 +427,20 @@ h6 {
     .container {
         max-width: 756px;
     }
+    .nav-main {
+        display: none;
+    }
 }
 
 @media (min-width: 992px) {
     .container {
         max-width: 980px;
+    }
+    .nav-mobile {
+        display: none;
+    }
+    .nav-main {
+        display: block;
     }
 }
 
@@ -398,17 +448,35 @@ h6 {
     .container {
         max-width: 1000px;
     }
+    .nav-mobile {
+        display: none;
+    }
+    .nav-main {
+        display: block;
+    }
 }
 
 @media screen and (min-width: 1216px) {
     .container {
         max-width: 1202px;
     }
+    .nav-mobile {
+        display: none;
+    }
+    .nav-main {
+        display: block;
+    }
 }
 
 @media screen and (min-width: 1408px) {
     .container {
         max-width: 1392px;
+    }
+    .nav-mobile {
+        display: none;
+    }
+    .nav-main {
+        display: block;
     }
 }
 
@@ -419,114 +487,116 @@ footer {
 footer p {
     text-align: center;
     color: white;
-    font-family: 'Leixo', sans-serif;
+    font-family: "Leixo", "Courier New", Courier, monospace;
 }
 
-// Loading Icon
-.sk-folding-cube {
-    margin: 20px auto;
+footer a {
+    font-size: 32px;
+    padding: 5px;
+    color: white !important;
+}
+
+// Burger menu
+.hamburger {
+    padding: 15px 15px;
+    display: inline-block;
+    cursor: pointer;
+    transition-property: opacity, filter;
+    transition-duration: 0.15s;
+    transition-timing-function: linear;
+    font: inherit;
+    color: inherit;
+    text-transform: none;
+    background-color: transparent;
+    border: 0;
+    margin: 0;
+    overflow: visible;
+    scale: 0.8;
+}
+
+.hamburger:hover {
+    opacity: 0.7;
+}
+
+.hamburger.is-active:hover {
+    opacity: 0.7;
+}
+
+.hamburger.is-active .hamburger-inner,
+.hamburger.is-active .hamburger-inner::before,
+.hamburger.is-active .hamburger-inner::after {
+    background-color: rgba(255, 255, 255, 0.5);
+}
+
+.hamburger-box {
     width: 40px;
-    height: 40px;
+    height: 24px;
+    display: inline-block;
     position: relative;
-    -webkit-transform: rotateZ(45deg);
-    transform: rotateZ(45deg);
 }
 
-.sk-folding-cube .sk-cube {
-    float: left;
-    width: 50%;
-    height: 50%;
-    position: relative;
-    -webkit-transform: scale(1.1);
-    -ms-transform: scale(1.1);
-    transform: scale(1.1);
+.hamburger-inner {
+    display: block;
+    top: 50%;
+    margin-top: -2px;
 }
 
-.sk-folding-cube .sk-cube:before {
-    content: '';
+.hamburger-inner,
+.hamburger-inner::before,
+.hamburger-inner::after {
+    width: 40px;
+    height: 4px;
+    background-color: rgba(255, 255, 255, 0.5);
+    border-radius: 4px;
     position: absolute;
+    transition-property: transform;
+    transition-duration: 0.15s;
+    transition-timing-function: ease;
+}
+
+.hamburger-inner::before,
+.hamburger-inner::after {
+    content: "";
+    display: block;
+}
+
+.hamburger-inner::before {
+    top: -10px;
+}
+
+.hamburger-inner::after {
+    bottom: -10px;
+}
+
+.hamburger--spin .hamburger-inner {
+    transition-duration: 0.22s;
+    transition-timing-function: cubic-bezier(0.55, 0.055, 0.675, 0.19);
+}
+
+.hamburger--spin .hamburger-inner::before {
+    transition: top 0.1s 0.25s ease-in, opacity 0.1s ease-in;
+}
+
+.hamburger--spin .hamburger-inner::after {
+    transition: bottom 0.1s 0.25s ease-in, transform 0.22s cubic-bezier(0.55, 0.055, 0.675, 0.19);
+}
+
+.hamburger--spin.is-active .hamburger-inner {
+    transform: rotate(225deg);
+    transition-delay: 0.12s;
+    transition-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
+}
+
+.hamburger--spin.is-active .hamburger-inner::before {
     top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: #fff;
-    -webkit-animation: sk-foldCubeAngle 2.4s infinite linear both;
-    animation: sk-foldCubeAngle 2.4s infinite linear both;
-    -webkit-transform-origin: 100% 100%;
-    -ms-transform-origin: 100% 100%;
-    transform-origin: 100% 100%;
+    opacity: 0;
+    transition: top 0.1s ease-out, opacity 0.1s 0.12s ease-out;
 }
 
-.sk-folding-cube .sk-cube2 {
-    -webkit-transform: scale(1.1) rotateZ(90deg);
-    transform: scale(1.1) rotateZ(90deg);
-}
-
-.sk-folding-cube .sk-cube3 {
-    -webkit-transform: scale(1.1) rotateZ(180deg);
-    transform: scale(1.1) rotateZ(180deg);
-}
-
-.sk-folding-cube .sk-cube4 {
-    -webkit-transform: scale(1.1) rotateZ(270deg);
-    transform: scale(1.1) rotateZ(270deg);
-}
-
-.sk-folding-cube .sk-cube2:before {
-    -webkit-animation-delay: 0.3s;
-    animation-delay: 0.3s;
-}
-
-.sk-folding-cube .sk-cube3:before {
-    -webkit-animation-delay: 0.6s;
-    animation-delay: 0.6s;
-}
-
-.sk-folding-cube .sk-cube4:before {
-    -webkit-animation-delay: 0.9s;
-    animation-delay: 0.9s;
-}
-
-@-webkit-keyframes sk-foldCubeAngle {
-    0%,
-    10% {
-        -webkit-transform: perspective(140px) rotateX(-180deg);
-        transform: perspective(140px) rotateX(-180deg);
-        opacity: 0;
-    }
-    25%,
-    75% {
-        -webkit-transform: perspective(140px) rotateX(0deg);
-        transform: perspective(140px) rotateX(0deg);
-        opacity: 1;
-    }
-    90%,
-    100% {
-        -webkit-transform: perspective(140px) rotateY(180deg);
-        transform: perspective(140px) rotateY(180deg);
-        opacity: 0;
-    }
-}
-
-@keyframes sk-foldCubeAngle {
-    0%,
-    10% {
-        -webkit-transform: perspective(140px) rotateX(-180deg);
-        transform: perspective(140px) rotateX(-180deg);
-        opacity: 0;
-    }
-    25%,
-    75% {
-        -webkit-transform: perspective(140px) rotateX(0deg);
-        transform: perspective(140px) rotateX(0deg);
-        opacity: 1;
-    }
-    90%,
-    100% {
-        -webkit-transform: perspective(140px) rotateY(180deg);
-        transform: perspective(140px) rotateY(180deg);
-        opacity: 0;
-    }
+.hamburger--spin.is-active .hamburger-inner::after {
+    bottom: 0;
+    transform: rotate(-90deg);
+    transition: bottom 0.1s ease-out, transform 0.22s 0.12s cubic-bezier(0.215, 0.61, 0.355, 1);
 }
 
 html,

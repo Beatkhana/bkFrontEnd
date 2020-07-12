@@ -1,24 +1,33 @@
 <div *ngIf="loading else loaded">
-    <div class="sk-folding-cube">
-        <div class="sk-cube1 sk-cube"></div>
-        <div class="sk-cube2 sk-cube"></div>
-        <div class="sk-cube4 sk-cube"></div>
-        <div class="sk-cube3 sk-cube"></div>
-    </div>
+    <img src="/assets/svg/BeatKhana Logo RGB animated.svg" style="display: block;
+        margin-left: auto;
+        margin-right: auto;
+        width: 100px;">
 </div>
 
 <ng-template #loaded>
-    <div *ngFor="let tournament of tournaments" class="container">
-        <div class="card noHover">
-            <div class="card-body">
+    <div class="container">
+        <div class="tab-bar">
+            <div [routerLink]="['/tournament', tourneyId]" [routerLinkActiveOptions]="{exact:true}" routerLinkActive="isActive">
+                <h3>Info</h3>
+            </div>
+            <div [routerLink]="['map-pool']" routerLinkActive="isActive">
+                <h3>Map Pool</h3>
+            </div>
+            <div [routerLink]="['bracket']" routerLinkActive="isActive">
+                <h3>Bracket</h3>
+            </div>
+        </div>
+        <div class="card noHover" style="border-radius: 0px 4px 4px 4px;">
+            <div class="card-body" #info *ngIf="isInfo">
                 <img class="tourneyImg" src="\{{ tournament.image | lowercase }}" alt="" />
                 <h1>{{ tournament.name }}</h1>
 
-                <p class="card-text" *ngIf="tournament.archived == 1">
+                <p class="card-text" style="color: #c8825a" *ngIf="tournament.archived == 1">
                     <b>Archived <br /></b>
                 </p>
 
-                <div class="card-text" *ngIf="tournament.info != null" [innerHTML]="tournament.info"></div>
+                <div class="card-text infoText" *ngIf="tournament.safeInfo != null" [innerHTML]="tournament.safeInfo"></div>
 
                 <p class="card-text">
                     <!-- <span *ngIf="tournament.info != null">
@@ -44,10 +53,13 @@
                     <button mat-button color="primary" (click)="openEdit()">Edit Tournament</button>
                 </p>
                 <p *ngIf="user && user['roleIds'].includes('1')" class="card-text">
-                    <button mat-button color="primary" (click)="openEdit()">Edit Tournament</button>
-                    <button mat-button color="warn" (click)="delete()">Delete Tournament</button>
+                    <button mat-stroked-button color="primary" (click)="openEdit()">Edit Tournament</button> &nbsp;
+                    <button mat-stroked-button color="warn" (click)="delete()">Delete Tournament</button>
                 </p>
             </div>
+            <!-- <router-outlet></router-outlet> -->
+            <app-map-pool [tournament]="tournament" *ngIf="isMapPool"></app-map-pool>
+            <app-bracket [tournament]="tournament" *ngIf="isBracket"></app-bracket>
         </div>
     </div>
 </ng-template>

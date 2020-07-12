@@ -1,11 +1,60 @@
 .card-body {
-  padding: 1.25rem;
+    padding: 1.25rem;
 }
+
+.infoText img {
+    border: none;
+}
+
 .tourneyImg {
-  max-width: 33%;
-  float: right;
-  margin: 5px;
+    max-width: 33%;
+    float: right;
+    margin: 5px;
+    border: 2px solid rgb(200, 130, 90) !important;
 }
+
 .tourneyLink:hover {
-  text-decoration: none;
+    text-decoration: none;
+}
+
+.infoText {
+    // max-width: 65%;
+    // overflow: hidden;
+    >p {
+        max-width: 100%;
+        word-break: break-all
+    }
+}
+
+.tab-bar {
+    width: 95%;
+    margin-left: auto;
+    margin-right: auto;
+    display: grid;
+    grid-template-columns: repeat(3, 150px);
+    div {
+        color: white;
+        // height: 40px;
+        padding: 10px 20px;
+        background-color: #202124;
+        margin-right: 10px;
+        border-radius: 6px 6px 0px 0px;
+        cursor: pointer;
+        &.isActive {
+            border-top: 2px solid #c8825a;
+        }
+    }
+    animation: cardEntrance 250ms ease-out;
+    animation-fill-mode: backwards;
+}
+
+@keyframes cardEntrance {
+    from {
+        opacity: 0;
+        transform: scale(0.5);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
 }

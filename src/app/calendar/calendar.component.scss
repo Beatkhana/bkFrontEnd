@@ -26,16 +26,19 @@
 
 .dates {
     display: grid;
+    grid-auto-flow: row;
     // gap: 4rem;
     grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+    grid-template-rows: repeat(6, 100px);
     .date {
         // border-right: solid rgb(155, 155, 155) 1px;
         padding: 5px;
         margin: 2px;
         background-color: #292b2e;
-        height: 70px;
+        // height: 70px;
         .dateNum {
             font-size: 14px;
+            z-index: 11;
         }
     }
 }
@@ -46,5 +49,22 @@
     &:hover {
         scale: 1.2;
         cursor: pointer;
+    }
+}
+
+.event {
+    height: 25px;
+    border-radius: 10px;
+    margin: 5px;
+    cursor: pointer;
+    p {
+        text-align: center;
+        font-size: 18px;
+        color: black;
+        font-family: "TomatoRound", Arial, Helvetica, sans-serif;
+        text-transform: capitalize;
+        height: 100%;
+        vertical-align: middle;
+        line-height: 25px;
     }
 }

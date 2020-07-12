@@ -30,6 +30,11 @@ import { ConfirmDialogComponent } from './confirm-dialog/confirm-dialog.componen
 import { SignUpComponent } from './sign-up/sign-up.component';
 import { CalendarComponent } from './calendar/calendar.component';
 
+import { ToastrModule } from 'ngx-toastr';
+import { BracketComponent } from './bracket/bracket.component';
+import { MapPoolComponent } from './map-pool/map-pool.component';
+
+
 @NgModule({
     declarations: [
         AppComponent,
@@ -44,7 +49,9 @@ import { CalendarComponent } from './calendar/calendar.component';
         UserComponent,
         ConfirmDialogComponent,
         SignUpComponent,
-        CalendarComponent
+        CalendarComponent,
+        BracketComponent,
+        MapPoolComponent
     ],
     imports: [
         BrowserModule,
@@ -60,7 +67,15 @@ import { CalendarComponent } from './calendar/calendar.component';
         MatDatepickerModule,
         MatNativeDateModule,
         MatAutocompleteModule,
-        CKEditorModule
+        CKEditorModule,
+        ToastrModule.forRoot({
+            maxOpened: 3,
+            autoDismiss: true,
+            newestOnTop: false,
+            preventDuplicates: true,
+            countDuplicates: true,
+            resetTimeoutOnDuplicate: true
+        })
     ],
     providers: [],
     bootstrap: [AppComponent]

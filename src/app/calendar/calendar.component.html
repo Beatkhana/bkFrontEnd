@@ -1,7 +1,7 @@
 <div class="container">
     <div class="card noHover">
         <div class="card-body">
-            <h1 style="text-align: center;"><i class='fas fa-angle-left' (click)="changeDate(-1)"></i> {{curMonth}} <i class='fas fa-angle-right' (click)="changeDate(1)"></i></h1>
+            <h1 style="text-align: center;"><i class='fas fa-angle-left' style="float: left;" (click)="changeDate(-1)"></i> {{curMonth}} {{curYear}} <i class='fas fa-angle-right' style="float: right;" (click)="changeDate(1)"></i></h1>
             <div class="calendar">
                 <div class="headers">
                     <span>Sunday</span>
@@ -13,9 +13,20 @@
                     <span>Saturday</span>
                 </div>
                 <div class="dates">
-                    <div *ngFor="let date of dates" class="date">
+                    <div *ngFor="let date of dates" class="date" style="grid-column: {{date.col + 1}}; grid-row: {{date.row + 1}};">
                         <span *ngIf="date.date != 0" class="dateNum">{{date.date}}</span>
-                        <span *ngIf="date.event">{{date.event}}</span>
+                    </div>
+                    <!-- <div style="grid-area: 4 / 7 / auto / span 2; z-index: 10;
+                    background: rgba(255, 255, 255, 0.465); height: 10px;">
+                        event :)
+                    </div> -->
+
+                    <div *ngFor="let event of displayEvents" class="event" [routerLink]="['/tournament',event.id]" style="grid-area: {{event.row + 1}} / {{event.start}} / auto / {{event.end}}; z-index: 10;
+                    background: {{event.color}}80; margin-top: {{event.top}}px">
+                        <p>
+                            {{event.name}}
+                        </p>
+                        <!-- {{event | json}} -->
                     </div>
                 </div>
             </div>

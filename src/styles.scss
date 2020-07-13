@@ -384,6 +384,9 @@ body {
     color: rgb(0, 170, 200);
     text-decoration: none;
     background-color: transparent;
+    &:hover {
+        color: rgb(0, 120, 141);
+    }
 }
 
 .card:not(.noHover):hover {

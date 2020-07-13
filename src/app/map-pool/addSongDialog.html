@@ -1,0 +1,24 @@
+<h1 mat-dialog-title>Add Song</h1>
+<form [formGroup]="newSongForm" novalidate (ngSubmit)="onSubmit()">
+    <!-- Value: {{ newSongForm.value | json }} -->
+
+
+    <mat-form-field class="fill">
+        <input matInput placeholder="Scoresaber Link" formControlName="ssLink">
+    </mat-form-field>
+    <br>
+    <mat-label>Pool to add to:</mat-label>
+    <br>
+    <ng-template [ngIf]="true" *ngFor="let pool of data.mapPools | keyvalue">
+        <mat-checkbox [value]="pool.value.id" (change)="onCheckChange($event)">
+            {{pool.value.poolName}}
+        </mat-checkbox>
+        <br>
+    </ng-template>
+
+
+    <div mat-dialog-actions>
+        <button mat-raised-button color="warn" mat-dialog-close>Close</button>
+        <button mat-raised-button color="primary" type="submit" [disabled]="newSongForm.invalid">Add Map Pool</button>
+    </div>
+</form>

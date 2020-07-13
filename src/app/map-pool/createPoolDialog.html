@@ -1,0 +1,20 @@
+<h1 mat-dialog-title>Edit Tournament</h1>
+<form [formGroup]="newPoolForm" novalidate (ngSubmit)="onSubmit()">
+    <!-- Value: {{ newPoolForm.value | json }} -->
+
+
+    <mat-form-field class="fill">
+        <input matInput placeholder="Map Pool Name" formControlName="poolName">
+    </mat-form-field>
+    <br>
+    <mat-form-field class="fill">
+        <input matInput placeholder="Map Pool Description" formControlName="description">
+    </mat-form-field>
+    <br>
+    <input type="file" (change)="onFileChanged($event)" #fileInput>
+
+    <div mat-dialog-actions>
+        <button mat-raised-button color="warn" mat-dialog-close>Close</button>
+        <button mat-raised-button color="primary" type="submit" [disabled]="newPoolForm.invalid">Add Map Pool</button>
+    </div>
+</form>

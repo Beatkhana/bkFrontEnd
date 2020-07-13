@@ -80,8 +80,8 @@ export class TournamentComponent extends AppComponent implements OnInit {
     openEdit() {
         const dialog = this.dialog.open(editTournament, {
             // height: '400px',
-            maxHeight: '60vh',
-            width: '80vw',
+            maxHeight: '80vh',
+            width: '60vw',
             data: { tournament: this.tournament }
         });
 

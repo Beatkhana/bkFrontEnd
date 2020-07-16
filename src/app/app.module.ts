@@ -35,6 +35,7 @@ import { CalendarComponent } from './calendar/calendar.component';
 import { ToastrModule } from 'ngx-toastr';
 import { BracketComponent } from './bracket/bracket.component';
 import { addSongDialog, createPoolDialog, MapPoolComponent } from './map-pool/map-pool.component';
+import { TeamComponent } from './team/team.component';
 
 
 @NgModule({
@@ -55,7 +56,8 @@ import { addSongDialog, createPoolDialog, MapPoolComponent } from './map-pool/ma
         BracketComponent,
         MapPoolComponent,
         createPoolDialog,
-        addSongDialog
+        addSongDialog,
+        TeamComponent
     ],
     imports: [
         BrowserModule,

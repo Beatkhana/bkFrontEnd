@@ -1,0 +1,18 @@
+<div class="container">
+    <div class="card noHover" style="border-radius: 0px 4px 4px 4px;">
+        <div class="card-body">
+            <ng-template *ngFor="let role of displayRoles | keyvalue" [ngIf]="role.value.users.length > 0">
+                <h2>{{role.value.label}}</h2>
+                <div class="usrRow">
+                    <p class="card-text" *ngFor="let user of role.value.users">
+                        <img class="teamImg" src="https://new.scoresaber.com{{user.avatar}}">
+                        <span class="teamName">{{user.name}}</span><br>
+                        <span style="font-size:smaller;">{{ user.roleNames.join(', ') }}</span><br>
+                        <a href="https://discordapp.com/users/{{ user.discordId }}"><i class="fab fa-discord"></i></a>
+                        <a href="https://www.twitch.tv/{{ user.twitchName }}"><i class="fab fa-twitch"></i></a>
+                    </p>
+                </div>
+            </ng-template>
+        </div>
+    </div>
+</div>

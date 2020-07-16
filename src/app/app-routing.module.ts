@@ -10,6 +10,7 @@ import { SignUpComponent } from './sign-up/sign-up.component';
 import { CalendarComponent } from './calendar/calendar.component';
 import { MapPoolComponent } from './map-pool/map-pool.component';
 import { BracketComponent } from './bracket/bracket.component';
+import { TeamComponent } from './team/team.component';
 
 
 const routes: Routes = [
@@ -17,14 +18,14 @@ const routes: Routes = [
   {path: 'archive', component: ArchiveComponent },
   {path: 'ranking', component: RankingsComponent },
   {path: 'tournament/:id', component: TournamentComponent, children: [
-    // {path: '', component: TournamentComponent, pathMatch: 'full'},
     {path: 'map-pool', component: MapPoolComponent},
     {path: 'bracket', component: BracketComponent},
-  ] },
+  ]},
   {path: 'profile', component: ProfileComponent },
   {path: 'user/:id', component: UserComponent },
   {path: 'sign-up', component: SignUpComponent },
   {path: 'calendar', component: CalendarComponent },
+  {path: 'team', component: TeamComponent },
 ];
 
 @NgModule({

@@ -13,7 +13,11 @@
     </div>
     <ng-template #loaded>
         <mat-tab-group animationDuration="300ms" dynamicHeight (selectedTabChange)="tabClick($event)">
-            <mat-tab *ngFor="let pool of mapPools | keyvalue" label="{{pool.value.poolName}}" id="{{pool.value.id}}">
+            <mat-tab *ngFor="let pool of mapPools | keyvalue" id="{{pool.value.id}}">
+                <ng-template mat-tab-label>
+                    <span>{{pool.value.poolName}}</span>
+                    <img src="{{pool.value.image}}" style="width: 24px;height: 24px;border: none;margin-left: 5px;">
+                </ng-template>
                 <table *ngIf="pool.value.songs.length > 0 else noSongs" mat-table [dataSource]="pool.value.songs" class="card-text">
                     <ng-container matColumnDef="image">
                         <th mat-header-cell *matHeaderCellDef style="width: 2%;"> &nbsp;&nbsp;&nbsp; Song </th>
@@ -63,7 +67,8 @@
         <p class="card-text">
             <button mat-stroked-button color="primary" (click)="downloadPool()" *ngIf="poolsLen > 0 && mapPools[curPoolId].songs.length > 0">Download Pool</button> &nbsp;
             <button *ngIf="isAuthorised && poolsLen > 0" mat-stroked-button color="primary" (click)="addSong()">Add Song</button> &nbsp;
-            <button *ngIf="isAuthorised" mat-stroked-button color="primary" (click)="openCreate()">Create Map Pool</button>
+            <button *ngIf="isAuthorised" mat-stroked-button color="primary" (click)="openCreate()">Create Map Pool</button> &nbsp;
+            <button *ngIf="isAuthorised" mat-stroked-button color="primary" (click)="editPool()">Edit Map Pool</button>
         </p>
     </ng-template>
 </div>

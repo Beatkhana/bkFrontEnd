@@ -1,4 +1,4 @@
-<h1 mat-dialog-title>Edit Tournament</h1>
+<h1 mat-dialog-title>{{dialogTitle}}</h1>
 <form [formGroup]="newPoolForm" novalidate (ngSubmit)="onSubmit()">
     <!-- Value: {{ newPoolForm.value | json }} -->
 
@@ -11,10 +11,16 @@
         <input matInput placeholder="Map Pool Description" formControlName="description">
     </mat-form-field>
     <br>
+    <img src="{{newPoolForm.value.image}}" style="width: 48px;height: 48px;border: none;margin: 5px;">
+    <br>
     <input type="file" (change)="onFileChanged($event)" #fileInput>
+    <br><br>
+    <mat-checkbox formControlName="live">
+        Is Live
+    </mat-checkbox>
 
     <div mat-dialog-actions>
         <button mat-raised-button color="warn" mat-dialog-close>Close</button>
-        <button mat-raised-button color="primary" type="submit" [disabled]="newPoolForm.invalid">Add Map Pool</button>
+        <button mat-raised-button color="primary" type="submit" [disabled]="newPoolForm.invalid">{{buttonMessage}}</button>
     </div>
 </form>

@@ -4,6 +4,7 @@ import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@ang
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Observable } from 'rxjs';
 import { AppComponent } from '../app.component';
+import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
 import { User } from '../models/user.model';
 import { NotificationService } from '../services/toast.service';
 
@@ -26,6 +27,7 @@ export class MapPoolComponent implements OnInit {
     columnsToDisplay = ['image', 'songName', 'diff', 'bsaver', 'oneClick'];
 
     curPoolId = '0';
+    curPoolLive = false;
     poolsLen = 0;
 
     public constructor(
@@ -47,7 +49,7 @@ export class MapPoolComponent implements OnInit {
                 this.mapPools = data;
                 this.curPoolId = Object.keys(this.mapPools)[0];
                 this.poolsLen = Object.keys(this.mapPools).length;
-                console.log(data)
+                // console.log(data)
             });
     }
 
@@ -73,25 +75,31 @@ export class MapPoolComponent implements OnInit {
             // height: '400px',
             maxHeight: '60vh',
             width: '40vw',
-            data: { tournament: this.tournament }
+            data: {
+                tournament: this.tournament,
+                edit: false
+            }
         });
 
         dialog.afterClosed()
             .subscribe(data => {
-                this.loading = true;
-                this.getPools()
-                    .subscribe(data => {
-                        this.loading = false;
-                        this.mapPools = data;
-                        this.curPoolId = Object.keys(this.mapPools)[0];
-                        this.poolsLen = Object.keys(this.mapPools).length;
-                        console.log(data)
-                    });
+                if (data) {
+                    this.loading = true;
+                    this.getPools()
+                        .subscribe(data => {
+                            this.loading = false;
+                            this.mapPools = data;
+                            this.curPoolId = Object.keys(this.mapPools)[0];
+                            this.poolsLen = Object.keys(this.mapPools).length;
+                            // console.log(data)
+                        });
+                }
             });
     }
 
     tabClick(tab) {
-        let id = Object.keys(this.mapPools)[tab.index]
+        let id = Object.keys(this.mapPools)[tab.index];
+        this.curPoolLive = !!this.mapPools[id].live;
         this.curPoolId = id;
     }
 
@@ -121,7 +129,6 @@ export class MapPoolComponent implements OnInit {
 
     addSong() {
         const dialog = this.dialog.open(addSongDialog, {
-            // height: '400px',
             maxHeight: '60vh',
             width: '40vw',
             data: {
@@ -132,18 +139,47 @@ export class MapPoolComponent implements OnInit {
 
         dialog.afterClosed()
             .subscribe(data => {
-                this.loading = true;
-                this.getPools()
-                    .subscribe(data => {
-                        this.loading = false;
-                        this.mapPools = data;
-                        this.curPoolId = Object.keys(this.mapPools)[0];
-                        this.poolsLen = Object.keys(this.mapPools).length;
-                        console.log(data)
-                    });
+                if(data) {
+                    this.loading = true;
+                    this.getPools()
+                        .subscribe(data => {
+                            this.loading = false;
+                            this.mapPools = data;
+                            this.curPoolId = Object.keys(this.mapPools)[0];
+                            this.poolsLen = Object.keys(this.mapPools).length;
+                            // console.log(data)
+                        });
+                }
             });
     }
 
+    editPool() {
+        const dialog = this.dialog.open(createPoolDialog, {
+            // height: '400px',
+            maxHeight: '60vh',
+            width: '40vw',
+            data: {
+                tournament: this.tournament,
+                mapPool: this.mapPools[this.curPoolId],
+                edit: true
+            }
+        });
+
+        dialog.afterClosed()
+            .subscribe(data => {
+                if (data) {
+                    this.loading = true;
+                    this.getPools()
+                        .subscribe(data => {
+                            this.loading = false;
+                            this.mapPools = data;
+                            this.curPoolId = Object.keys(this.mapPools)[0];
+                            this.poolsLen = Object.keys(this.mapPools).length;
+                            // console.log(data)
+                        });
+                }
+            });
+    }
 }
 
 @Component({
@@ -162,19 +198,39 @@ export class createPoolDialog implements OnInit {
         private notif: NotificationService
     ) { }
 
-    ngOnInit() {
-        this.newPoolForm = this.fb.group({
-            tournamentId: this.data.tournament.id,
-            poolName: ['', [
-                Validators.required
-            ]],
-            image: ['', [
-                Validators.required
-            ]],
-            description: '',
-            live: 0
-        });
+    dialogTitle = "";
+    buttonMessage = "";
 
+    ngOnInit() {
+        if (this.data.edit) {
+            this.dialogTitle = "Edit Map Pool";
+            this.buttonMessage = "Update Map Pool";
+            this.newPoolForm = this.fb.group({
+                poolId: this.data.mapPool.id,
+                poolName: [this.data.mapPool.poolName, [
+                    Validators.required
+                ]],
+                image: [this.data.mapPool.image, [
+                    Validators.required
+                ]],
+                description: this.data.mapPool.description,
+                live: this.data.mapPool.live
+            });
+        } else {
+            this.dialogTitle = "Create Map Pool";
+            this.buttonMessage = "Add Map Pool";
+            this.newPoolForm = this.fb.group({
+                tournamentId: this.data.tournament.id,
+                poolName: ['', [
+                    Validators.required
+                ]],
+                image: ['', [
+                    Validators.required
+                ]],
+                description: '',
+                live: 0
+            });
+        }
     }
 
     selectedFile: File;
@@ -192,23 +248,45 @@ export class createPoolDialog implements OnInit {
     }
 
     onSubmit() {
-        this.addPool(this.newPoolForm.value)
-            .subscribe(data => {
-                if (!data.flag) {
-                    this.notif.showSuccess('', 'Successfully created map pool');
-                } else {
-                    this.notif.showError('', 'Error updating tournament');
-                }
-                this.dialogRef.close(this.newPoolForm.value);
-            }, error => {
-                this.notif.showError('', 'Error creating map pool');
-                console.error("Error: ", error);
-                this.dialogRef.close(this.newPoolForm.value);
-            });
+        if(this.data.edit) {
+            this.newPoolForm.value.live = +this.newPoolForm.value.live;
+            this.updatePool(this.newPoolForm.value)
+                .subscribe(data => {
+                    if (!data.flag) {
+                        this.notif.showSuccess('', 'Successfully updated map pool');
+                    } else {
+                        console.error("Error: ", data);
+                        this.notif.showError('', 'Error updating map pool');
+                    }
+                    this.dialogRef.close(true);
+                }, error => {
+                    this.notif.showError('', 'Error updating map pool');
+                    console.error("Error: ", error);
+                    this.dialogRef.close(true);
+                });
+        } else {
+            this.addPool(this.newPoolForm.value)
+                .subscribe(data => {
+                    if (!data.flag) {
+                        this.notif.showSuccess('', 'Successfully created map pool');
+                    } else {
+                        this.notif.showError('', 'Error creating map pool');
+                    }
+                    this.dialogRef.close(true);
+                }, error => {
+                    this.notif.showError('', 'Error creating map pool');
+                    console.error("Error: ", error);
+                    this.dialogRef.close(true);
+                });
+        }
     }
 
     addPool(data: any): Observable<any> {
         return this.http.post('/api/tournament/addPool', data);
+    }
+
+    updatePool(data: any): Observable<any> {
+        return this.http.put('/api/map-pools/' + this.data.tournament.id, data);
     }
 }
 
@@ -242,8 +320,8 @@ export class addSongDialog implements OnInit {
     }
 
     onCheckChange(event) {
-        console.log(event);
-        console.log(this.newSongForm.value.poolIds);
+        // console.log(event);
+        // console.log(this.newSongForm.value.poolIds);
         let poolId = event.source.value;
         if (event.checked && !this.newSongForm.value.poolIds.includes(poolId)) {
             this.newSongForm.value.poolIds.push(poolId);

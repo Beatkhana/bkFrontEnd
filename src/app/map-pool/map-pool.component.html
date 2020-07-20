@@ -52,6 +52,12 @@
                             <a href="beatsaver://{{song.key}}" target="_blank">One Click</a>
                         </td>
                     </ng-container>
+                    <ng-container matColumnDef="delete" *ngIf="isAuthorised">
+                        <th mat-header-cell *matHeaderCellDef style="width: 2%;"> </th>
+                        <td mat-cell *matCellDef="let song" style="width: 2%;">
+                            <button mat-button color="warn" (click)="delete(song.id)">Delete</button>
+                        </td>
+                    </ng-container>
 
                     <tr mat-header-row *matHeaderRowDef="columnsToDisplay"></tr>
                     <tr mat-row *matRowDef="let myRowData; columns: columnsToDisplay"></tr>
@@ -61,7 +67,6 @@
                         This pool currently has no songs in it.
                     </p>
                 </ng-template>
-
             </mat-tab>
         </mat-tab-group>
         <p class="card-text">

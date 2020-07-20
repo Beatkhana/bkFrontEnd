@@ -32,7 +32,8 @@ export class MapPoolComponent implements OnInit {
 
     public constructor(
         public http: HttpClient,
-        public dialog: MatDialog
+        public dialog: MatDialog,
+        private notif: NotificationService
     ) {
         // console.log(this.user);
         if (this.user == null) {
@@ -60,6 +61,7 @@ export class MapPoolComponent implements OnInit {
                     this.user = data[0];
                     if (this.user != null && (this.user['roleIds'].includes('1') || this.user.discordId == this.tournament.owner)) {
                         this.isAuthorised = true;
+                        this.columnsToDisplay.push('delete');
                     }
                 }
             });
@@ -68,6 +70,51 @@ export class MapPoolComponent implements OnInit {
     public logIn(): Observable<User[]> {
         // console.log('/api/discordAuth?code=' + code);
         return this.http.get<User[]>('/api/user');
+    }
+
+    delete(songId) {
+        const dialog = this.dialog.open(ConfirmDialogComponent, {
+            // height: '400px',
+            width: '400px',
+            data: {
+                cancelText: 'Cancel',
+                confirmText: 'Delete',
+                message: 'Are you sure you want to delete this song from this pool?',
+                title: 'Delete Song?'
+            }
+        });
+
+        dialog.afterClosed().subscribe(
+            data => {
+                if (data) {
+                    let info = {
+                        id: songId
+                    }
+                    this.deleteSong(info)
+                        .subscribe(data => {
+                            if (!data.flag) {
+                                this.notif.showSuccess('', 'Successfully deleted song from map pool');
+                                this.loading = true;
+                                this.getPools()
+                                    .subscribe(data => {
+                                        this.loading = false;
+                                        this.mapPools = data;
+                                        this.curPoolId = Object.keys(this.mapPools)[0];
+                                        this.poolsLen = Object.keys(this.mapPools).length;
+                                        // console.log(data)
+                                    });
+                            } else {
+                                console.error("Error: ", data);
+                                this.notif.showError('', 'Error deleting song from map pool');
+                            }
+                        });
+                }
+            }
+        );
+    }
+
+    public deleteSong(data): Observable<any> {
+        return this.http.post('api/map-pools/deleteSong', data);
     }
 
     openCreate() {
@@ -139,7 +186,7 @@ export class MapPoolComponent implements OnInit {
 
         dialog.afterClosed()
             .subscribe(data => {
-                if(data) {
+                if (data) {
                     this.loading = true;
                     this.getPools()
                         .subscribe(data => {
@@ -248,7 +295,7 @@ export class createPoolDialog implements OnInit {
     }
 
     onSubmit() {
-        if(this.data.edit) {
+        if (this.data.edit) {
             this.newPoolForm.value.live = +this.newPoolForm.value.live;
             this.updatePool(this.newPoolForm.value)
                 .subscribe(data => {

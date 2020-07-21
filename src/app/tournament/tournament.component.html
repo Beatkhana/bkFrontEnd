@@ -30,18 +30,12 @@
                 <div class="card-text infoText" *ngIf="tournament.safeInfo != null" [innerHTML]="tournament.safeInfo"></div>
 
                 <p class="card-text">
-                    <!-- <span *ngIf="tournament.info != null">
-                        
-                    <br /><br /> -->
-                    <!-- </span> -->
                     Date: {{ tournament.date | date: 'dd/MM/yyyy'}} <br /> Time: {{ tournament.time }} <br />
                     <span *ngIf="tournament.info != null; else noPrize">
                         Prize pool: {{ tournament.prize }} <br />
                     </span>
                     <ng-template #noPrize>Prize Pool: Not announced yet <br></ng-template>
-                    <span *ngIf="tournament.signup != null">
-                        Signup: {{ tournament.signup }} <br />
-                    </span>
+
                     <span *ngIf="tournament.twitchLink != null">
                         <a href="{{ tournament.twitchLink }}" target="new">Twitch</a> <br />
                     </span>

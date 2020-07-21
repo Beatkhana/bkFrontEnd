@@ -16,6 +16,8 @@ export class SignUpComponent implements OnInit {
     url = '/api/newUser';
     users = [];
 
+    pronouns = ['He/Him', 'She/Her', 'They/Them'];
+
     constructor(
         private fb: FormBuilder,
         public http: HttpClient,
@@ -25,16 +27,18 @@ export class SignUpComponent implements OnInit {
         this.signUpForm = this.fb.group({
             twitch: ['', [
                 Validators.required,
-                // Validators.pattern('^(?:https?:\/\/)?(?:www\.|go\.)?twitch\.tv\/([a-z0-9_]+)($|\?)')
+                // Validators.pattern('^(?:https?:\/\/)?(?:www\.|go\.)?twitch\.tv\/([a-z0-9_]+)($|\?)'),
             ]],
             scoreSaber: ['', [
+                Validators.required
+            ]],
+            pronoun: ['He/Him', [
                 Validators.required
             ]]
         });
     }
 
     onSubmit() {
-        console.log('good job');
         this.submitData()
             .subscribe(data => {
                 console.log(data);
@@ -48,5 +52,9 @@ export class SignUpComponent implements OnInit {
 
     get twitch() {
         return this.signUpForm.get('twitch');
+    }
+
+    get scoresaber() {
+        return this.signUpForm.get('scoreSaber');
     }
 }

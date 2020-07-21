@@ -26,6 +26,7 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import {MatTabsModule} from '@angular/material/tabs';
 import {MatTableModule} from '@angular/material/table';
+import {MatRadioModule} from '@angular/material/radio'; 
 
 import { CKEditorModule } from 'ckeditor4-angular';
 import { ConfirmDialogComponent } from './confirm-dialog/confirm-dialog.component';
@@ -75,6 +76,7 @@ import { TeamComponent } from './team/team.component';
         MatAutocompleteModule,
         MatTabsModule,
         MatTableModule,
+        MatRadioModule,
         CKEditorModule,
         ToastrModule.forRoot({
             maxOpened: 3,

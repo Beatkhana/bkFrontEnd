@@ -6,26 +6,37 @@
 
             </p>
             <form [formGroup]="signUpForm" novalidate (ngSubmit)="onSubmit()" class="card-text">
-                <!-- Value: {{ archiveForm.value | json }} -->
+                <!-- Value: {{ signUpForm.value | json }} -->
 
                 <mat-form-field class="fill">
-                    <input matInput placeholder="Twitch Link" formControlName="twitch">
-                    <!-- <mat-error *ngIf="twitch.invalid">
-                        Please enter a valid twitch link
-                    </mat-error> -->
+                    <input matInput placeholder="Twitch Link" formControlName="twitch" pattern="^(?:https?:\/\/)?(?:www\.)?twitch\.tv\/([a-z0-9_]+)($|\?)">
+                    <mat-error *ngIf="twitch.invalid">
+                        Please enter a valid twitch link, Format: https://twitch.tv/[channel name]
+                    </mat-error>
                 </mat-form-field>
                 <br>
                 <mat-form-field class="fill">
-                    <input matInput placeholder="Scoresaber Link" formControlName="scoreSaber">
-                    <!-- <mat-error *ngIf="twitch.invalid">
-                        Please enter a valid scoresaber url or id
-                    </mat-error> -->
+                    <input matInput placeholder="Scoresaber Link" formControlName="scoreSaber" pattern="^(?:https?:\/\/)?(?:www\.)?scoresaber\.com\/u\/([0-9]+)($|\?)">
+                    <mat-error *ngIf="scoresaber.invalid">
+                        Please enter a valid Score Saber link, Format: https://scoresaber.com/u/1234567890123456
+                    </mat-error>
                 </mat-form-field>
+                <br>
+                <label id="pronounlabel">Preferred Pronoun:</label>
+                <mat-radio-group aria-labelledby="pronounlabel" formControlName="pronoun" class="pronounRadio">
+                    <mat-radio-button *ngFor="let pronoun of pronouns" class="radio-button" value="{{pronoun}}">{{pronoun}}</mat-radio-button>
+                    <mat-radio-button class="radio-button" value="Other">Other</mat-radio-button>
+                    <mat-form-field style="margin-top: 5px;" class="fill" *ngIf="pronouns.indexOf(signUpForm.value.pronoun) == -1">
+                        <input matInput placeholder="Preferred Pronoun" formControlName="pronoun">
+                    </mat-form-field>
+                </mat-radio-group>
+
 
 
                 <div mat-dialog-actions>
                     <button mat-raised-button color="warn">Cancel</button> &nbsp;
-                    <button mat-raised-button color="primary" type="submit" [disabled]="signUpForm.invalid">Sign Up</button>
+                    <button mat-raised-button color="primary" type="submit" [disabled]="signUpForm.invalid">Sign
+                        Up</button>
                 </div>
             </form>
         </div>

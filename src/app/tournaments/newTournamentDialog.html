@@ -21,9 +21,9 @@
     </mat-form-field>
     <br>
     <mat-form-field class="fill">
-        <input matInput placeholder="Discord Link" formControlName="discord">
+        <input matInput placeholder="Discord Link" formControlName="discord" pattern="^(?:https?:\/\/)?(?:www\.)?discord\.gg\/([a-zA-Z0-9]+)($|\?)">
         <mat-error *ngIf="discord.invalid && discord.touched">
-            Please enter a valid link
+            Please enter a valid link, Format: https://discord.gg/[code]
         </mat-error>
     </mat-form-field>
 
@@ -42,7 +42,10 @@
 
     <br>
     <mat-form-field class="fill">
-        <input matInput placeholder="Twitch Link" formControlName="twitchLink">
+        <input matInput placeholder="Twitch Link" formControlName="twitchLink" pattern="^(?:https?:\/\/)?(?:www\.)?twitch\.tv\/([a-z0-9_]+)($|\?)">
+        <mat-error *ngIf="twitch.invalid && (twitch.dirty || twitch.touched)">
+            Please enter a valid twitch link, Format: https://twitch.tv/[channel name]
+        </mat-error>
     </mat-form-field>
 
     <br>

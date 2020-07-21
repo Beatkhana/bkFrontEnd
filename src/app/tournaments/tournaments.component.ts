@@ -73,7 +73,6 @@ export class newTournamentDialog implements OnInit {
         this.getUsers()
             .subscribe(data => {
                 this.users = data;
-                console.log(this.users)
             });
     }
 
@@ -111,6 +110,10 @@ export class newTournamentDialog implements OnInit {
 
     get discord() {
         return this.tournamentForm.get('discord');
+    }
+
+    get twitch() {
+        return this.tournamentForm.get('twitchLink');
     }
 
     onSubmit() {

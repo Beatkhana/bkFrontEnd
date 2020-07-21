@@ -54,7 +54,7 @@ export class TournamentComponent extends AppComponent implements OnInit {
                     this.setTitle(this.tournament.name + ' | ' + this.title);
                 });
         });
-        
+
         this.router.events.subscribe((val) => {
             if (this.router.url.includes('map-pool')) {
                 this.isMapPool = true;
@@ -183,6 +183,10 @@ export class editTournament implements OnInit {
         return this.tournamentForm.get('discord');
     }
 
+    get twitch() {
+        return this.tournamentForm.get('twitchLink');
+    }
+    
     public formatDate(date) {
         var d = new Date(date),
             month = '' + (d.getMonth() + 1),
@@ -213,6 +217,7 @@ export class editTournament implements OnInit {
                 this.dialogRef.close(this.tournamentForm.value);
             });
     }
+
 
     getUsers(): Observable<any> {
         return this.http.get('/api/users');

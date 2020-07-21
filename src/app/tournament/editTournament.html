@@ -23,11 +23,6 @@
         <mat-datepicker-toggle matSuffix [for]="dp1"></mat-datepicker-toggle>
         <mat-datepicker #dp1 disabled="false"></mat-datepicker>
     </mat-form-field>
-    <br>
-    <mat-form-field class="fill">
-        <mat-label>Time</mat-label>
-        <input matInput type="time" formControlName="time">
-    </mat-form-field>
 
     <br>
     <mat-form-field class="fill">
@@ -67,7 +62,8 @@
 
     <div mat-dialog-actions>
         <button mat-raised-button color="warn" mat-dialog-close>Close</button>
-        <button mat-raised-button color="primary" type="submit" [disabled]="tournamentForm.invalid">Update
-            Tournament</button>
+        <button mat-raised-button color="primary" type="submit" [disabled]="tournamentForm.invalid">
+            Update Tournament
+        </button>
     </div>
 </form>

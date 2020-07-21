@@ -15,8 +15,9 @@
                 </h5>
             </a>
             <p class="card-text">
-                Date: {{tournament.date | date: 'dd/MM/yyyy'}} <br> Time: {{tournament.time}} <br>
-                <a href="<?= $tournament->signup ?>">Discord</a><br>
+                Date: {{tournament.date | date: 'dd/MM/yyyy'}} <br> Prize: {{tournament.prize}} <br>
+                <a href="{{tournament.discord}}">Discord</a><br>
+                <a href="{{tournament.twitch}}">Twitch</a><br>
             </p>
             <p *ngIf="user && user['roleIds'].includes('1')" class="card-text">
                 <button mat-button color="primary" (click)="archive(tournament.id)">Archive Tournament</button>

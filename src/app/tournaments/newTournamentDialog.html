@@ -6,27 +6,19 @@
         <input matInput placeholder="Tournament Name" formControlName="name">
     </mat-form-field>
     <br>
-    <mat-label>All times and dates in UTC</mat-label>
-    <br>
-    <br>
     <mat-form-field>
-        <mat-label>Start Date</mat-label>
+        <mat-label>Start Date (local)</mat-label>
         <input matInput [matDatepicker]="dp3" readonly formControlName="date" (focus)="dp3.open()" (click)="dp3.open()">
         <mat-datepicker-toggle matSuffix [for]="dp3"></mat-datepicker-toggle>
         <mat-datepicker #dp3 disabled="false"></mat-datepicker>
     </mat-form-field>
     <br>
     <mat-form-field>
-        <mat-label>End Date</mat-label>
+        <mat-label>End Date (local)</mat-label>
         <input matInput [matDatepicker]="dp1" readonly formControlName="endDate" (focus)="dp1.open()" (click)="dp1.open()">
         <mat-datepicker-toggle matSuffix [for]="dp1"></mat-datepicker-toggle>
         <mat-datepicker #dp1 disabled="false"></mat-datepicker>
     </mat-form-field>
-    <br>
-    <mat-form-field class="fill">
-        <input matInput type="time" formControlName="time">
-    </mat-form-field>
-
     <br>
     <mat-form-field class="fill">
         <input matInput placeholder="Discord Link" formControlName="discord">

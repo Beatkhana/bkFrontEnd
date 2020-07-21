@@ -88,6 +88,7 @@ export class MapPoolComponent implements OnInit {
             data => {
                 if (data) {
                     let info = {
+                        tournamentId: this.tournament.id,
                         id: songId
                     }
                     this.deleteSong(info)
@@ -379,7 +380,7 @@ export class addSongDialog implements OnInit {
     }
 
     onSubmit() {
-        console.log(this.newSongForm.value);
+        // console.log(this.newSongForm.value);
         this.addSong(this.newSongForm.value)
             .subscribe(data => {
                 if (!data.flag) {

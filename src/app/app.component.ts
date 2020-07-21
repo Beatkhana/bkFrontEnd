@@ -27,7 +27,7 @@ export class AppComponent implements OnInit {
         public router: Router,
         public dialog: MatDialog,
         public sanitizer: DomSanitizer,
-        private NotificationService : NotificationService
+        public notif: NotificationService
     ) {
         // console.log(this.user);
         if (this.user == null) {
@@ -69,21 +69,5 @@ export class AppComponent implements OnInit {
 
     burgerClick() {
         this.burgerActive = !this.burgerActive;
-    }
-
-    showToasterSuccess(title:string, message:string){
-        this.NotificationService.showSuccess(title, message)
-    }
-  
-    showToasterError(title:string, message:string){  
-        this.NotificationService.showError(title, message)
-    }    
-  
-    showToasterInfo(title:string, message:string){
-        this.NotificationService.showInfo(title, message)
-    }   
-  
-    showToasterWarning(title:string, message:string){
-        this.NotificationService.showWarning(title, message)
     }
 }

@@ -70,7 +70,6 @@ export class TournamentComponent extends AppComponent implements OnInit {
                 this.isInfo = true;
             }
         });
-        // console.log(this.user);
     }
 
     public getTournaments(): Observable<ITournament[]> {
@@ -114,10 +113,12 @@ export class TournamentComponent extends AppComponent implements OnInit {
                 if (data) {
                     this.deleteTourney(this.tourneyId)
                         .subscribe(data => {
-                            if (!data.error) {
+                            if (!data.flag) {
+                                this.notif.showSuccess('', 'Successfully deleted tournament');
                                 this.router.navigate(['/']);
                             } else {
-                                console.error(data.error);
+                                console.error("Error: ", data);
+                                this.notif.showError('', 'Error deleting tournament');
                             }
                         })
                 }
@@ -170,7 +171,6 @@ export class editTournament implements OnInit {
             name: this.data.tournament.name,
             date: this.data.tournament.date,
             endDate: this.data.tournament.endDate,
-            time: this.data.tournament.time,
             discord: this.data.tournament.discord,
             owner: this.data.tournament.owner,
             twitchLink: this.data.tournament.twitchLink,
@@ -198,17 +198,12 @@ export class editTournament implements OnInit {
     }
 
     onSubmit() {
-        if (typeof this.tournamentForm.value.date.getMonth === 'function') {
-            this.tournamentForm.value.date = this.formatDate(this.tournamentForm.value.date.toString());
-        }
-        if (typeof this.tournamentForm.value.endDate.getMonth === 'function') {
-            this.tournamentForm.value.endDate = this.formatDate(this.tournamentForm.value.endDate.toString());
-        }
         this.updateTournament(this.tournamentForm.value)
             .subscribe(data => {
                 if (!data.flag) {
                     this.notif.showSuccess('', 'Successfully updated tournament');
                 } else {
+                    console.error('Error', data.err)
                     this.notif.showError('', 'Error updating tournament');
                 }
                 this.dialogRef.close(this.tournamentForm.value);
@@ -224,6 +219,6 @@ export class editTournament implements OnInit {
     }
 
     public updateTournament(data: any): Observable<any> {
-        return this.http.put(this.url, data, { observe: 'response' });
+        return this.http.put(this.url, data);
     }
 }

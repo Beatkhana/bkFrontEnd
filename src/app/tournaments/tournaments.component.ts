@@ -5,7 +5,8 @@ import { Observable } from 'rxjs';
 import { ITournament } from '../interfaces/tournament';
 import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
 import { Router } from '@angular/router';
-import { MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { NotificationService } from '../services/toast.service';
 
 
 @Component({
@@ -25,6 +26,9 @@ export class TournamentsComponent extends AppComponent implements OnInit {
     ngOnInit(): void {
         this.getTournaments()
             .subscribe(data => {
+                data.sort(function(a, b) {
+                    return <any>new Date(a.date) - <any>new Date(b.date);
+                });
                 this.tournaments = data;
                 this.loading = false;
             });
@@ -44,21 +48,15 @@ export class TournamentsComponent extends AppComponent implements OnInit {
     }
 
     archive(id: number) {
-        console.log(id);
-        // this.archiveTournament(id);
-        // archiveTournamentDialog.archiveId(id);
         this.dialog.open(archiveTournamentDialog, {
-            // height: '400px',
             width: '60vw',
-            data: {id: id}
+            data: { id: id }
         });
     }
 
     public archiveTournament(id: number): Observable<ITournament[]> {
         return this.http.put<ITournament[]>('/api/archiveTournament', { 'id': id });
     }
-
-
 
 }
 
@@ -71,7 +69,7 @@ export class newTournamentDialog implements OnInit {
 
     users = [];
 
-    constructor(private fb: FormBuilder, public http: HttpClient, private router: Router,) { 
+    constructor(private fb: FormBuilder, public http: HttpClient, private router: Router, private dialogRef: MatDialogRef<newTournamentDialog>, private notif: NotificationService) {
         this.getUsers()
             .subscribe(data => {
                 this.users = data;
@@ -88,9 +86,6 @@ export class newTournamentDialog implements OnInit {
                 Validators.required
             ]],
             endDate: ['', [
-                Validators.required
-            ]],
-            time: ['', [
                 Validators.required
             ]],
             discord: ['', [
@@ -119,16 +114,19 @@ export class newTournamentDialog implements OnInit {
     }
 
     onSubmit() {
-        console.log(this.tournamentForm.value);
         this.addTournament(this.tournamentForm.value)
             .subscribe(data => {
                 if (data) {
-                    // this.router.navigate(['']);
-                    this.router.navigateByUrl('/archive', { skipLocationChange: true }).then(() => {
-                        this.router.navigate(['']);
-                    });
-                    console.log(data);
+                    if (!data.flag) {
+                        this.notif.showSuccess('', 'Successfully created tournament');
+                    } else {
+                        console.error("Error: ", data);
+                        this.notif.showError('', 'Error creating tournament');
+                    }
                 }
+            }, error => {
+                this.notif.showError('', 'Error creating tournament');
+                console.error("Error: ", error);
             });
     }
 
@@ -136,8 +134,8 @@ export class newTournamentDialog implements OnInit {
         return this.http.get('/api/users');
     }
 
-    addTournament(tournament: ITournament): Observable<ITournament> {
-        return this.http.post<ITournament>('/api/tournament', tournament);
+    addTournament(tournament: ITournament): Observable<any> {
+        return this.http.post<any>('/api/tournament', tournament);
     }
 
     selectedFile: File;
@@ -145,12 +143,12 @@ export class newTournamentDialog implements OnInit {
 
     onFileChanged(event) {
         this.selectedFile = event.target.files[0];
-        this.tournamentForm.patchValue({imgName: this.selectedFile.name});
+        this.tournamentForm.patchValue({ imgName: this.selectedFile.name });
 
         let reader = new FileReader();
         reader.readAsDataURL(this.selectedFile);
         reader.onload = () => {
-            this.tournamentForm.patchValue({image: reader.result});
+            this.tournamentForm.patchValue({ image: reader.result });
         };
     }
 }
@@ -163,7 +161,7 @@ export class archiveTournamentDialog implements OnInit {
     archiveForm: FormGroup;
     tournamentId: number;
 
-    constructor(private fb: FormBuilder, public http: HttpClient, private router: Router,@Inject(MAT_DIALOG_DATA) public data: any) { }
+    constructor(private fb: FormBuilder, public http: HttpClient, private router: Router, @Inject(MAT_DIALOG_DATA) public data: any, private notif: NotificationService) { }
 
     ngOnInit() {
         this.archiveForm = this.fb.group({
@@ -180,28 +178,28 @@ export class archiveTournamentDialog implements OnInit {
         })
     }
 
-    // archiveId(id) {
-    //     this.tournamentId = id;
-    //     this.archiveForm.patchValue({id: id});
-    // }
-
-
     onSubmit() {
-        console.log(this.archiveForm.value);
-        this.addTournament(this.archiveForm.value)
+        this.archiveTournament(this.archiveForm.value)
             .subscribe(data => {
                 if (data) {
-                    // this.router.navigate(['']);
-                    this.router.navigateByUrl('/archive', { skipLocationChange: true }).then(() => {
-                        this.router.navigate(['']);
-                    });
-                    console.log(data);
+                    if (!data.flag) {
+                        this.notif.showSuccess('', 'Successfully archived tournament');
+                        this.router.navigateByUrl('/archive', { skipLocationChange: true }).then(() => {
+                            this.router.navigate(['']);
+                        });
+                    } else {
+                        console.error("Error: ", data);
+                        this.notif.showError('', 'Error archiving tournament');
+                    }
                 }
+            }, error => {
+                this.notif.showError('', 'Error archiving tournament');
+                console.error("Error: ", error);
             });
     }
 
-    public addTournament(data: any): Observable<ITournament[]> {
-        return this.http.put<ITournament[]>('/api/archiveTournament', data);
+    public archiveTournament(data: any): Observable<any> {
+        return this.http.put<any>('/api/archiveTournament', data);
     }
-    
+
 }

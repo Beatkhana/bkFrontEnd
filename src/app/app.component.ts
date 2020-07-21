@@ -57,7 +57,6 @@ export class AppComponent implements OnInit {
     }
 
     public logIn(): Observable<User[]> {
-        // console.log('/api/discordAuth?code=' + code);
         return this.http.get<User[]>('/api/user');
     }
 

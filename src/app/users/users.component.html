@@ -1,0 +1,94 @@
+<div *ngIf="loading else loaded">
+    <img src="/assets/svg/BeatKhana Logo RGB animated.svg" style="display: block;
+        margin-left: auto;
+        margin-right: auto;
+        width: 100px;">
+</div>
+
+<ng-template #loaded>
+    <div class="container">
+        <div class="card noHover">
+            <div class="card-body">
+                <h1>All Users</h1>
+                <p class="card-text">
+                    <mat-form-field>
+                        <mat-label>Search</mat-label>
+                        <input matInput (keyup)="applyFilter($event)" placeholder="" #input autocomplete="off">
+                    </mat-form-field>
+                </p>
+                <table mat-table [dataSource]="dataSource" class="card-text" matSort matSortActive="name" matSortDirection="asc">
+                    <ng-container matColumnDef="name">
+                        <th mat-header-cell *matHeaderCellDef mat-sort-header>Name</th>
+                        <td mat-cell *matCellDef="let user">
+                            {{user.name}}
+                        </td>
+                    </ng-container>
+                    <ng-container matColumnDef="ssLink">
+                        <th mat-header-cell *matHeaderCellDef>SS Link</th>
+                        <td mat-cell *matCellDef="let user">
+                            <a href="https://scoresaber.com/u/{{user.ssId}}" target="_blank">Link</a>
+                        </td>
+                    </ng-container>
+                    <ng-container matColumnDef="twitch">
+                        <th mat-header-cell *matHeaderCellDef>Twitch Link</th>
+                        <td mat-cell *matCellDef="let user">
+                            <a href="https://twitch.tv/{{user.twitchName}}" target="_blank">Link</a>
+                        </td>
+                    </ng-container>
+                    <ng-container matColumnDef="globalRank">
+                        <th mat-header-cell *matHeaderCellDef mat-sort-header>Global Rank</th>
+                        <td mat-cell *matCellDef="let user">
+                            {{user.globalRank}}
+                        </td>
+                    </ng-container>
+                    <ng-container matColumnDef="localRank">
+                        <th mat-header-cell *matHeaderCellDef mat-sort-header>Regional Rank</th>
+                        <td mat-cell *matCellDef="let user">
+                            {{user.localRank}}
+                        </td>
+                    </ng-container>
+                    <ng-container matColumnDef="country">
+                        <th mat-header-cell *matHeaderCellDef>Country</th>
+                        <td mat-cell *matCellDef="let user">
+                            {{user.country}} <img src="\assets/flags/{{user.country}}.png" alt="{{user.country}} Flag" style="height: 20px;border: none;">
+                        </td>
+                    </ng-container>
+                    <ng-container matColumnDef="tourneyRank">
+                        <th mat-header-cell *matHeaderCellDef mat-sort-header>Tournament Rank</th>
+                        <td mat-cell *matCellDef="let user">
+                            {{user.tourneyRank}}
+                        </td>
+                    </ng-container>
+                    <ng-container matColumnDef="TR">
+                        <th mat-header-cell *matHeaderCellDef mat-sort-header>TR</th>
+                        <td mat-cell *matCellDef="let user">
+                            {{user.TR}}
+                        </td>
+                    </ng-container>
+                    <ng-container matColumnDef="pronoun">
+                        <th mat-header-cell *matHeaderCellDef mat-sort-header>Pronoun</th>
+                        <td mat-cell *matCellDef="let user">
+                            {{user.pronoun}}
+                        </td>
+                    </ng-container>
+                    <ng-container matColumnDef="roleNames">
+                        <th mat-header-cell *matHeaderCellDef mat-sort-header>Roles</th>
+                        <td mat-cell *matCellDef="let user">
+                            {{user.roleNames}}
+                        </td>
+                    </ng-container>
+                    <ng-container matColumnDef="edit">
+                        <th mat-header-cell *matHeaderCellDef></th>
+                        <td mat-cell *matCellDef="let user">
+                            <button mat-button color="primary" (click)="editUser(user.discordId)">Edit</button>
+                        </td>
+                    </ng-container>
+
+                    <tr mat-header-row *matHeaderRowDef="columnsToDisplay"></tr>
+                    <tr mat-row *matRowDef="let myRowData; columns: columnsToDisplay"></tr>
+                </table>
+                <mat-paginator [pageSize]="25" [pageSizeOptions]="[10, 25, 50, 100]" showFirstLastButtons></mat-paginator>
+            </div>
+        </div>
+    </div>
+</ng-template>

@@ -24,9 +24,11 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
-import {MatTabsModule} from '@angular/material/tabs';
-import {MatTableModule} from '@angular/material/table';
-import {MatRadioModule} from '@angular/material/radio'; 
+import { MatTabsModule } from '@angular/material/tabs';
+import { MatTableModule } from '@angular/material/table';
+import { MatRadioModule } from '@angular/material/radio';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatSortModule } from '@angular/material/sort';
 
 import { CKEditorModule } from 'ckeditor4-angular';
 import { ConfirmDialogComponent } from './confirm-dialog/confirm-dialog.component';
@@ -37,6 +39,7 @@ import { ToastrModule } from 'ngx-toastr';
 import { BracketComponent } from './bracket/bracket.component';
 import { addSongDialog, createPoolDialog, MapPoolComponent } from './map-pool/map-pool.component';
 import { TeamComponent } from './team/team.component';
+import { editUserDialog, UsersComponent } from './users/users.component';
 
 
 @NgModule({
@@ -58,7 +61,9 @@ import { TeamComponent } from './team/team.component';
         MapPoolComponent,
         createPoolDialog,
         addSongDialog,
-        TeamComponent
+        TeamComponent,
+        UsersComponent,
+        editUserDialog
     ],
     imports: [
         BrowserModule,
@@ -76,6 +81,8 @@ import { TeamComponent } from './team/team.component';
         MatAutocompleteModule,
         MatTabsModule,
         MatTableModule,
+        MatPaginatorModule,
+        MatSortModule,
         MatRadioModule,
         CKEditorModule,
         ToastrModule.forRoot({

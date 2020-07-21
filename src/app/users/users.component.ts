@@ -48,7 +48,8 @@ export class UsersComponent extends AppComponent implements OnInit {
                 this.users = data;
                 this.dataSource = new MatTableDataSource(this.users);
                 this.setDataSourceAttributes();
-            })
+            });
+        this.setTitle('All Users | BeatKhana!');
     }
 
     getUsers(): Observable<any> {

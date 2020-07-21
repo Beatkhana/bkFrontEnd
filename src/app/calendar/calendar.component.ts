@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
+import { Title } from '@angular/platform-browser';
 
 @Component({
     selector: 'app-calendar',
@@ -11,6 +12,7 @@ export class CalendarComponent implements OnInit {
 
     constructor(
         public http: HttpClient,
+        public titleService: Title,
     ) { }
 
     monthNames = ["January", "February", "March", "April", "May", "June",
@@ -50,6 +52,7 @@ export class CalendarComponent implements OnInit {
 
         this.updateDates(d);
         this.updateEvents(d);
+        this.titleService.setTitle('Calendar | BeatKhana!');
     }
 
     async fillCalendar(): Promise<void> {

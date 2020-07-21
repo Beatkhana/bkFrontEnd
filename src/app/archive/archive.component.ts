@@ -10,7 +10,7 @@ import { AppComponent } from '../app.component';
 })
 export class ArchiveComponent extends AppComponent implements OnInit {
 
-    title = "BeatKhana!";
+    title = "Archive | BeatKhana!";
     private url = '/api/tournament/archived';
     public tournaments = [];
     public loading = true;

@@ -3,10 +3,11 @@ import { HttpClient } from '@angular/common/http';
 import { AppComponent } from '../app.component';
 import { Observable } from 'rxjs';
 import { ITournament } from '../interfaces/tournament';
-import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
+import { FormGroup, FormBuilder, Validators, FormControl, ValidationErrors } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { NotificationService } from '../services/toast.service';
+import { map, startWith } from 'rxjs/operators';
 
 
 @Component({
@@ -69,10 +70,18 @@ export class newTournamentDialog implements OnInit {
 
     users = [];
 
+    filteredOptions: Observable<any>;
+
     constructor(private fb: FormBuilder, public http: HttpClient, private router: Router, private dialogRef: MatDialogRef<newTournamentDialog>, private notif: NotificationService) {
         this.getUsers()
             .subscribe(data => {
                 this.users = data;
+                this.filteredOptions = this.tournamentForm.valueChanges
+                    .pipe(
+                        startWith(''),
+                        map(value => typeof value === 'string' ? value : value.owner),
+                        map(owner => owner ? this._filter(owner) : this.users.slice())
+                    );
             });
     }
 
@@ -92,7 +101,7 @@ export class newTournamentDialog implements OnInit {
                 Validators.pattern('^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$')
             ]],
             owner: ['', [
-                Validators.required
+                Validators.required, this.requireMatch.bind(this)
             ]],
             twitchLink: ['', [
                 Validators.required
@@ -106,6 +115,25 @@ export class newTournamentDialog implements OnInit {
                 Validators.required
             ]]
         });
+    }
+
+    private _filter(name: string) {
+        const filterValue = name.toLowerCase();
+
+        return this.users.filter(option => option.name.toLowerCase().indexOf(filterValue) === 0);
+    }
+
+    displayFn(id): string {
+        let user = this.users.find(x => x.discordId == id);
+        return user && user.name ? user.name : '';
+    }
+
+    private requireMatch(control: FormControl): ValidationErrors | null {
+        const selection: any = control.value;
+        if (!this.users.some(x => x.discordId == selection)) {
+            return { requireMatch: true };
+        }
+        return null;
     }
 
     get discord() {

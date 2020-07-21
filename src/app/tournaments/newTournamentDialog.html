@@ -31,13 +31,22 @@
     <!-- <mat-form-field class="fill">
         <input matInput placeholder="Owner" formControlName="owner">
     </mat-form-field> -->
-    <mat-form-field>
+    <!-- <mat-form-field>
         <mat-label>Owner</mat-label>
         <mat-select formControlName="owner">
             <mat-option *ngFor="let user of users" [value]="user.discordId">
                 {{user.name}}
             </mat-option>
         </mat-select>
+    </mat-form-field> -->
+    <mat-form-field *ngIf="users.length > 0">
+        <mat-label>Owner</mat-label>
+        <input type="text" matInput formControlName="owner" [matAutocomplete]="auto">
+        <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn.bind(this)">
+            <mat-option *ngFor="let option of filteredOptions | async" [value]="option.discordId">
+                {{option.name}}
+            </mat-option>
+        </mat-autocomplete>
     </mat-form-field>
 
     <br>

@@ -2,7 +2,7 @@ import { Component, OnInit, Inject, Output, EventEmitter, ViewEncapsulation } fr
 import { AppComponent } from '../app.component';
 import { ITournament } from '../interfaces/tournament';
 import { Observable } from 'rxjs';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { FormGroup, FormBuilder, Validators, AbstractControl, FormControl, ValidationErrors } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
@@ -147,7 +147,7 @@ export class editTournament implements OnInit {
     url = '/api/tournament/';
     users = [];
 
-
+    filteredOptions: Observable<any>;
 
     constructor(
         private fb: FormBuilder,
@@ -157,10 +157,7 @@ export class editTournament implements OnInit {
         private dialogRef: MatDialogRef<editTournament>,
         private notif: NotificationService
     ) {
-        this.getUsers()
-            .subscribe(data => {
-                this.users = data;
-            });
+
     }
 
     ngOnInit() {
@@ -172,11 +169,28 @@ export class editTournament implements OnInit {
             date: this.data.tournament.date,
             endDate: this.data.tournament.endDate,
             discord: this.data.tournament.discord,
-            owner: this.data.tournament.owner,
+            owner: [this.data.tournament.owner, [Validators.required, this.requireMatch.bind(this)]],
             twitchLink: this.data.tournament.twitchLink,
             prize: this.data.tournament.prize,
             info: this.data.tournament.info
         });
+
+        this.getUsers()
+            .subscribe(data => {
+                this.users = data;
+                this.filteredOptions = this.tournamentForm.valueChanges
+                    .pipe(
+                        startWith(''),
+                        map(value => typeof value === 'string' ? value : value.owner),
+                        map(owner => owner ? this._filter(owner) : this.users.slice())
+                    );
+            });
+    }
+
+    private _filter(name: string) {
+        const filterValue = name.toLowerCase();
+
+        return this.users.filter(option => option.name.toLowerCase().indexOf(filterValue) === 0);
     }
 
     get discord() {
@@ -186,7 +200,12 @@ export class editTournament implements OnInit {
     get twitch() {
         return this.tournamentForm.get('twitchLink');
     }
-    
+
+    displayFn(id): string {
+        let user = this.users.find(x => x.discordId == id);
+        return user && user.name ? user.name : '';
+    }
+
     public formatDate(date) {
         var d = new Date(date),
             month = '' + (d.getMonth() + 1),
@@ -225,5 +244,13 @@ export class editTournament implements OnInit {
 
     public updateTournament(data: any): Observable<any> {
         return this.http.put(this.url, data);
+    }
+
+    private requireMatch(control: FormControl): ValidationErrors | null {
+        const selection: any = control.value;
+        if (!this.users.some(x => x.discordId == selection)) {
+            return { requireMatch: true };
+        }
+        return null;
     }
 }

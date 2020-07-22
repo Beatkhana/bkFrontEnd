@@ -34,6 +34,7 @@ export class TournamentsComponent extends AppComponent implements OnInit {
                 this.loading = false;
             });
         this.setTitle(this.title);
+        this.metaTags.defineTags('/','BeatKhana!','The one stop spot for all Beat Saber tournament information!','assets/images/icon/BeatKhana Logo RGB.png')
     }
 
     public getTournaments(): Observable<ITournament[]> {

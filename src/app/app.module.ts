@@ -6,7 +6,7 @@ import { AppComponent } from './app.component';
 import { TournamentsComponent, newTournamentDialog, archiveTournamentDialog } from './tournaments/tournaments.component';
 
 import { HttpClientModule } from '@angular/common/http';
-import { TournamentComponent, editTournament } from './tournament/tournament.component';
+import { TournamentComponent, editTournament, tournamentSettingsDialog } from './tournament/tournament.component';
 import { ArchiveComponent } from './archive/archive.component';
 import { RankingsComponent } from './rankings/rankings.component';
 import { ProfileComponent } from './profile/profile.component';
@@ -63,7 +63,8 @@ import { editUserDialog, UsersComponent } from './users/users.component';
         addSongDialog,
         TeamComponent,
         UsersComponent,
-        editUserDialog
+        editUserDialog,
+        tournamentSettingsDialog
     ],
     imports: [
         BrowserModule,

@@ -1,0 +1,46 @@
+<h1>Tournament Settings</h1>
+<form [formGroup]="settingsForm" novalidate (ngSubmit)="onSubmit()">
+    <!-- Value: {{ settingdForm.value | json }} -->
+    <br>
+    <mat-checkbox formControlName="public_singups">
+        Public Signups?
+    </mat-checkbox>
+    <br>
+    <mat-checkbox formControlName="public">
+        Is public?
+    </mat-checkbox>
+    <br>
+    <mat-checkbox formControlName="has_bracket">
+        Has Bracket?
+    </mat-checkbox>
+    <br>
+    <mat-checkbox formControlName="has_map_pool">
+        Has Map Pool?
+    </mat-checkbox>
+    <br><br>
+    <mat-form-field appearance="fill">
+        <mat-label>State</mat-label>
+        <mat-select formControlName="state">
+            <mat-option value="awaiting_start">Awaiting Start</mat-option>
+            <mat-option value="qualifiers">Qualifiers</mat-option>
+            <mat-option value="main_stage">Main Stage</mat-option>
+            <mat-option value="archived">Archived</mat-option>
+        </mat-select>
+    </mat-form-field>
+    <br>
+    <mat-form-field appearance="fill">
+        <mat-label>Type</mat-label>
+        <mat-select formControlName="type">
+            <mat-option value="single_elim">Single Elimination</mat-option>
+            <mat-option value="double_elim">Double Elimination</mat-option>
+            <mat-option value="round_robin">Round Robin</mat-option>
+            <mat-option value="battle_royale">Battle Royale</mat-option>
+        </mat-select>
+    </mat-form-field>
+
+    <div mat-dialog-actions>
+        <button mat-raised-button color="warn" mat-dialog-close>Close</button>
+        <button mat-raised-button color="primary" type="submit" [disabled]="settingsForm.invalid">Update
+            Settings</button>
+    </div>
+</form>

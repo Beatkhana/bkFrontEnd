@@ -96,6 +96,26 @@ export class TournamentComponent extends AppComponent implements OnInit {
         );
     }
 
+    tourneySettings() {
+        const dialog = this.dialog.open(tournamentSettingsDialog, {
+            // height: '400px',
+            maxHeight: '80vh',
+            width: '60vw',
+            data: { tournament: this.tournament }
+        });
+
+        dialog.afterClosed().subscribe(
+            data => {
+                if (data) {
+                    // console.log("Dialog output:", data);
+                    this.tournament = { ...this.tournament, ...data };
+                    this.tournament.safeInfo = this.sanitizer.bypassSecurityTrustHtml(this.tournament.info);
+                }
+
+            }
+        );
+    }
+
     delete() {
         const dialog = this.dialog.open(ConfirmDialogComponent, {
             // height: '400px',
@@ -252,5 +272,70 @@ export class editTournament implements OnInit {
             return { requireMatch: true };
         }
         return null;
+    }
+}
+
+@Component({
+    selector: 'tournamentSettingsDialog',
+    templateUrl: './tournamentSettingsDialog.html',
+})
+export class tournamentSettingsDialog implements OnInit {
+
+    settingsForm: FormGroup;
+    id: number;
+    url = '/api/tournament/';
+    users = [];
+
+    filteredOptions: Observable<any>;
+
+    constructor(
+        private fb: FormBuilder,
+        public http: HttpClient,
+        private router: Router,
+        @Inject(MAT_DIALOG_DATA) public data: any,
+        private dialogRef: MatDialogRef<tournamentSettingsDialog>,
+        private notif: NotificationService
+    ) {
+
+    }
+
+    ngOnInit() {
+        this.id = this.data.tournament.id;
+        this.url += this.id;
+        // console.log(this.data);
+        this.settingsForm = this.fb.group({
+            public_singups: !!this.data.tournament.public_singups,
+            public: !!this.data.tournament.public,
+            state: this.data.tournament.state,
+            type: this.data.tournament.type,
+            has_bracket: !!this.data.tournament.has_bracket,
+            has_map_pool: !!this.data.tournament.has_map_pool,
+        });
+    }
+
+    onSubmit() {
+        let info = {
+            tournamentId: this.data.tournament.tournamentId,
+            settingsId: this.data.tournament.settingsId,
+            settings: this.settingsForm.value
+        }
+        this.updateSettings(info)
+            .subscribe(data => {
+                if (!data.flag) {
+                    this.notif.showSuccess('', 'Successfully updated tournament settings');
+                } else {
+                    console.error('Error', data.err)
+                    this.notif.showError('', 'Error updating tournament settings');
+                }
+                this.dialogRef.close(this.settingsForm.value);
+            }, error => {
+                this.notif.showError('', 'Error updating tournament settings');
+                console.error("Error: ", error);
+                this.dialogRef.close(this.settingsForm.value);
+            });
+    }
+
+    updateSettings(data: any): Observable<any> {
+        return this.http.put(`/api/tournament/${data.tournamentId}/settings`, data);
     }
 }

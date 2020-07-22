@@ -8,6 +8,7 @@ import { Observable } from 'rxjs';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 
 import { NotificationService } from './services/toast.service';
+import { MetaTagService } from './services/meta-tag.service';
 
 @Component({
     selector: 'app-root',
@@ -27,7 +28,8 @@ export class AppComponent implements OnInit {
         public router: Router,
         public dialog: MatDialog,
         public sanitizer: DomSanitizer,
-        public notif: NotificationService
+        public notif: NotificationService,
+        public metaTags: MetaTagService
     ) {
         // console.log(this.user);
         if (this.user == null) {
@@ -44,7 +46,7 @@ export class AppComponent implements OnInit {
     }
 
     ngOnInit(): void {
-
+        this.metaTags.defineTags('/','BeatKhana!','The one stop spot for all Beat Saber tournament information','assets/images/icon/BeatKhana Logo RGB.png')
     }
 
     updateUser() {

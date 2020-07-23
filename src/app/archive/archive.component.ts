@@ -20,6 +20,7 @@ export class ArchiveComponent extends AppComponent implements OnInit {
         this.getTournaments()
             .subscribe(data => {
                 this.tournaments = data;
+                console.log(data);
                 this.loading = false;
             });
         this.setTitle(this.title);

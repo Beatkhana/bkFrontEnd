@@ -28,6 +28,11 @@ export class TournamentComponent extends AppComponent implements OnInit {
     isInfo = true;
     isMapPool = false;
     isBracket = false;
+    isParticipants = false;
+
+    participants = [];
+    isParticipant = true;
+    participantData = {};
 
     ngOnInit(): void {
         this.route.paramMap.subscribe(params => {
@@ -36,19 +41,30 @@ export class TournamentComponent extends AppComponent implements OnInit {
                 this.isMapPool = true;
                 this.isBracket = false;
                 this.isInfo = false;
+                this.isParticipants = false;
             } else if (this.router.url.includes('bracket')) {
                 this.isBracket = true;
+                this.isMapPool = false;
+                this.isInfo = false;
+                this.isParticipants = false;
+            } else if (this.router.url.includes('participants')) {
+                this.isParticipants = true;
+                this.isBracket = false;
                 this.isMapPool = false;
                 this.isInfo = false;
             } else {
                 this.isMapPool = false;
                 this.isBracket = false;
                 this.isInfo = true;
+                this.isParticipants = false;
             }
             // console.log(this.tourneyId);
             this.getTournaments()
                 .subscribe(data => {
                     this.tournament = data[0];
+                    if (this.tournament.public_signups == 1) {
+                        this.setParticpants();
+                    }
                     this.loading = false;
                     this.tournament.safeInfo = this.sanitizer.bypassSecurityTrustHtml(this.tournament.info);
                     this.setTitle(this.tournament.name + ' | ' + this.title);
@@ -60,16 +76,42 @@ export class TournamentComponent extends AppComponent implements OnInit {
                 this.isMapPool = true;
                 this.isBracket = false;
                 this.isInfo = false;
+                this.isParticipants = false;
             } else if (this.router.url.includes('bracket')) {
                 this.isBracket = true;
+                this.isMapPool = false;
+                this.isInfo = false;
+                this.isParticipants = false;
+            } else if (this.router.url.includes('participants')) {
+                this.isParticipants = true;
+                this.isBracket = false;
                 this.isMapPool = false;
                 this.isInfo = false;
             } else {
                 this.isMapPool = false;
                 this.isBracket = false;
                 this.isInfo = true;
+                this.isParticipants = false;
             }
         });
+    }
+
+    setParticpants() {
+        this.getParticipants()
+            .subscribe(data => {
+                this.participants = data;
+                this.participantData = {
+                    participants: this.participants,
+                    tournament: this.tournament
+                }
+                if(this.user != null && !this.participants.some(x => x.discordId == this.user.discordId)){
+                    this.isParticipant = false;
+                }
+            })
+    }
+
+    getParticipants(): Observable<any> {
+        return this.http.get(`/api/tournament/${this.tournament.tournamentId}/participants`);
     }
 
     public getTournaments(): Observable<ITournament[]> {
@@ -84,16 +126,14 @@ export class TournamentComponent extends AppComponent implements OnInit {
             data: { tournament: this.tournament }
         });
 
-        dialog.afterClosed().subscribe(
-            data => {
+        dialog.afterClosed()
+            .subscribe(data => {
                 if (data) {
                     // console.log("Dialog output:", data);
                     this.tournament = { ...this.tournament, ...data };
                     this.tournament.safeInfo = this.sanitizer.bypassSecurityTrustHtml(this.tournament.info);
                 }
-
-            }
-        );
+            });
     }
 
     tourneySettings() {
@@ -104,16 +144,14 @@ export class TournamentComponent extends AppComponent implements OnInit {
             data: { tournament: this.tournament }
         });
 
-        dialog.afterClosed().subscribe(
-            data => {
+        dialog.afterClosed()
+            .subscribe(data => {
                 if (data) {
                     // console.log("Dialog output:", data);
                     this.tournament = { ...this.tournament, ...data };
                     this.tournament.safeInfo = this.sanitizer.bypassSecurityTrustHtml(this.tournament.info);
                 }
-
-            }
-        );
+            });
     }
 
     delete() {
@@ -128,8 +166,8 @@ export class TournamentComponent extends AppComponent implements OnInit {
             }
         });
 
-        dialog.afterClosed().subscribe(
-            data => {
+        dialog.afterClosed()
+            .subscribe(data => {
                 if (data) {
                     this.deleteTourney(this.tourneyId)
                         .subscribe(data => {
@@ -142,10 +180,23 @@ export class TournamentComponent extends AppComponent implements OnInit {
                             }
                         })
                 }
+            });
+    }
 
-            }
-        );
+    signUp() {
+        const dialog = this.dialog.open(signUpDialog, {
+            // height: '400px',
+            maxHeight: '80vh',
+            width: '60vw',
+            data: { tournament: this.tournament }
+        });
 
+        dialog.afterClosed()
+            .subscribe(data => {
+                if (data) {
+                    this.isParticipant = true;
+                }
+            });
     }
 
     private deleteTourney(id): Observable<any> {
@@ -304,7 +355,7 @@ export class tournamentSettingsDialog implements OnInit {
         this.url += this.id;
         // console.log(this.data);
         this.settingsForm = this.fb.group({
-            public_singups: !!this.data.tournament.public_singups,
+            public_signups: !!this.data.tournament.public_signups,
             public: !!this.data.tournament.public,
             state: this.data.tournament.state,
             type: this.data.tournament.type,
@@ -337,5 +388,58 @@ export class tournamentSettingsDialog implements OnInit {
 
     updateSettings(data: any): Observable<any> {
         return this.http.put(`/api/tournament/${data.tournamentId}/settings`, data);
+    }
+}
+
+@Component({
+    selector: 'signUpDialog',
+    templateUrl: './signUpDialog.html',
+})
+export class signUpDialog implements OnInit {
+
+    signUpForm: FormGroup;
+    id: number;
+
+    filteredOptions: Observable<any>;
+
+    constructor(
+        private fb: FormBuilder,
+        public http: HttpClient,
+        private router: Router,
+        @Inject(MAT_DIALOG_DATA) public data: any,
+        private dialogRef: MatDialogRef<signUpDialog>,
+        private notif: NotificationService
+    ) {
+
+    }
+
+    ngOnInit() {
+        this.id = this.data.tournament.tournamentId;
+        this.signUpForm = this.fb.group({
+            tournamentId: this.id,
+            comment: ''
+        });
+    }
+
+    onSubmit() {
+        this.signUp(this.signUpForm.value)
+            .subscribe(data => {
+                if (!data.flag) {
+                    this.notif.showInfo('', 'Successfully signed up');
+                    this.dialogRef.close(true);
+                } else {
+                    console.error('Error', data.err)
+                    this.notif.showError('', 'Error signing up');
+                    this.dialogRef.close(false);
+                }
+            }, error => {
+                this.notif.showError('', 'Error signing up');
+                console.error("Error: ", error);
+                this.dialogRef.close(false);
+            });
+    }
+
+    signUp(data: any): Observable<any> {
+        return this.http.post(`/api/tournament/${this.id}/signUp`, data);
     }
 }

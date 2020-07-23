@@ -6,7 +6,7 @@ import { AppComponent } from './app.component';
 import { TournamentsComponent, newTournamentDialog, archiveTournamentDialog } from './tournaments/tournaments.component';
 
 import { HttpClientModule } from '@angular/common/http';
-import { TournamentComponent, editTournament, tournamentSettingsDialog } from './tournament/tournament.component';
+import { TournamentComponent, editTournament, tournamentSettingsDialog, signUpDialog } from './tournament/tournament.component';
 import { ArchiveComponent } from './archive/archive.component';
 import { RankingsComponent } from './rankings/rankings.component';
 import { ProfileComponent } from './profile/profile.component';
@@ -29,6 +29,7 @@ import { MatTableModule } from '@angular/material/table';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatSortModule } from '@angular/material/sort';
+import { MatExpansionModule } from '@angular/material/expansion';
 
 import { CKEditorModule } from 'ckeditor4-angular';
 import { ConfirmDialogComponent } from './confirm-dialog/confirm-dialog.component';
@@ -40,6 +41,7 @@ import { BracketComponent } from './bracket/bracket.component';
 import { addSongDialog, createPoolDialog, MapPoolComponent } from './map-pool/map-pool.component';
 import { TeamComponent } from './team/team.component';
 import { editUserDialog, UsersComponent } from './users/users.component';
+import { ParticipantsComponent } from './participants/participants.component';
 
 
 @NgModule({
@@ -64,7 +66,9 @@ import { editUserDialog, UsersComponent } from './users/users.component';
         TeamComponent,
         UsersComponent,
         editUserDialog,
-        tournamentSettingsDialog
+        tournamentSettingsDialog,
+        signUpDialog,
+        ParticipantsComponent
     ],
     imports: [
         BrowserModule,
@@ -85,6 +89,7 @@ import { editUserDialog, UsersComponent } from './users/users.component';
         MatPaginatorModule,
         MatSortModule,
         MatRadioModule,
+        MatExpansionModule,
         CKEditorModule,
         ToastrModule.forRoot({
             maxOpened: 3,

@@ -11,6 +11,9 @@
             <div [routerLink]="['/tournament', tourneyId]" [routerLinkActiveOptions]="{exact:true}" routerLinkActive="isActive">
                 <h3>Info</h3>
             </div>
+            <div *ngIf="tournament.public_signups == 1" [routerLink]="['participants']" routerLinkActive="isActive">
+                <h3>Participants</h3>
+            </div>
             <div *ngIf="tournament.has_map_pool == 1" [routerLink]="['map-pool']" routerLinkActive="isActive">
                 <h3>Map Pool</h3>
             </div>
@@ -44,6 +47,9 @@
                 <p class="card-text" *ngIf="tournament.first != null && tournament.archived == 1">
                     <b>Tournament Results:</b> <br> #1 {{tournament.first}} <br> #2 {{tournament.second}} <br> #3 {{tournament.third}} <br>
                 </p>
+                <p *ngIf="tournament.public_signups == 1 && user != null && !isParticipant" class="card-text">
+                    <button mat-stroked-button color="accent" (click)="signUp()">Sign Up!</button>
+                </p>
                 <p *ngIf="user && tournament.owner == user.discordId && !user['roleIds'].includes('1')" class="card-text">
                     <button mat-stroked-button color="primary" (click)="openEdit()">Edit Tournament</button> &nbsp;
                     <button mat-stroked-button color="primary" (click)="tourneySettings()">Tournament Settings</button>
@@ -55,8 +61,9 @@
                 </p>
             </div>
             <!-- <router-outlet></router-outlet> -->
-            <app-map-pool [tournament]="tournament" *ngIf="isMapPool"></app-map-pool>
-            <app-bracket [tournament]="tournament" *ngIf="isBracket"></app-bracket>
+            <app-participants [data]="participantData" *ngIf="isParticipants && tournament.public_signups == 1"></app-participants>
+            <app-map-pool [tournament]="tournament" *ngIf="isMapPool && tournament.has_map_pool == 1"></app-map-pool>
+            <app-bracket [tournament]="tournament" *ngIf="isBracket && tournament.has_bracket == 1"></app-bracket>
         </div>
     </div>
 </ng-template>

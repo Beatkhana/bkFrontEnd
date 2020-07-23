@@ -1,7 +1,7 @@
-<h1>Tournament Settings</h1>
-<form [formGroup]="settingsForm" novalidate (ngSubmit)="onSubmit()">
-    <!-- Value: {{ settingdForm.value | json }} -->
-    <br>
+<h1>Sign up</h1>
+<form [formGroup]="signUpForm" novalidate (ngSubmit)="onSubmit()">
+    <!-- Value: {{ signUpForm.value | json }} -->
+    <!-- <br>
     <mat-checkbox formControlName="public_signups">
         Public Signups?
     </mat-checkbox>
@@ -36,11 +36,15 @@
             <mat-option value="round_robin">Round Robin</mat-option>
             <mat-option value="battle_royale">Battle Royale</mat-option>
         </mat-select>
+    </mat-form-field> -->
+    <br>
+    <mat-form-field>
+        <mat-label>Comment</mat-label>
+        <textarea matInput formControlName="comment"></textarea>
     </mat-form-field>
 
     <div mat-dialog-actions>
         <button mat-raised-button color="warn" mat-dialog-close>Close</button>
-        <button mat-raised-button color="primary" type="submit" [disabled]="settingsForm.invalid">Update
-            Settings</button>
+        <button mat-raised-button color="primary" type="submit" [disabled]="signUpForm.invalid">Sign Up</button>
     </div>
 </form>

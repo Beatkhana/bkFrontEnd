@@ -1,0 +1,28 @@
+<div class="card-body">
+    <h1>{{tournament.name}}</h1>
+    <h3>participants</h3>
+
+    <div class="participantGrid">
+        <mat-accordion *ngFor="let user of participants">
+            <mat-expansion-panel hideToggle class="playerPanel">
+                <mat-expansion-panel-header>
+                    <mat-panel-title class="playerName">
+                        {{user.name}} &nbsp;
+                    </mat-panel-title>
+                </mat-expansion-panel-header>
+                <p class="card-text">
+                    <img class="participantImg" src="https://new.scoresaber.com{{user.avatar}}">
+                    <span style="float: right;">
+                        <b>Global Rank:</b> #{{user.globalRank}} <br>
+                        <b>Regional Rank:</b> #{{user.localRank}} <img class="participantFlag" src="\assets/flags/{{user.country}}.png" alt="{{user.country}} Flag" style="height: 20px;border: none;"><br>
+                        <b>Tournament Rank:</b> #{{user.tourneyRank}} <br>
+                        <a href="https://scoresaber.com/u/{{user.ssId}}" target="_blank">Scoresaber</a> <br>
+                        <a href="https://twitch.tv/{{user.twitchName}}" target="_blank">Twitch</a>
+                    </span>
+                </p>
+            </mat-expansion-panel>
+        </mat-accordion>
+    </div>
+
+
+</div>

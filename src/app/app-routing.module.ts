@@ -13,6 +13,7 @@ import { BracketComponent } from './bracket/bracket.component';
 import { TeamComponent } from './team/team.component';
 import { UsersComponent } from './users/users.component';
 import { AuthGuardGuard } from './guards/auth-guard.guard';
+import { ParticipantsComponent } from './participants/participants.component';
 
 
 const routes: Routes = [
@@ -22,6 +23,7 @@ const routes: Routes = [
   {path: 'tournament/:id', component: TournamentComponent, children: [
     {path: 'map-pool', component: MapPoolComponent},
     {path: 'bracket', component: BracketComponent},
+    {path: 'participants', component: ParticipantsComponent},
   ]},
   {path: 'profile', component: ProfileComponent },
   {path: 'user/:id', component: UserComponent },

@@ -50,14 +50,16 @@ export class TournamentsComponent extends AppComponent implements OnInit {
 
         dialog.afterClosed()
             .subscribe(data => {
-                this.getTournaments()
-                    .subscribe(data => {
-                        data.sort(function (a, b) {
-                            return <any>new Date(a.date) - <any>new Date(b.date);
+                if(data) {
+                    this.getTournaments()
+                        .subscribe(data => {
+                            data.sort(function (a, b) {
+                                return <any>new Date(a.date) - <any>new Date(b.date);
+                            });
+                            this.tournaments = data;
+                            this.loading = false;
                         });
-                        this.tournaments = data;
-                        this.loading = false;
-                    });
+                }
             });
     }
 
@@ -163,14 +165,17 @@ export class newTournamentDialog implements OnInit {
                 if (data) {
                     if (!data.flag) {
                         this.notif.showSuccess('', 'Successfully created tournament');
+                        this.dialogRef.close(true);
                     } else {
                         console.error("Error: ", data);
                         this.notif.showError('', 'Error creating tournament');
+                        this.dialogRef.close(false);
                     }
                 }
             }, error => {
                 this.notif.showError('', 'Error creating tournament');
                 console.error("Error: ", error);
+                this.dialogRef.close(false);
             });
     }
 

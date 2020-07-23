@@ -27,14 +27,14 @@ export class TournamentsComponent extends AppComponent implements OnInit {
     ngOnInit(): void {
         this.getTournaments()
             .subscribe(data => {
-                data.sort(function(a, b) {
+                data.sort(function (a, b) {
                     return <any>new Date(a.date) - <any>new Date(b.date);
                 });
                 this.tournaments = data;
                 this.loading = false;
             });
         this.setTitle(this.title);
-        this.metaTags.defineTags('/','BeatKhana!','The one stop spot for all Beat Saber tournament information!','assets/images/icon/BeatKhana Logo RGB.png')
+        this.metaTags.defineTags('/', 'BeatKhana!', 'The one stop spot for all Beat Saber tournament information!', 'assets/images/icon/BeatKhana Logo RGB.png')
     }
 
     public getTournaments(): Observable<ITournament[]> {
@@ -42,11 +42,23 @@ export class TournamentsComponent extends AppComponent implements OnInit {
     }
 
     openDialog() {
-        this.dialog.open(newTournamentDialog, {
+        const dialog = this.dialog.open(newTournamentDialog, {
             height: '50vw',
             maxHeight: '60vh',
             width: '60vw',
         });
+
+        dialog.afterClosed()
+            .subscribe(data => {
+                this.getTournaments()
+                    .subscribe(data => {
+                        data.sort(function (a, b) {
+                            return <any>new Date(a.date) - <any>new Date(b.date);
+                        });
+                        this.tournaments = data;
+                        this.loading = false;
+                    });
+            });
     }
 
     archive(id: number) {

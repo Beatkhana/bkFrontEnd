@@ -72,7 +72,7 @@
     <br>
     <!-- <mat-form-field class="fill"> -->
     <!-- <input matInput placeholder="Image (soonTM)" formControlName="image" [disabled]="true"> -->
-    <input type="file" (change)="onFileChanged($event)" #fileInput>
+    <input type="file" (change)="onFileChanged($event)" #fileInput accept="image/png, image/jpeg, image/gif, image/webp, image/svg+xml, image/tiff">
     <br>
     <p class="card-text" style="font-size: small;">*Will be rescaled to 550px wide</p>
     <!-- </mat-form-field> -->

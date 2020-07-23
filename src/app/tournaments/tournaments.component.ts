@@ -84,6 +84,7 @@ export class newTournamentDialog implements OnInit {
     tournamentForm: FormGroup;
 
     users = [];
+    isSubmitted = false;
 
     filteredOptions: Observable<any>;
 
@@ -160,6 +161,7 @@ export class newTournamentDialog implements OnInit {
     }
 
     onSubmit() {
+        this.isSubmitted = true
         this.addTournament(this.tournamentForm.value)
             .subscribe(data => {
                 if (data) {

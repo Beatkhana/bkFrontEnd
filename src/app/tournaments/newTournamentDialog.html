@@ -67,7 +67,7 @@
         <textarea matInput placeholder="Tournament Info" formControlName="info"></textarea>
     </mat-form-field> -->
     <label class="card-text">Tournament Info:</label> <br><br>
-    <ckeditor placeholder="Tournament Info" formControlName="info"></ckeditor>
+    <ckeditor placeholder="Tournament Info" formControlName="info" [config]="{ extraPlugins: ['colorbutton', 'iframe']}"></ckeditor>
 
     <br>
     <!-- <mat-form-field class="fill"> -->
@@ -79,7 +79,7 @@
 
     <div mat-dialog-actions>
         <button mat-raised-button color="warn" mat-dialog-close>Close</button>
-        <button mat-raised-button color="primary" type="submit" [disabled]="tournamentForm.invalid">Add
+        <button mat-raised-button color="primary" type="submit" [disabled]="tournamentForm.invalid || isSubmitted">Add
             Tournament</button>
     </div>
 </form>

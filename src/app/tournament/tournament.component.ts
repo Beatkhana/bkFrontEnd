@@ -117,6 +117,7 @@ export class TournamentComponent extends AppComponent implements OnInit {
     openEdit() {
         const dialog = this.dialog.open(editTournament, {
             // height: '400px',
+            minWidth: '60vw',
             maxHeight: '90vh',
             maxWidth: '95vw',
             data: { tournament: this.tournament }
@@ -135,6 +136,7 @@ export class TournamentComponent extends AppComponent implements OnInit {
     tourneySettings() {
         const dialog = this.dialog.open(tournamentSettingsDialog, {
             // height: '400px',
+            minWidth: '40vw',
             maxHeight: '90vh',
             maxWidth: '95vw',
             data: { tournament: this.tournament }
@@ -182,6 +184,7 @@ export class TournamentComponent extends AppComponent implements OnInit {
     signUp() {
         const dialog = this.dialog.open(signUpDialog, {
             // height: '400px',
+            minWidth: '40vw',
             maxHeight: '90vh',
             maxWidth: '95vw',
             data: { tournament: this.tournament }

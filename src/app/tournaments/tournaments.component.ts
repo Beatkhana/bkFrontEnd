@@ -44,6 +44,7 @@ export class TournamentsComponent extends AppComponent implements OnInit {
 
     openDialog() {
         const dialog = this.dialog.open(newTournamentDialog, {
+            minWidth: '60vw',
             maxHeight: '90vh',
             maxWidth: '95vw',
         });

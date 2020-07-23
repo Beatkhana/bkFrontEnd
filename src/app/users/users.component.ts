@@ -59,6 +59,7 @@ export class UsersComponent extends AppComponent implements OnInit {
     editUser(id) {
         const dialog = this.dialog.open(editUserDialog, {
             // height: '400px',
+            minWidth: '60vw',
             maxHeight: '90vh',
             maxWidth: '95vw',
             data: {

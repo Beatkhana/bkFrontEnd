@@ -100,10 +100,6 @@ export class TournamentComponent extends AppComponent implements OnInit {
         this.getParticipants()
             .subscribe(data => {
                 this.participants = data;
-                this.participantData = {
-                    participants: this.participants,
-                    tournament: this.tournament
-                }
                 if(this.user != null && !this.participants.some(x => x.discordId == this.user.discordId)){
                     this.isParticipant = false;
                 }

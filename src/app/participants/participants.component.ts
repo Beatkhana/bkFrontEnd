@@ -11,15 +11,10 @@ export class ParticipantsComponent implements OnInit {
 
     @Input() tournament;
     @Input() participants;
-    @Input() data;
 
     constructor(public http: HttpClient,) { }
 
     ngOnInit(): void {
-        if(this.data) {
-            this.participants = this.data.participants;
-            this.tournament = this.data.tournament;
-        }
         this.setParticpants();
     }
 

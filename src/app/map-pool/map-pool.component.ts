@@ -172,7 +172,7 @@ export class MapPoolComponent implements OnInit {
     }
 
     public getPools(): Observable<any[]> {
-        return this.http.get<any[]>('api/map-pools/' + this.tournament.id);
+        return this.http.get<any[]>('api/map-pools/' + this.tournament.tournamentId);
     }
 
     addSong() {

@@ -129,7 +129,7 @@ export class TournamentComponent extends AppComponent implements OnInit {
         dialog.afterClosed()
             .subscribe(data => {
                 if (data) {
-                    // console.log("Dialog output:", data);
+                    console.log("Dialog output:", data);
                     this.tournament = { ...this.tournament, ...data };
                     this.tournament.safeInfo = this.sanitizer.bypassSecurityTrustHtml(this.tournament.info);
                 }
@@ -232,7 +232,7 @@ export class editTournament implements OnInit {
     }
 
     ngOnInit() {
-        this.id = this.data.tournament.id;
+        this.id = this.data.tournament.tournamentId;
         this.url += this.id;
         // console.log(this.data);
         this.tournamentForm = this.fb.group({

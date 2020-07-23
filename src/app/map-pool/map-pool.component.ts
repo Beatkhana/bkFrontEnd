@@ -121,8 +121,8 @@ export class MapPoolComponent implements OnInit {
     openCreate() {
         const dialog = this.dialog.open(createPoolDialog, {
             // height: '400px',
-            maxHeight: '60vh',
-            width: '40vw',
+            maxHeight: '90vh',
+            maxWidth: '95vw',
             data: {
                 tournament: this.tournament,
                 edit: false
@@ -177,8 +177,8 @@ export class MapPoolComponent implements OnInit {
 
     addSong() {
         const dialog = this.dialog.open(addSongDialog, {
-            maxHeight: '60vh',
-            width: '40vw',
+            maxHeight: '90vh',
+            maxWidth: '95vw',
             data: {
                 tournament: this.tournament,
                 mapPools: this.mapPools
@@ -204,8 +204,8 @@ export class MapPoolComponent implements OnInit {
     editPool() {
         const dialog = this.dialog.open(createPoolDialog, {
             // height: '400px',
-            maxHeight: '60vh',
-            width: '40vw',
+            maxHeight: '90vh',
+            maxWidth: '95vw',
             data: {
                 tournament: this.tournament,
                 mapPool: this.mapPools[this.curPoolId],

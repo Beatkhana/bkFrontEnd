@@ -17,7 +17,7 @@
             <p class="card-text">
                 Date: {{tournament.date | date: 'dd/MM/yyyy'}} <br> Prize: {{tournament.prize}} <br>
                 <a href="{{tournament.discord}}">Discord</a><br>
-                <a href="{{tournament.twitch}}">Twitch</a><br>
+                <a href="{{tournament.twitchLink}}">Twitch</a><br>
                 <span *ngIf="tournament.public == 0" style="color:rgb(209, 23, 23);font-style: italic;">*Private</span>
             </p>
             <p *ngIf="user && user['roleIds'].includes('1')" class="card-text">

@@ -59,8 +59,8 @@ export class UsersComponent extends AppComponent implements OnInit {
     editUser(id) {
         const dialog = this.dialog.open(editUserDialog, {
             // height: '400px',
-            maxHeight: '60vh',
-            width: '40vw',
+            maxHeight: '90vh',
+            maxWidth: '95vw',
             data: {
                 user: this.users.find(x => x.discordId == id)
             }

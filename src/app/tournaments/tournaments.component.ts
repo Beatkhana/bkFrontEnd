@@ -31,6 +31,7 @@ export class TournamentsComponent extends AppComponent implements OnInit {
                     return <any>new Date(a.date) - <any>new Date(b.date);
                 });
                 this.tournaments = data;
+                console.log(this.tournaments);
                 this.loading = false;
             });
         this.setTitle(this.title);
@@ -43,9 +44,8 @@ export class TournamentsComponent extends AppComponent implements OnInit {
 
     openDialog() {
         const dialog = this.dialog.open(newTournamentDialog, {
-            height: '50vw',
-            maxHeight: '60vh',
-            width: '60vw',
+            maxHeight: '90vh',
+            maxWidth: '95vw',
         });
 
         dialog.afterClosed()
@@ -65,7 +65,8 @@ export class TournamentsComponent extends AppComponent implements OnInit {
 
     archive(id: number) {
         this.dialog.open(archiveTournamentDialog, {
-            width: '60vw',
+            maxHeight: '90vh',
+            maxWidth: '95vw',
             data: { id: id }
         });
     }

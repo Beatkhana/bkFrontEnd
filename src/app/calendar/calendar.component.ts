@@ -61,10 +61,10 @@ export class CalendarComponent implements OnInit {
         for (let event of this.events) {
             event.color = '#' + (0x1000000 + (Math.random()) * 0xffffff).toString(16).substr(1, 6);
         }
-        console.log(this.events);
+        // console.log(this.events);
         this.updateDates(d);
         this.updateEvents(d);
-        console.log(this.displayEvents);
+        // console.log(this.displayEvents);
     }
 
     displayEvents = [];
@@ -111,17 +111,17 @@ export class CalendarComponent implements OnInit {
 
                     let row = ((eventStartDate.getDate() + this.startDay) / 7) % 1 == 0 ? ((eventStartDate.getDate() + this.startDay) / 7) - 1 : Math.floor((eventStartDate.getDate() + this.startDay) / 7);
 
-                    console.log(adjustedDiff)
-                    console.log(diff)
-                    console.log(start)
-                    console.log(end)
-                    console.log(row)
+                    // console.log(adjustedDiff)
+                    // console.log(diff)
+                    // console.log(start)
+                    // console.log(end)
+                    // console.log(row)
                     if (diff+start > 6) {
                         // let numRows = ((diff + start + 1) / 7) % 1 == 0 ? (diff + start + 1) / 7 - 1 : Math.floor((diff + start + 1) / 7);
                         let finRow =  ((eventEndDate.getDate() + this.startDay) / 7) % 1 == 0 ? ((eventEndDate.getDate() + this.startDay) / 7) - 1 : Math.floor((eventEndDate.getDate() + this.startDay) / 7);
                         // let curRow = Math.floor((eventStartDate.getDate() + this.startDay) / 7);
                         let curRow = ((eventStartDate.getDate() + this.startDay) / 7) % 1 == 0 ? ((eventStartDate.getDate() + this.startDay) / 7) - 1 : Math.floor((eventStartDate.getDate() + this.startDay) / 7);
-                        console.log(finRow)
+                        // console.log(finRow)
                         // first elem
                         this.displayEvents.push({
                             name: event.name,
@@ -133,11 +133,13 @@ export class CalendarComponent implements OnInit {
                             id: event.id
                         })
                         for (let i = curRow; i < finRow && curRow < 4; i++) {
+                            // console.log(((diff + start) - (7 * (i - curRow + 1))) + 1)
                             curRow += 1;
+                            // console.log(((diff + start) - (7 * (i - curRow + 2))) + 1)
                             this.displayEvents.push({
                                 name: event.name,
                                 start: 1,
-                                end: ((diff + start) - (7 * i)) + 1,
+                                end: ((diff + start) - (7 * (i - curRow + 2))) + 1,
                                 row: curRow,
                                 top: margin,
                                 color: event.color,

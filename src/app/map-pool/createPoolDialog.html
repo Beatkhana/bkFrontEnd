@@ -13,7 +13,7 @@
     <br>
     <img src="{{newPoolForm.value.image}}" style="width: 48px;height: 48px;border: none;margin: 5px;">
     <br>
-    <input type="file" (change)="onFileChanged($event)" #fileInput>
+    <input type="file" (change)="onFileChanged($event)" #fileInput accept="image/png, image/jpeg, image/gif, image/webp, image/svg+xml, image/tiff">
     <br><br>
     <mat-checkbox formControlName="live">
         Is Live
@@ -21,6 +21,6 @@
 
     <div mat-dialog-actions>
         <button mat-raised-button color="warn" mat-dialog-close>Close</button>
-        <button mat-raised-button color="primary" type="submit" [disabled]="newPoolForm.invalid">{{buttonMessage}}</button>
+        <button mat-raised-button color="primary" type="submit" [disabled]="newPoolForm.invalid || isSubmitted">{{buttonMessage}}</button>
     </div>
 </form>

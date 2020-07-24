@@ -88,7 +88,7 @@ export class MapPoolComponent implements OnInit {
             data => {
                 if (data) {
                     let info = {
-                        tournamentId: this.tournament.id,
+                        tournamentId: this.tournament.tournamentId,
                         id: songId
                     }
                     this.deleteSong(info)
@@ -121,6 +121,7 @@ export class MapPoolComponent implements OnInit {
     openCreate() {
         const dialog = this.dialog.open(createPoolDialog, {
             // height: '400px',
+            minWidth: '40vw',
             maxHeight: '90vh',
             maxWidth: '95vw',
             data: {
@@ -139,7 +140,6 @@ export class MapPoolComponent implements OnInit {
                             this.mapPools = data;
                             this.curPoolId = Object.keys(this.mapPools)[0];
                             this.poolsLen = Object.keys(this.mapPools).length;
-                            // console.log(data)
                         });
                 }
             });
@@ -177,6 +177,7 @@ export class MapPoolComponent implements OnInit {
 
     addSong() {
         const dialog = this.dialog.open(addSongDialog, {
+            minWidth: '40vw',
             maxHeight: '90vh',
             maxWidth: '95vw',
             data: {
@@ -195,7 +196,6 @@ export class MapPoolComponent implements OnInit {
                             this.mapPools = data;
                             this.curPoolId = Object.keys(this.mapPools)[0];
                             this.poolsLen = Object.keys(this.mapPools).length;
-                            // console.log(data)
                         });
                 }
             });
@@ -204,6 +204,7 @@ export class MapPoolComponent implements OnInit {
     editPool() {
         const dialog = this.dialog.open(createPoolDialog, {
             // height: '400px',
+            minWidth: '40vw',
             maxHeight: '90vh',
             maxWidth: '95vw',
             data: {
@@ -248,6 +249,7 @@ export class createPoolDialog implements OnInit {
 
     dialogTitle = "";
     buttonMessage = "";
+    isSubmitted = false;
 
     ngOnInit() {
         if (this.data.edit) {
@@ -268,7 +270,7 @@ export class createPoolDialog implements OnInit {
             this.dialogTitle = "Create Map Pool";
             this.buttonMessage = "Add Map Pool";
             this.newPoolForm = this.fb.group({
-                tournamentId: this.data.tournament.id,
+                tournamentId: this.data.tournament.tournamentId,
                 poolName: ['', [
                     Validators.required
                 ]],
@@ -296,6 +298,7 @@ export class createPoolDialog implements OnInit {
     }
 
     onSubmit() {
+        this.isSubmitted = true;
         if (this.data.edit) {
             this.newPoolForm.value.live = +this.newPoolForm.value.live;
             this.updatePool(this.newPoolForm.value)
@@ -334,7 +337,7 @@ export class createPoolDialog implements OnInit {
     }
 
     updatePool(data: any): Observable<any> {
-        return this.http.put('/api/map-pools/' + this.data.tournament.id, data);
+        return this.http.put('/api/map-pools/' + this.data.tournament.tournamentId, data);
     }
 }
 
@@ -353,10 +356,12 @@ export class addSongDialog implements OnInit {
         private dialogRef: MatDialogRef<createPoolDialog>,
         private notif: NotificationService
     ) { }
+    
+    isSubmitted = false;
 
     ngOnInit() {
         this.newSongForm = this.fb.group({
-            tournamentId: this.data.tournament.id,
+            tournamentId: this.data.tournament.tournamentId,
             poolIds: [[], [
                 Validators.minLength(1)
             ]],
@@ -380,6 +385,7 @@ export class addSongDialog implements OnInit {
     }
 
     onSubmit() {
+        this.isSubmitted = true;
         // console.log(this.newSongForm.value);
         this.addSong(this.newSongForm.value)
             .subscribe(data => {

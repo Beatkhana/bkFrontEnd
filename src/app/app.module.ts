@@ -43,6 +43,8 @@ import { TeamComponent } from './team/team.component';
 import { editUserDialog, UsersComponent } from './users/users.component';
 import { ParticipantsComponent } from './participants/participants.component';
 
+import { NgxLinkifyjsModule } from 'ngx-linkifyjs';
+
 
 @NgModule({
     declarations: [
@@ -98,7 +100,8 @@ import { ParticipantsComponent } from './participants/participants.component';
             preventDuplicates: true,
             countDuplicates: true,
             resetTimeoutOnDuplicate: true
-        })
+        }),
+        NgxLinkifyjsModule.forRoot()
     ],
     providers: [],
     bootstrap: [AppComponent]

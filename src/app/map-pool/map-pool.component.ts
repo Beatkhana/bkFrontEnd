@@ -35,7 +35,6 @@ export class MapPoolComponent implements OnInit {
         public dialog: MatDialog,
         private notif: NotificationService
     ) {
-        // console.log(this.user);
         if (this.user == null) {
             this.updateUser();
         }

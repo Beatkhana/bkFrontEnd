@@ -60,10 +60,12 @@
     <ckeditor formControlName="info" [config]="{ extraPlugins: ['colorbutton', 'iframe']}"></ckeditor>
 
     <br>
+    <input type="file" (change)="onFileChanged($event)" #fileInput accept="image/png, image/jpeg, image/gif, image/webp, image/svg+xml, image/tiff">
+    <br>
 
     <div mat-dialog-actions>
         <button mat-raised-button color="warn" mat-dialog-close>Close</button>
-        <button mat-raised-button color="primary" type="submit" [disabled]="tournamentForm.invalid">
+        <button mat-raised-button color="primary" type="submit" [disabled]="tournamentForm.invalid || isSubmitted">
             Update Tournament
         </button>
     </div>

@@ -68,6 +68,11 @@ export class TournamentComponent extends AppComponent implements OnInit {
                     this.loading = false;
                     this.tournament.safeInfo = this.sanitizer.bypassSecurityTrustHtml(this.tournament.info);
                     this.setTitle(this.tournament.name + ' | ' + this.title);
+
+                    // this.checkTwitch()
+                    //     .subscribe(data => {
+                    //         console.log(data);
+                    //     })
                 });
         });
 
@@ -94,13 +99,14 @@ export class TournamentComponent extends AppComponent implements OnInit {
                 this.isParticipants = false;
             }
         });
+
     }
 
     setParticpants() {
         this.getParticipants()
             .subscribe(data => {
                 this.participants = data;
-                if(this.user != null && !this.participants.some(x => x.discordId == this.user.discordId)){
+                if (this.user != null && !this.participants.some(x => x.discordId == this.user.discordId)) {
                     this.isParticipant = false;
                 }
             })
@@ -114,9 +120,13 @@ export class TournamentComponent extends AppComponent implements OnInit {
         return this.http.get<ITournament[]>(this.url + '/' + this.tourneyId);
     }
 
+    // checkTwitch(): Observable<any> {
+    //     let twitchName = this.tournament.twitchLink.split('twitch.tv/')[1];
+    //     return this.http.get(`https://api.twitch.tv/helix/streams?user_login=${twitchName}`);
+    // }
+
     openEdit() {
         const dialog = this.dialog.open(editTournament, {
-            // height: '400px',
             minWidth: '60vw',
             maxHeight: '90vh',
             maxWidth: '95vw',
@@ -219,6 +229,8 @@ export class editTournament implements OnInit {
 
     filteredOptions: Observable<any>;
 
+    isSubmitted = false;
+
     constructor(
         private fb: FormBuilder,
         public http: HttpClient,
@@ -241,6 +253,8 @@ export class editTournament implements OnInit {
             discord: this.data.tournament.discord,
             owner: [this.data.tournament.owner, [Validators.required, this.requireMatch.bind(this)]],
             twitchLink: this.data.tournament.twitchLink,
+            image: this.data.tournament.image,
+            imgName: '',
             prize: this.data.tournament.prize,
             info: this.data.tournament.info
         });
@@ -257,9 +271,22 @@ export class editTournament implements OnInit {
             });
     }
 
+    selectedFile: File;
+    base64: string;
+
+    onFileChanged(event) {
+        this.selectedFile = event.target.files[0];
+        this.tournamentForm.patchValue({ imgName: this.selectedFile.name });
+
+        let reader = new FileReader();
+        reader.readAsDataURL(this.selectedFile);
+        reader.onload = () => {
+            this.tournamentForm.patchValue({ image: reader.result });
+        };
+    }
+
     private _filter(name: string) {
         const filterValue = name.toLowerCase();
-
         return this.users.filter(option => option.name.toLowerCase().indexOf(filterValue) === 0);
     }
 
@@ -291,6 +318,7 @@ export class editTournament implements OnInit {
     }
 
     onSubmit() {
+        this.isSubmitted = true;
         this.updateTournament(this.tournamentForm.value)
             .subscribe(data => {
                 if (!data.flag) {
@@ -299,7 +327,7 @@ export class editTournament implements OnInit {
                     console.error('Error', data.err)
                     this.notif.showError('', 'Error updating tournament');
                 }
-                this.dialogRef.close(this.tournamentForm.value);
+                this.dialogRef.close(data.data);
             }, error => {
                 this.notif.showError('', 'Error updating tournament');
                 console.error("Error: ", error);

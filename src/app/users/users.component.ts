@@ -63,7 +63,8 @@ export class UsersComponent extends AppComponent implements OnInit {
             maxHeight: '90vh',
             maxWidth: '95vw',
             data: {
-                user: this.users.find(x => x.discordId == id)
+                selUser: this.users.find(x => x.discordId == id),
+                curUser: this.user
             }
         });
 
@@ -71,7 +72,7 @@ export class UsersComponent extends AppComponent implements OnInit {
             .subscribe(data => {
                 if (data) {
                     let i = this.users.findIndex(x => x.discordId == data.discordId);
-                    this.users[i] = {...this.users[i], ...data};
+                    this.users[i] = { ...this.users[i], ...data };
                     this.dataSource.data = this.users;
                 }
             });
@@ -105,6 +106,29 @@ export class editUserDialog implements OnInit {
 
     pronouns = ['He/Him', 'She/Her', 'They/Them'];
 
+    userRoles = [
+        {
+            id: "1",
+            name: 'Admin'
+        },
+        {
+            id: "2",
+            name: 'Staff'
+        },
+        {
+            id: "3",
+            name: 'Map Pool'
+        },
+        {
+            id: "4",
+            name: 'Coordinator'
+        },
+        {
+            id: "5",
+            name: 'Competitor'
+        },
+    ]
+
     constructor(
         private fb: FormBuilder,
         public http: HttpClient,
@@ -113,41 +137,68 @@ export class editUserDialog implements OnInit {
         private notif: NotificationService
     ) { }
 
+    roleIds = [];
+    minRole = 999;
+
     ngOnInit() {
         this.userForm = this.fb.group({
-            discordId: [this.data.user.discordId, [
+            discordId: [this.data.selUser.discordId, [
                 Validators.required
             ]],
-            ssId: [this.data.user.ssId, [
+            ssId: [this.data.selUser.ssId, [
                 Validators.required
             ]],
-            name: [this.data.user.name, [
+            name: [this.data.selUser.name, [
                 Validators.required
             ]],
-            twitchName: [this.data.user.twitchName, [
+            twitchName: [this.data.selUser.twitchName, [
                 Validators.required
             ]],
-            pronoun: [this.data.user.pronoun, [
+            pronoun: [this.data.selUser.pronoun, [
                 Validators.required
             ]],
+            roleIds: this.fb.array([])
         });
+        this.userForm.value.roleIds = [];
+        this.roleIds = this.data.selUser.roleIds != null ? this.data.selUser.roleIds.split(', ').map(x=>+x) : [];
+        this.minRole = Math.min(...this.data.curUser.roleIds.map(x=>+x));
     }
 
     onSubmit() {
         this.updateUser()
             .subscribe(data => {
+                let returnData = this.userForm.value;
+                if(this.userForm.value.roleIds.length == 0){
+                    this.userForm.value.roleIds = this.data.selUser.roleIds;
+                } else {
+                    let roleNames = this.userForm.value.roleIds.map(x => this.userRoles[this.userRoles.findIndex(y=>y.id == x)].name).join(', ');
+                    this.userForm.value.roleIds = this.userForm.value.roleIds.join(', ')
+                    returnData = {...this.userForm.value, ...{roleNames: roleNames}};
+                }
                 if (!data.flag) {
                     this.notif.showSuccess('', 'Successfully updated user');
                 } else {
                     console.error("Error: ", data.err);
                     this.notif.showError('', 'Error updating user');
                 }
-                this.dialogRef.close(this.userForm.value);
+                this.dialogRef.close(returnData);
             }, error => {
                 this.notif.showError('', 'Error updating user');
                 console.error("Error: ", error);
                 this.dialogRef.close(this.userForm.value);
             });
+    }
+
+    updateRoleId(roleId) {
+        roleId = parseInt(roleId)
+        var i = this.roleIds.indexOf(roleId);
+        if (i === -1) {
+            this.roleIds.push(roleId);
+        } else {
+            this.roleIds.splice(i, 1);
+        }
+        this.userForm.value.roleIds = this.roleIds;
+        // console.log(this.roleIds)
     }
 
     updateUser(): Observable<any> {

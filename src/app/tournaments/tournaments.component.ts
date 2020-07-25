@@ -31,7 +31,6 @@ export class TournamentsComponent extends AppComponent implements OnInit {
                     return <any>new Date(a.date) - <any>new Date(b.date);
                 });
                 this.tournaments = data;
-                console.log(this.tournaments);
                 this.loading = false;
             });
         this.setTitle(this.title);

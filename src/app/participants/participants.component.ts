@@ -94,7 +94,6 @@ export class ParticipantsComponent implements OnInit {
         this.getParticipants()
             .subscribe(data => {
                 this.participants = data;
-                console.log(this.participants)
             })
     }
 

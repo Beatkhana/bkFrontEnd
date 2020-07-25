@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Component, Inject, Input, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { DomSanitizer } from '@angular/platform-browser';
 import { Observable } from 'rxjs';
 import { AppComponent } from '../app.component';
 import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
@@ -33,7 +34,8 @@ export class MapPoolComponent implements OnInit {
     public constructor(
         public http: HttpClient,
         public dialog: MatDialog,
-        private notif: NotificationService
+        private notif: NotificationService,
+        private sanitizer:DomSanitizer
     ) {
         if (this.user == null) {
             this.updateUser();
@@ -64,6 +66,10 @@ export class MapPoolComponent implements OnInit {
                     }
                 }
             });
+    }
+
+    sanitize(url:string){
+        return this.sanitizer.bypassSecurityTrustUrl(url);
     }
 
     public logIn(): Observable<User[]> {

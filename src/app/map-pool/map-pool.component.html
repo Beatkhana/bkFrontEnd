@@ -49,7 +49,7 @@
                     <ng-container matColumnDef="oneClick">
                         <th mat-header-cell *matHeaderCellDef> </th>
                         <td mat-cell *matCellDef="let song">
-                            <a href="beatsaver://{{song.key}}" target="_blank">One Click</a>
+                            <a [href]="sanitize('beatsaver://'+song.key)" target="_blank">One Click</a>
                         </td>
                     </ng-container>
                     <ng-container matColumnDef="delete" *ngIf="isAuthorised">

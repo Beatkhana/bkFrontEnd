@@ -1,51 +1,5 @@
 <header>
     <nav>
-        <!-- <div class="container">
-            <div class="banner">
-                <a routerLink="/">
-                    <img src="/assets\svg\BeatKhana Logo Text RGB2.svg" alt="BeatKhana! Logo" height="50">
-                </a>
-            </div>
-            <div>
-                <ul>
-                    <li><a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact:true}" class="navLink btn-reload">Home</a></li>
-                    <li><a routerLink="/archive" routerLinkActive="active" class="navLink btn-reload">Archive</a></li>
-                    <li><a routerLink="/rankings" routerLinkActive="active" class="navLink btn-reload">Rankings</a></li>
-                    <li><a routerLink="/team" routerLinkActive="active" class="navLink btn-reload">Team</a></li>
-                </ul>
-            </div>
-            <div style="float:right;">
-                <ul>
-                    <li>
-                        <a href="" class="navLink noHover icon">
-                            <i class="fab fa-twitter"></i>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="" class="navLink noHover icon">
-                            <i class="fab fa-discord"></i>
-                        </a>
-                    </li>
-                    <li *ngIf="user" class="nav-item dropdown">
-                        <button class="nav-link dropdown-toggle">
-                            <img class="userImg" src="https://new.scoresaber.com{{ user.avatar }}" style="display: inline;" height="64" width="64">
-
-                        </button>
-                        <!-- <a href="#0" class="nav-link dropdown-toggle">
-
-                        </a> 
-                        <div class="dropdown-content" id="myDropdown">
-                            <a href="profile">View Profile</a>
-                            <a href="/api/logout">Logout</a>
-                        </div>
-                    </li>
-                    <li *ngIf="!user">
-                        <a href="https://discord.com/api/oauth2/authorize?client_id=670442368385810452&redirect_uri=http%3A%2F%2Flocalhost%3A4200%2Fapi%2FdiscordAuth&response_type=code&scope=identify" class="navLink">Login</a>
-                        <!-- <a href="https://discord.com/api/oauth2/authorize?client_id=670442368385810452&redirect_uri=https%3A%2F%2Fbeatkhanatest.herokuapp.com%2Fapi%2FdiscordAuth&response_type=code&scope=identify" class="navLink">Login</a> 
-                    </li>
-                </ul>
-            </div>
-        </div> -->
         <div class="container">
             <div>
                 <a routerLink="/">
@@ -64,13 +18,13 @@
             <div style="float: right;" class="nav-main">
                 <ul class="navbar-nav">
                     <li>
-                        <a href="https://www.twitch.tv/beatkhana" target="_blank" class="nav-item noHover icon">
-                            <i class="fab fa-twitch"></i>
+                        <a href="https://discord.gg/5NjfSAC" target="_blank" class="nav-item noHover icon">
+                            <i class="fab fa-discord"></i>
                         </a>
                     </li>
                     <li>
-                        <a href="https://discord.gg/5NjfSAC" target="_blank" class="nav-item noHover icon">
-                            <i class="fab fa-discord"></i>
+                        <a href="https://www.twitch.tv/beatkhana" target="_blank" class="nav-item noHover icon">
+                            <i class="fab fa-twitch"></i>
                         </a>
                     </li>
                     <li *ngIf="user" class="nav-item has-dropdown noHover">
@@ -120,21 +74,6 @@
                 <div>
                     <hr>
                     <ul class="navbar-nav mobile">
-                        <!-- <li *ngIf="user" class="nav-item has-dropdown noHover">
-                            <!-- <button class="nav-link dropdown-toggle">
-
-
-                            </button> 
-                            <img class="userImg" src="https://new.scoresaber.com{{ user.avatar }} " style="display: inline-box; float: left;" height="64" width="64">
-                            <ul class="navbar-nav">
-                                <li class=" dropdown-item ">
-                                    <a routerLink="/profile ">View Profile</a>
-                                </li>
-                                <li class="dropdown-item ">
-                                    <a href="/api/logout ">Logout</a>
-                                </li>
-                            </ul>
-                        </li> -->
                         <li *ngIf="user">
                             <img class="userImg" src="https://new.scoresaber.com{{ user.avatar }} " style="display: inline-box;" height="64" width="64">
                         </li>
@@ -150,10 +89,6 @@
                     </ul>
                 </div>
             </div>
-
-
-
-
         </div>
     </nav>
 </header>

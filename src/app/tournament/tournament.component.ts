@@ -136,7 +136,6 @@ export class TournamentComponent extends AppComponent implements OnInit {
         dialog.afterClosed()
             .subscribe(data => {
                 if (data) {
-                    console.log("Dialog output:", data);
                     this.tournament = { ...this.tournament, ...data };
                     this.tournament.safeInfo = this.sanitizer.bypassSecurityTrustHtml(this.tournament.info);
                 }
@@ -210,10 +209,6 @@ export class TournamentComponent extends AppComponent implements OnInit {
 
     private deleteTourney(id): Observable<any> {
         return this.http.post('/api/tournament/delete/' + id, {});
-    }
-
-    receiveMessage($event) {
-        console.log($event);
     }
 }
 

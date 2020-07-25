@@ -1,6 +1,6 @@
-<h1 mat-dialog-title>Edit {{data.user.name}}</h1>
+<h1 mat-dialog-title>Edit {{data.selUser.name}}</h1>
 <form [formGroup]="userForm" novalidate (ngSubmit)="onSubmit()">
-    <!-- Value: {{ newPoolForm.value | json }} -->
+    <!-- Value: {{ userForm.value | json }} -->
     <mat-form-field class="fill">
         <input matInput placeholder="Name" formControlName="name">
     </mat-form-field>
@@ -22,7 +22,13 @@
             <input matInput placeholder="Preferred Pronoun" formControlName="pronoun">
         </mat-form-field>
     </mat-radio-group>
-
+    <br>
+    <label>Roles:</label>
+    <div class="roles">
+        <mat-checkbox *ngFor="let role of userRoles" (change)="updateRoleId(role.id)" [checked]="roleIds.includes(+role.id)" [disabled]="role.id <= minRole">
+            {{role.name}}
+        </mat-checkbox>
+    </div>
 
     <div mat-dialog-actions>
         <button mat-raised-button color="warn" mat-dialog-close>Close</button>

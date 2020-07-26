@@ -227,20 +227,24 @@ export class CalendarComponent implements OnInit {
         this.startDay = tempDate.getDay();
 
         this.dates = [];
+        let todayDate = new Date();
         for (let i = 0; i < (Math.ceil((this.days + this.startDay - 1) / 7) * 7); i++) {
+            let today = todayDate.getDate() + this.startDay - 1 == i && todayDate.getMonth() == this.curDate.getMonth();
             if (i < this.startDay || i >= this.days + this.startDay - 1) {
                 this.dates[i] = {
                     date: 0,
                     event: false,
                     col: i % 7,
-                    row: Math.floor(i / 7)
+                    row: Math.floor(i / 7),
+                    today: today
                 }
             } else {
                 this.dates[i] = {
                     date: i - this.startDay + 1,
                     event: false,
                     col: i % 7,
-                    row: Math.floor(i / 7)
+                    row: Math.floor(i / 7),
+                    today: today
                 }
             }
         }

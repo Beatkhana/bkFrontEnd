@@ -28,10 +28,18 @@ export class ParticipantsComponent implements OnInit {
     constructor(public http: HttpClient, public dialog: MatDialog,private notif: NotificationService) { }
 
     ngOnInit(): void {
+        this.participants.sort(this.orderGlobal)
         this.setParticpants();
         if (this.user == null) {
             this.updateUser();
         }
+        this.participants.sort(this.orderGlobal)
+    }
+
+    orderGlobal(a,b) {
+        if(a.globalRank == 0) return 1;
+        if(b.globalRank == 0) return -1;
+        return a.globalRank - b.globalRank;
     }
 
     updateUser() {
@@ -94,6 +102,7 @@ export class ParticipantsComponent implements OnInit {
         this.getParticipants()
             .subscribe(data => {
                 this.participants = data;
+                this.participants.sort(this.orderGlobal)
             })
     }
 

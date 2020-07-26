@@ -13,7 +13,7 @@
                     <span>Saturday</span>
                 </div>
                 <div class="dates">
-                    <div *ngFor="let date of dates" class="date" style="grid-column: {{date.col + 1}}; grid-row: {{date.row + 1}};">
+                    <div *ngFor="let date of dates" class="date" [ngClass]="{'today': date.today}" style="grid-column: {{date.col + 1}}; grid-row: {{date.row + 1}};">
                         <span *ngIf="date.date != 0" class="dateNum">{{date.date}}</span>
                     </div>
                     <!-- <div style="grid-area: 4 / 7 / auto / span 2; z-index: 10;

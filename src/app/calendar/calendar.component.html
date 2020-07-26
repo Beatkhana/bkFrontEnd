@@ -4,13 +4,13 @@
             <h1 style="text-align: center;"><i class='fas fa-angle-left' style="float: left;" (click)="changeDate(-1)"></i> {{curMonth}} {{curYear}} <i class='fas fa-angle-right' style="float: right;" (click)="changeDate(1)"></i></h1>
             <div class="calendar">
                 <div class="headers">
-                    <span>Sunday</span>
                     <span>Monday</span>
                     <span>Tuesday</span>
                     <span>Wednesday</span>
                     <span>Thursday</span>
                     <span>Friday</span>
                     <span>Saturday</span>
+                    <span>Sunday</span>
                 </div>
                 <div class="dates">
                     <div *ngFor="let date of dates" class="date" [ngClass]="{'today': date.today}" style="grid-column: {{date.col + 1}}; grid-row: {{date.row + 1}};">

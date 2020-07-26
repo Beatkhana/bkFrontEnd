@@ -23,6 +23,8 @@ export class UserComponent extends AppComponent implements OnInit {
                 .subscribe( data => {
                     this.curUser = data[0];
 
+                    this.curUser.tournaments = this.curUser.tournaments.split(', ');
+                    
                     console.log(this.curUser)
                     this.setTitle(this.curUser.name+"'s Profile" + this.title);
                 });

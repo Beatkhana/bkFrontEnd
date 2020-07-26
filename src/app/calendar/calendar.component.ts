@@ -29,10 +29,10 @@ export class CalendarComponent implements OnInit {
     dates = [];
 
     events: any = [
-        // { "id": 3, "name": "Is a tourney :)", "startDate": "2020-03-08", "endDate": "2020-03-08", "color": "#02943d" },
-        // { "id": 2147483647, "name": "gfdsgdfs", "startDate": "2020-03-14", "endDate": "2020-03-14", "color": "#6a687b" },
-        // { "id": 4, "name": "Another tourney :))", "startDate": "2020-03-18", "endDate": "2020-03-18", "color": "#8b3ef7" },
-        // { "id": 2147483651, "name": "OMEGALUL", "startDate": "2020-07-12", "endDate": "2020-07-15", "color": "#0cb099" },
+        { "id": 3, "name": "Is a tourney :)", "startDate": "2020-03-08", "endDate": "2020-03-08", "color": "#02943d" },
+        { "id": 2147483647, "name": "gfdsgdfs", "startDate": "2020-03-14", "endDate": "2020-03-14", "color": "#6a687b" },
+        { "id": 4, "name": "Another tourney :))", "startDate": "2020-03-18", "endDate": "2020-03-18", "color": "#8b3ef7" },
+        { "id": 2147483651, "name": "OMEGALUL", "startDate": "2020-11-11", "endDate": "2020-12-12", "color": "#0cb099" },
         // { "id": 2147483921, "name": "dannys gay", "startDate": "2020-07-13", "endDate": "2020-07-27", "color": "#99fb24" }
     ]
 
@@ -57,7 +57,7 @@ export class CalendarComponent implements OnInit {
 
     async fillCalendar(): Promise<void> {
         const d = new Date();
-        this.events = await this.getDates().toPromise();
+        // this.events = await this.getDates().toPromise();
         // console.log(this.events)
         for (let event of this.events) {
             event.color = '#' + (0x1000000 + (Math.random()) * 0xffffff).toString(16).substr(1, 6);
@@ -101,7 +101,7 @@ export class CalendarComponent implements OnInit {
 
 
 
-                    let adjustedDiff = (timeDiff / (1000 * 3600 * 24)) + this.startDay;
+                    // let adjustedDiff = (timeDiff / (1000 * 3600 * 24)) + this.startDay;
                     let diff = timeDiff / (1000 * 3600 * 24);
 
                     let start = (eventStartDate.getDate() + this.startDay) % 7 != 0 ? (eventStartDate.getDate() + this.startDay) % 7 : 7;
@@ -120,7 +120,7 @@ export class CalendarComponent implements OnInit {
                         if (eventEndDate.getMonth() == date.getMonth()) {
                             finRow =  ((eventEndDate.getDate() + this.startDay) / 7) % 1 == 0 ? ((eventEndDate.getDate() + this.startDay) / 7) - 1 : Math.floor((eventEndDate.getDate() + this.startDay) / 7);
                         } else {
-                            finRow = 5;
+                            finRow = Math.floor((this.days + this.startDay) / 7);
                         }
                         // let curRow = Math.floor((eventStartDate.getDate() + this.startDay) / 7);
                         let curRow = ((eventStartDate.getDate() + this.startDay) / 7) % 1 == 0 ? ((eventStartDate.getDate() + this.startDay) / 7) - 1 : Math.floor((eventStartDate.getDate() + this.startDay) / 7);
@@ -135,7 +135,7 @@ export class CalendarComponent implements OnInit {
                             color: event.color,
                             id: event.id
                         })
-                        for (let i = curRow; i < finRow && curRow < 5; i++) {
+                        for (let i = curRow; i < finRow && curRow < 6; i++) {
                             // console.log(((diff + start) - (7 * (i - curRow + 1))) + 1)
                             curRow += 1;
                             // console.log(((diff + start) - (7 * (i - curRow + 2))) + 1)
@@ -179,7 +179,7 @@ export class CalendarComponent implements OnInit {
                     let numRows = Math.ceil((dayDiff - 1) / 7);
                     let curRow = 0;
 
-                    for (let i = 0; i < numRows && curRow < 4; i++) {
+                    for (let i = 0; i < numRows && curRow < 6; i++) {
                         this.displayEvents.push({
                             name: event.name,
                             start: 1,
@@ -224,8 +224,8 @@ export class CalendarComponent implements OnInit {
         this.days = this.getDaysInMonth(date.getMonth() + 1, date.getFullYear());
 
         let tempDate = new Date(`${date.getFullYear()}-${date.getMonth() + 1}-01`);
-        this.startDay = tempDate.getDay();
-
+        this.startDay = tempDate.getDay()-1 != -1? tempDate.getDay()-1 : 6;
+        // console.log(this.startDay)
         this.dates = [];
         let todayDate = new Date();
         for (let i = 0; i < (Math.ceil((this.days + this.startDay - 1) / 7) * 7); i++) {

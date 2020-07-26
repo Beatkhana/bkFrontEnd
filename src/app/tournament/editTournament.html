@@ -1,6 +1,6 @@
 <h1 mat-dialog-title>Edit Tournament</h1>
 <form [formGroup]="tournamentForm" novalidate (ngSubmit)="onSubmit()">
-    <!-- Value: {{ tournamentForm.value | json }} -->
+    Value: {{ tournamentForm.value | json }}
 
 
     <mat-form-field class="fill">
@@ -65,8 +65,6 @@
 
     <div mat-dialog-actions>
         <button mat-raised-button color="warn" mat-dialog-close>Close</button>
-        <button mat-raised-button color="primary" type="submit" [disabled]="tournamentForm.invalid || isSubmitted">
-            Update Tournament
-        </button>
+        <button mat-raised-button color="primary" type="submit" [disabled]="tournamentForm.invalid || isSubmitted">Update Tournament</button>
     </div>
 </form>

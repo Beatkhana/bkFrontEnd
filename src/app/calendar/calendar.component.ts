@@ -58,6 +58,7 @@ export class CalendarComponent implements OnInit {
     async fillCalendar(): Promise<void> {
         const d = new Date();
         this.events = await this.getDates().toPromise();
+        // console.log(this.events)
         for (let event of this.events) {
             event.color = '#' + (0x1000000 + (Math.random()) * 0xffffff).toString(16).substr(1, 6);
         }
@@ -78,9 +79,6 @@ export class CalendarComponent implements OnInit {
                 let eventStartDate = new Date(event.startDate);
                 let eventEndDate = new Date(event.endDate);
                 let monthStart = new Date(date.getFullYear(), date.getMonth(), 1);
-
-                // console.log(eventStartDate)
-                // console.log(eventStartDate)
 
                 let margin = 10;
 
@@ -118,7 +116,12 @@ export class CalendarComponent implements OnInit {
                     // console.log(row)
                     if (diff+start > 6) {
                         // let numRows = ((diff + start + 1) / 7) % 1 == 0 ? (diff + start + 1) / 7 - 1 : Math.floor((diff + start + 1) / 7);
-                        let finRow =  ((eventEndDate.getDate() + this.startDay) / 7) % 1 == 0 ? ((eventEndDate.getDate() + this.startDay) / 7) - 1 : Math.floor((eventEndDate.getDate() + this.startDay) / 7);
+                        let finRow = 0;
+                        if (eventEndDate.getMonth() == date.getMonth()) {
+                            finRow =  ((eventEndDate.getDate() + this.startDay) / 7) % 1 == 0 ? ((eventEndDate.getDate() + this.startDay) / 7) - 1 : Math.floor((eventEndDate.getDate() + this.startDay) / 7);
+                        } else {
+                            finRow = 5;
+                        }
                         // let curRow = Math.floor((eventStartDate.getDate() + this.startDay) / 7);
                         let curRow = ((eventStartDate.getDate() + this.startDay) / 7) % 1 == 0 ? ((eventStartDate.getDate() + this.startDay) / 7) - 1 : Math.floor((eventStartDate.getDate() + this.startDay) / 7);
                         // console.log(finRow)
@@ -132,7 +135,7 @@ export class CalendarComponent implements OnInit {
                             color: event.color,
                             id: event.id
                         })
-                        for (let i = curRow; i < finRow && curRow < 4; i++) {
+                        for (let i = curRow; i < finRow && curRow < 5; i++) {
                             // console.log(((diff + start) - (7 * (i - curRow + 1))) + 1)
                             curRow += 1;
                             // console.log(((diff + start) - (7 * (i - curRow + 2))) + 1)

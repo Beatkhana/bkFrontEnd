@@ -11,7 +11,6 @@ import { map, startWith, switchMap } from 'rxjs/operators';
 import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
 import { NotificationService } from '../services/toast.service';
 
-
 @Component({
     selector: 'app-tournament',
     templateUrl: './tournament.component.html',
@@ -214,7 +213,7 @@ export class TournamentComponent extends AppComponent implements OnInit {
 
 @Component({
     selector: 'editTournament',
-    templateUrl: './editTournament.html',
+    templateUrl: './editTournament.html'
 })
 export class editTournament implements OnInit {
     tournamentForm: FormGroup;
@@ -300,7 +299,7 @@ export class editTournament implements OnInit {
 
     public formatDate(date) {
         var d = new Date(date),
-            month = '' + (d.getMonth() + 1),
+            month = '' + (d.getMonth()),
             day = '' + d.getDate(),
             year = d.getFullYear();
 
@@ -309,11 +308,15 @@ export class editTournament implements OnInit {
         if (day.length < 2)
             day = '0' + day;
 
-        return [year, month, day].join('-');
+        // return [year, month, day].join('-');
+        return new Date(Date.UTC(year, parseInt(month), parseInt(day)))
     }
 
     onSubmit() {
         this.isSubmitted = true;
+        this.tournamentForm.value.date = this.formatDate(this.tournamentForm.value.date.toString())
+        this.tournamentForm.value.endDate = this.formatDate(this.tournamentForm.value.endDate.toString())
+        // console.log
         this.updateTournament(this.tournamentForm.value)
             .subscribe(data => {
                 if (!data.flag) {

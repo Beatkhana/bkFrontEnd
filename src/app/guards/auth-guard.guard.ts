@@ -16,7 +16,7 @@ export class AuthGuardGuard implements CanActivate {
 
     canActivate(next: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
         return this.http.get('/api/user').pipe(map(data=> {
-            return data[0]['roleIds'].indexOf('1') > -1
+            return data[0]['roleIds'].indexOf('1') > -1 || data[0]['roleIds'].indexOf('2') > -1
         }))
     }
 }

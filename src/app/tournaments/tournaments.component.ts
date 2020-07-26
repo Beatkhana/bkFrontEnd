@@ -161,8 +161,26 @@ export class newTournamentDialog implements OnInit {
         return this.tournamentForm.get('twitchLink');
     }
 
+    public formatDate(date) {
+        var d = new Date(date),
+            month = '' + (d.getMonth()),
+            day = '' + d.getDate(),
+            year = d.getFullYear();
+
+        if (month.length < 2)
+            month = '0' + month;
+        if (day.length < 2)
+            day = '0' + day;
+
+        // return [year, month, day].join('-');
+        return new Date(Date.UTC(year, parseInt(month), parseInt(day)))
+    }
+
     onSubmit() {
         this.isSubmitted = true
+        this.tournamentForm.value.date = this.formatDate(this.tournamentForm.value.date.toString())
+        this.tournamentForm.value.endDate = this.formatDate(this.tournamentForm.value.endDate.toString())
+        
         this.addTournament(this.tournamentForm.value)
             .subscribe(data => {
                 if (data) {

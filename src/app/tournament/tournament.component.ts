@@ -238,6 +238,7 @@ export class editTournament implements OnInit {
 
     ngOnInit() {
         this.id = this.data.tournament.tournamentId;
+        console.log(this.data);
         this.url += this.id;
         // console.log(this.data);
         this.tournamentForm = this.fb.group({

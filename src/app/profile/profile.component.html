@@ -24,9 +24,9 @@
                     <a href="https://scoresaber.com/u/{{user.ssId}}" target="_blank">Scoresaber</a> <br>
                     <a href="https://twitch.tv/{{user.twitchName}}" target="_blank">Twitch</a>
                 </p>
-                <ng-container *ngIf="user['roleIds'].includes('1')">
+                <ng-container *ngIf="user['roleIds'].includes('1') || user['roleIds'].includes('2')">
                     <br>
-                    <h4>Admin:</h4>
+                    <h4>Staff:</h4>
                     <p class="card-text">
                         <a [routerLink]="['/users']">All Users</a>
                     </p>

@@ -20,7 +20,7 @@
                 <a href="{{tournament.twitchLink}}">Twitch</a><br>
                 <span *ngIf="tournament.public == 0" style="color:rgb(209, 23, 23);font-style: italic;">*Private</span>
             </p>
-            <p *ngIf="user && user['roleIds'].includes('1')" class="card-text">
+            <p *ngIf="user && (user['roleIds'].includes('1') || user['roleIds'].includes('2'))" class="card-text">
                 <button mat-button color="primary" (click)="archive(tournament.id)">Archive Tournament</button>
             </p>
         </div>

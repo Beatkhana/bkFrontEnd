@@ -31,7 +31,7 @@
     margin-left: auto;
     margin-right: auto;
     display: grid;
-    grid-template-columns: repeat(3, 150px);
+    grid-template-columns: repeat(3, minmax(50px, 150px));
     div {
         color: white;
         // height: 40px;
@@ -42,6 +42,10 @@
         cursor: pointer;
         &.isActive {
             border-top: 2px solid #c8825a;
+        }
+        >h3 {
+            // font-size: 0.5rem;
+            width: auto;
         }
     }
     animation: cardEntrance 250ms ease-out;
@@ -56,5 +60,17 @@
     to {
         opacity: 1;
         transform: scale(1);
+    }
+}
+
+@media (max-width: 576px) {
+    .tab-bar h3 {
+        font-size: 0.5rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .tab-bar h3 {
+        font-size: 0.7rem;
     }
 }

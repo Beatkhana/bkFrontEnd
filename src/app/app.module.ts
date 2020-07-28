@@ -6,7 +6,7 @@ import { AppComponent } from './app.component';
 import { TournamentsComponent, newTournamentDialog, archiveTournamentDialog } from './tournaments/tournaments.component';
 
 import { HttpClientModule } from '@angular/common/http';
-import { TournamentComponent, editTournament, tournamentSettingsDialog, signUpDialog } from './tournament/tournament.component';
+import { TournamentComponent, editTournament, tournamentSettingsDialog, signUpDialog, addPlayerDialog } from './tournament/tournament.component';
 import { ArchiveComponent } from './archive/archive.component';
 import { RankingsComponent } from './rankings/rankings.component';
 import { editProfileDialog, ProfileComponent } from './profile/profile.component';
@@ -41,7 +41,7 @@ import { BracketComponent } from './bracket/bracket.component';
 import { addSongDialog, createPoolDialog, MapPoolComponent } from './map-pool/map-pool.component';
 import { TeamComponent } from './team/team.component';
 import { editUserDialog, UsersComponent } from './users/users.component';
-import { ParticipantsComponent } from './participants/participants.component';
+import { editCommentDialog, ParticipantsComponent } from './participants/participants.component';
 
 import { NgxLinkifyjsModule } from 'ngx-linkifyjs';
 
@@ -61,6 +61,8 @@ import { NgxLinkifyjsModule } from 'ngx-linkifyjs';
         UserComponent,
         ConfirmDialogComponent,
         SignUpComponent,
+        addPlayerDialog,
+        editCommentDialog,
         CalendarComponent,
         BracketComponent,
         MapPoolComponent,

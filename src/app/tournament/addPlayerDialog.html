@@ -1,0 +1,27 @@
+<h1>Add Player</h1>
+<form [formGroup]="addPlayerForm" novalidate (ngSubmit)="onSubmit()">
+    <!-- Value: {{ addPlayerForm.value | json }} -->
+    <br>
+    <mat-form-field *ngIf="users.length > 0">
+        <mat-label>User</mat-label>
+        <input type="text" matInput formControlName="userId" [matAutocomplete]="auto">
+        <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn.bind(this)">
+            <mat-option *ngFor="let option of filteredOptions | async" [value]="option.discordId">
+                {{option.name}}
+            </mat-option>
+        </mat-autocomplete>
+    </mat-form-field>
+    <br>
+    <mat-form-field>
+        <mat-label>{{signUpComment}}</mat-label>
+        <textarea matInput formControlName="comment"></textarea>
+        <mat-error *ngIf="comment.invalid && comment.touched">
+            This tournament requires you to provide: {{signUpComment}} in order to sign up
+        </mat-error>
+    </mat-form-field>
+
+    <div mat-dialog-actions>
+        <button mat-raised-button color="warn" mat-dialog-close>Close</button>
+        <button mat-raised-button color="primary" type="submit" [disabled]="addPlayerForm.invalid">Sign Up</button>
+    </div>
+</form>

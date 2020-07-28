@@ -8,20 +8,20 @@
 
     <ng-template #loaded>
         <div class="card tournamentCard" *ngFor="let tournament of tournaments">
-            <a [title]="tournament.name" [routerLink]="['/tournament',tournament.id]">
+            <a [title]="tournament.name" [routerLink]="['/tournament',tournament.tournamentId]">
                 <img src="\{{tournament.image | lowercase}}" class="card-img-top">
                 <h5 class="card-title">
                     {{tournament.name}}
                 </h5>
             </a>
             <p class="card-text">
-                Date: {{tournament.date | date: 'dd/MM/yyyy'}} <br> Prize: {{tournament.prize}} <br>
+                Date: {{tournament.startDate | date: 'dd/MM/yyyy'}} <br> Prize: {{tournament.prize}} <br>
                 <a href="{{tournament.discord}}">Discord</a><br>
                 <a href="{{tournament.twitchLink}}">Twitch</a><br>
                 <span *ngIf="tournament.public == 0" style="color:rgb(209, 23, 23);font-style: italic;">*Private</span>
             </p>
             <p *ngIf="user && (user['roleIds'].includes('1') || user['roleIds'].includes('2'))" class="card-text">
-                <button mat-button color="primary" (click)="archive(tournament.id)">Archive Tournament</button>
+                <button mat-button color="primary" (click)="archive(tournament.tournamentId)">Archive Tournament</button>
             </p>
         </div>
 

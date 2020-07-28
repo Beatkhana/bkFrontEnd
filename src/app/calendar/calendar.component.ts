@@ -133,7 +133,7 @@ export class CalendarComponent implements OnInit {
                             row: curRow,
                             top: margin,
                             color: event.color,
-                            id: event.id
+                            id: event.tournamentId
                         })
                         for (let i = curRow; i < finRow && curRow < 6; i++) {
                             // console.log(((diff + start) - (7 * (i - curRow + 1))) + 1)
@@ -146,7 +146,7 @@ export class CalendarComponent implements OnInit {
                                 row: curRow,
                                 top: margin,
                                 color: event.color,
-                                id: event.id
+                                id: event.tournamentId
                             })
                         }
                     } else if (eventStartDate.getDate() == eventEndDate.getDate()) {
@@ -159,7 +159,7 @@ export class CalendarComponent implements OnInit {
                             row: row,
                             top: margin,
                             color: event.color,
-                            id: event.id
+                            id: event.tournamentId
                         })
                     } else {
                         this.displayEvents.push({
@@ -169,7 +169,7 @@ export class CalendarComponent implements OnInit {
                             row: row,
                             top: margin,
                             color: event.color,
-                            id: event.id
+                            id: event.tournamentId
                         })
                     }
                 } else if (eventEndDate.getMonth() == date.getMonth()) {
@@ -186,7 +186,7 @@ export class CalendarComponent implements OnInit {
                             end: (dayDiff - (7 * i)),
                             row: curRow,
                             color: event.color,
-                            id: event.id
+                            id: event.tournamentId
                         })
                         curRow += 1;
                     }
@@ -206,7 +206,7 @@ export class CalendarComponent implements OnInit {
                             row: i,
                             top: margin,
                             color: event.color,
-                            id: event.id
+                            id: event.tournamentId
                         })
                     }
                 }

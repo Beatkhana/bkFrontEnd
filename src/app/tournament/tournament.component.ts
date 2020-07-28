@@ -61,7 +61,7 @@ export class TournamentComponent extends AppComponent implements OnInit {
             this.getTournaments()
                 .subscribe(data => {
                     this.tournament = data[0];
-                    // console.log(this.tournament)
+                    console.log(this.tournament)
                     if (this.tournament.public_signups == 1) {
                         this.setParticpants();
                     }
@@ -161,6 +161,28 @@ export class TournamentComponent extends AppComponent implements OnInit {
             });
     }
 
+    addPlayer() {
+        const dialog = this.dialog.open(addPlayerDialog, {
+            // height: '400px',
+            minWidth: '40vw',
+            maxHeight: '90vh',
+            maxWidth: '95vw',
+            data: {
+                tournament: this.tournament,
+                participants: this.participants
+            }
+        });
+
+        dialog.afterClosed()
+            .subscribe(data => {
+                if (data) {
+                    // console.log("Dialog output:", data);
+                    // this.tournament = { ...this.tournament, ...data };
+                    // this.tournament.safeInfo = this.sanitizer.bypassSecurityTrustHtml(this.tournament.info);
+                }
+            });
+    }
+
     delete() {
         const dialog = this.dialog.open(ConfirmDialogComponent, {
             // height: '400px',
@@ -244,7 +266,7 @@ export class editTournament implements OnInit {
         // console.log(this.data);
         this.tournamentForm = this.fb.group({
             name: this.data.tournament.name,
-            date: this.data.tournament.date,
+            date: this.data.tournament.startDate,
             endDate: this.data.tournament.endDate,
             discord: this.data.tournament.discord,
             owner: [this.data.tournament.owner, [Validators.required, this.requireMatch.bind(this)]],
@@ -451,7 +473,7 @@ export class signUpDialog implements OnInit {
             tournamentId: this.id,
             comment: ''
         });
-        if(!!this.data.tournament.comment_required) {
+        if (!!this.data.tournament.comment_required) {
             this.signUpForm.controls['comment'].setValidators([Validators.required]);
             this.signUpForm.controls['comment'].updateValueAndValidity();
         }
@@ -481,5 +503,103 @@ export class signUpDialog implements OnInit {
 
     signUp(data: any): Observable<any> {
         return this.http.post(`/api/tournament/${this.id}/signUp`, data);
+    }
+}
+
+@Component({
+    selector: 'addPlayerDialog',
+    templateUrl: './addPlayerDialog.html',
+})
+export class addPlayerDialog implements OnInit {
+
+    addPlayerForm: FormGroup;
+    id: number;
+    signUpComment: string = '';
+
+    filteredOptions: Observable<any>;
+    users: any = [];
+
+    constructor(
+        private fb: FormBuilder,
+        public http: HttpClient,
+        private router: Router,
+        @Inject(MAT_DIALOG_DATA) public data: any,
+        private dialogRef: MatDialogRef<signUpDialog>,
+        private notif: NotificationService
+    ) {
+
+    }
+
+    ngOnInit() {
+        this.id = this.data.tournament.tournamentId;
+        console.log(this.data)
+        this.signUpComment = this.data.tournament.signup_comment;
+        this.addPlayerForm = this.fb.group({
+            userId: ['', [Validators.required, this.requireMatch.bind(this)]],
+            tournamentId: this.id,
+            comment: ''
+        });
+        if (!!this.data.tournament.comment_required) {
+            this.addPlayerForm.controls['comment'].setValidators([Validators.required]);
+            this.addPlayerForm.controls['comment'].updateValueAndValidity();
+        }
+        this.getUsers()
+            .subscribe(data => {
+                this.users = data;
+                this.filteredOptions = this.addPlayerForm.valueChanges
+                    .pipe(
+                        startWith(''),
+                        map(value => typeof value === 'string' ? value : value.userId),
+                        map(userId => userId ? this._filter(userId) : this.users.slice())
+                    );
+            });
+    }
+
+    get comment() {
+        return this.addPlayerForm.get('comment');
+    }
+
+    onSubmit() {
+        this.signUp(this.addPlayerForm.value)
+            .subscribe(data => {
+                if (!data.flag) {
+                    this.notif.showInfo('', 'Successfully added participant');
+                    this.dialogRef.close(true);
+                } else {
+                    console.error('Error', data.err)
+                    this.notif.showError('', 'Error adding participant');
+                    this.dialogRef.close(false);
+                }
+            }, error => {
+                this.notif.showError('', 'Error adding participant');
+                console.error("Error: ", error);
+                this.dialogRef.close(false);
+            });
+    }
+
+    signUp(data: any): Observable<any> {
+        return this.http.post(`/api/tournament/${this.id}/signUp`, data);
+    }
+
+    displayFn(id): string {
+        let user = this.users.find(x => x.discordId == id);
+        return user && user.name ? user.name : '';
+    }
+
+    private _filter(name: string) {
+        const filterValue = name.toLowerCase();
+        return this.users.filter(option => option.name.toLowerCase().indexOf(filterValue) === 0);
+    }
+
+    getUsers(): Observable<any> {
+        return this.http.get('/api/users');
+    }
+
+    private requireMatch(control: FormControl): ValidationErrors | null {
+        const selection: any = control.value;
+        if (!this.users.some(x => x.discordId == selection)) {
+            return { requireMatch: true };
+        }
+        return null;
     }
 }

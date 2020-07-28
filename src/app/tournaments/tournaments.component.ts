@@ -28,7 +28,7 @@ export class TournamentsComponent extends AppComponent implements OnInit {
         this.getTournaments()
             .subscribe(data => {
                 data.sort(function (a, b) {
-                    return <any>new Date(a.date) - <any>new Date(b.date);
+                    return <any>new Date(a.startDate) - <any>new Date(b.startDate);
                 });
                 this.tournaments = data;
                 this.loading = false;
@@ -54,7 +54,7 @@ export class TournamentsComponent extends AppComponent implements OnInit {
                     this.getTournaments()
                         .subscribe(data => {
                             data.sort(function (a, b) {
-                                return <any>new Date(a.date) - <any>new Date(b.date);
+                                return <any>new Date(a.startDate) - <any>new Date(b.startDate);
                             });
                             this.tournaments = data;
                             this.loading = false;

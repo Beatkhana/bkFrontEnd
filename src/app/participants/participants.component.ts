@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
-import { Component, Input, OnInit } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
+import { Component, Inject, Input, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Observable } from 'rxjs';
 import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
 import { User } from '../models/user.model';
@@ -17,7 +18,7 @@ export class ParticipantsComponent implements OnInit {
     @Input() participants: Array<any>;
 
     isAuthorised = false;
-    user: User = null;
+    curUser: User = null;
 
     linkOptions = {
         target: {
@@ -28,12 +29,14 @@ export class ParticipantsComponent implements OnInit {
     constructor(public http: HttpClient, public dialog: MatDialog,private notif: NotificationService) { }
 
     ngOnInit(): void {
+        // console.log(this.tournament)
         this.participants.sort(this.orderGlobal)
         this.setParticpants();
-        if (this.user == null) {
+        if (this.curUser == null) {
             this.updateUser();
         }
         this.participants.sort(this.orderGlobal)
+        
     }
 
     orderGlobal(a,b) {
@@ -46,8 +49,8 @@ export class ParticipantsComponent implements OnInit {
         this.logIn()
             .subscribe(data => {
                 if (data) {
-                    this.user = data[0];
-                    if (this.user != null && (this.user['roleIds'].includes('1') || this.user.discordId == this.tournament.owner)) {
+                    this.curUser = data[0];
+                    if (this.curUser != null && (this.curUser['roleIds'].includes('1') || this.curUser.discordId == this.tournament.owner)) {
                         this.isAuthorised = true;
                     }
                 }
@@ -89,6 +92,30 @@ export class ParticipantsComponent implements OnInit {
             });
     }
 
+    editComment(participantId) {
+        const dialog = this.dialog.open(editCommentDialog, {
+            minWidth: '60vw',
+            maxHeight: '90vh',
+            maxWidth: '95vw',
+            data: {
+                participantId: participantId,
+                tournament: this.tournament,
+                curUser: this.participants.find(x=> x.participantId == participantId)
+            }
+        });
+
+        dialog.afterClosed()
+            .subscribe(data => {
+                if (data) {
+                    let userIndex = this.participants.findIndex(x=> x.participantId == data.participantId);
+                    console.log(this.participants[userIndex])
+                    this.participants[userIndex] = {...this.participants[userIndex], ...data}
+                    console.log(this.participants[userIndex])
+                    console.log(data)
+                }
+            });
+    }
+
     removeParticipant(data: any): Observable<any> {
         return this.http.post(`/api/tournament/${this.tournament.tournamentId}/deleteParticipant`, data)
     }
@@ -103,6 +130,7 @@ export class ParticipantsComponent implements OnInit {
             .subscribe(data => {
                 this.participants = data;
                 this.participants.sort(this.orderGlobal)
+                // console.log(this.participants);
             })
     }
 
@@ -110,4 +138,66 @@ export class ParticipantsComponent implements OnInit {
         return this.http.get(`/api/tournament/${this.tournament.tournamentId}/participants`);
     }
 
+}
+
+@Component({
+    selector: 'editCommentDialog',
+    templateUrl: './editCommentDialog.html',
+})
+export class editCommentDialog implements OnInit {
+
+    signUpForm: FormGroup;
+    id: number;
+    signUpComment: string = '';
+
+    filteredOptions: Observable<any>;
+
+    constructor(
+        private fb: FormBuilder,
+        public http: HttpClient,
+        @Inject(MAT_DIALOG_DATA) public data: any,
+        private dialogRef: MatDialogRef<editCommentDialog>,
+        private notif: NotificationService
+    ) {
+
+    }
+
+    ngOnInit() {
+        // console.log(this.data)
+        this.id = this.data.tournament.tournamentId;
+        this.signUpComment = this.data.tournament.signup_comment;
+        this.signUpForm = this.fb.group({
+            comment: this.data.curUser.comment
+        });
+        if (!!this.data.tournament.comment_required) {
+            this.signUpForm.controls['comment'].setValidators([Validators.required]);
+            this.signUpForm.controls['comment'].updateValueAndValidity();
+        }
+    }
+
+    get comment() {
+        return this.signUpForm.get('comment');
+    }
+
+    onSubmit() {
+        this.editSignup(this.signUpForm.value)
+            .subscribe(data => {
+                if (!data.flag) {
+                    this.notif.showInfo('', 'Successfully updated sign up');
+                    this.dialogRef.close({...this.signUpForm.value, participantId: this.data.participantId});
+                } else {
+                    console.error('Error', data.err)
+                    this.notif.showError('', 'Error updaing sign up');
+                    this.dialogRef.close(false);
+                }
+            }, error => {
+                this.notif.showError('', 'Error updaing sign up');
+                console.error("Error: ", error);
+                this.dialogRef.close(false);
+            });
+    }
+
+    editSignup(data: any): Observable<any> {
+        return this.http.put(`/api/updateParticipant/${this.id}/${this.data.participantId}`, data);
+    }
 }

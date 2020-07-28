@@ -3,7 +3,7 @@ export interface ITournament {
     id: string;
     name: string;
     image: string;
-    date: string;
+    startDate: string;
     time: string;
     signup: string;
     discord: string;

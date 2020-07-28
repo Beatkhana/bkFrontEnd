@@ -61,7 +61,7 @@ export class TournamentComponent extends AppComponent implements OnInit {
             this.getTournaments()
                 .subscribe(data => {
                     this.tournament = data[0];
-                    console.log(this.tournament)
+                    // console.log(this.tournament)
                     if (this.tournament.public_signups == 1) {
                         this.setParticpants();
                     }
@@ -532,7 +532,7 @@ export class addPlayerDialog implements OnInit {
 
     ngOnInit() {
         this.id = this.data.tournament.tournamentId;
-        console.log(this.data)
+        // console.log(this.data)
         this.signUpComment = this.data.tournament.signup_comment;
         this.addPlayerForm = this.fb.group({
             userId: ['', [Validators.required, this.requireMatch.bind(this)]],

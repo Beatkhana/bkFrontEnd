@@ -11,7 +11,7 @@
             <div [routerLink]="['/tournament', tourneyId]" [routerLinkActiveOptions]="{exact:true}" routerLinkActive="isActive">
                 <h3>Info</h3>
             </div>
-            <div *ngIf="tournament.public_signups == 1" [routerLink]="['participants']" routerLinkActive="isActive">
+            <div *ngIf="tournament.show_signups == 1" [routerLink]="['participants']" routerLinkActive="isActive">
                 <h3>Participants</h3>
             </div>
             <div *ngIf="tournament.has_map_pool == 1" [routerLink]="['map-pool']" routerLinkActive="isActive">

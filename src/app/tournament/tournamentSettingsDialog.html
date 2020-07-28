@@ -6,6 +6,10 @@
         Public Signups?
     </mat-checkbox>
     <br>
+    <mat-checkbox formControlName="show_signups">
+        Publicly show signups?
+    </mat-checkbox>
+    <br>
     <mat-checkbox formControlName="public">
         Is public?
     </mat-checkbox>
@@ -38,13 +42,16 @@
         </mat-select>
     </mat-form-field>
     <br>
+    <mat-checkbox formControlName="comment_required">
+        Comment Required?
+    </mat-checkbox>
+    <br><br>
     <mat-form-field class="fill">
         <input matInput placeholder="Sign up Comment Label" formControlName="signup_comment">
     </mat-form-field>
 
     <div mat-dialog-actions>
         <button mat-raised-button color="warn" mat-dialog-close>Close</button>
-        <button mat-raised-button color="primary" type="submit" [disabled]="settingsForm.invalid">Update
-            Settings</button>
+        <button mat-raised-button color="primary" type="submit" [disabled]="settingsForm.invalid">Update Settings</button>
     </div>
 </form>

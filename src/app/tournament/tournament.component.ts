@@ -383,12 +383,14 @@ export class tournamentSettingsDialog implements OnInit {
         // console.log(this.data);
         this.settingsForm = this.fb.group({
             public_signups: !!this.data.tournament.public_signups,
+            show_signups: !!this.data.tournament.show_signups,
             public: !!this.data.tournament.public,
             state: this.data.tournament.state,
             type: this.data.tournament.type,
             has_bracket: !!this.data.tournament.has_bracket,
             has_map_pool: !!this.data.tournament.has_map_pool,
-            signup_comment: this.data.tournament.signup_comment
+            signup_comment: this.data.tournament.signup_comment,
+            comment_required: !!this.data.tournament.comment_required,
         });
     }
 
@@ -449,6 +451,14 @@ export class signUpDialog implements OnInit {
             tournamentId: this.id,
             comment: ''
         });
+        if(!!this.data.tournament.comment_required) {
+            this.signUpForm.controls['comment'].setValidators([Validators.required]);
+            this.signUpForm.controls['comment'].updateValueAndValidity();
+        }
+    }
+
+    get comment() {
+        return this.signUpForm.get('comment');
     }
 
     onSubmit() {

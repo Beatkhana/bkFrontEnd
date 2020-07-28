@@ -1,6 +1,6 @@
 import { Component, OnInit, HostListener, ElementRef } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Title, DomSanitizer } from '@angular/platform-browser';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Title, DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 
 import { User } from './models/user.model'
@@ -20,6 +20,8 @@ export class AppComponent implements OnInit {
     title = 'BeatKhana!';
 
     user: User = null;
+
+    discordSvg: SafeHtml;
 
     public constructor(
         public titleService: Title,
@@ -43,11 +45,24 @@ export class AppComponent implements OnInit {
         route.params.subscribe(val => {
             this.updateUser;
         });
+        // console.log(this.discordSvg);
+        // console.log(discordLogo);
+        // this.getSVG()
+        // this.discordSvg = this.sanitizer.bypassSecurityTrustHtml(discordLogo);
     }
 
     ngOnInit(): void {
-        this.metaTags.defineTags('/','BeatKhana!','The one stop spot for all Beat Saber tournament information','assets/images/icon/BeatKhana Logo RGB.png');
+        this.metaTags.defineTags('/', 'BeatKhana!', 'The one stop spot for all Beat Saber tournament information', 'assets/images/icon/BeatKhana Logo RGB.png');
     }
+
+    // async getSVG() {
+    //     const headers = new HttpHeaders();
+    //     headers.set('Accept', 'image/svg+xml');
+    //     const svgString =
+    //         await this.http.get(`/assets/icons/discord.svg`, { headers, responseType: 'text' }).toPromise();
+    //     console.log(svgString)
+    //     this.discordSvg = this.sanitizer.bypassSecurityTrustHtml(svgString);
+    // }
 
     updateUser() {
         this.logIn()

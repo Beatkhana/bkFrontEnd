@@ -9,7 +9,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { TournamentComponent, editTournament, tournamentSettingsDialog, signUpDialog } from './tournament/tournament.component';
 import { ArchiveComponent } from './archive/archive.component';
 import { RankingsComponent } from './rankings/rankings.component';
-import { ProfileComponent } from './profile/profile.component';
+import { editProfileDialog, ProfileComponent } from './profile/profile.component';
 import { UserComponent } from './user/user.component';
 
 
@@ -57,6 +57,7 @@ import { NgxLinkifyjsModule } from 'ngx-linkifyjs';
         editTournament,
         RankingsComponent,
         ProfileComponent,
+        editProfileDialog,
         UserComponent,
         ConfirmDialogComponent,
         SignUpComponent,

@@ -18,3 +18,13 @@ h1 {
     // width: 2%;
     display: inline-block;
 }
+
+.pronounRadio,
+.roles {
+    display: flex;
+    flex-direction: column;
+    margin: 15px 0;
+    .radio-button {
+        margin: 5px;
+    }
+}

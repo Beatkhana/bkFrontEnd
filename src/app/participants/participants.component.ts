@@ -108,10 +108,10 @@ export class ParticipantsComponent implements OnInit {
             .subscribe(data => {
                 if (data) {
                     let userIndex = this.participants.findIndex(x=> x.participantId == data.participantId);
-                    console.log(this.participants[userIndex])
+                    // console.log(this.participants[userIndex])
                     this.participants[userIndex] = {...this.participants[userIndex], ...data}
-                    console.log(this.participants[userIndex])
-                    console.log(data)
+                    // console.log(this.participants[userIndex])
+                    // console.log(data)
                 }
             });
     }

@@ -29,11 +29,11 @@ export class CalendarComponent implements OnInit {
     dates = [];
 
     events: any = [
-        { "id": 3, "name": "Is a tourney :)", "startDate": "2020-03-08", "endDate": "2020-03-08", "color": "#02943d" },
-        { "id": 2147483647, "name": "gfdsgdfs", "startDate": "2020-03-14", "endDate": "2020-03-14", "color": "#6a687b" },
-        { "id": 4, "name": "Another tourney :))", "startDate": "2020-03-18", "endDate": "2020-03-18", "color": "#8b3ef7" },
-        { "id": 2147483651, "name": "OMEGALUL", "startDate": "2020-11-11", "endDate": "2020-12-12", "color": "#0cb099" },
-        // { "id": 2147483921, "name": "dannys gay", "startDate": "2020-07-13", "endDate": "2020-07-27", "color": "#99fb24" }
+    //     { "id": 3, "name": "Is a tourney :)", "startDate": "2020-03-08", "endDate": "2020-03-08", "color": "#02943d" },
+    //     { "id": 2147483647, "name": "gfdsgdfs", "startDate": "2020-03-14", "endDate": "2020-03-14", "color": "#6a687b" },
+    //     { "id": 4, "name": "Another tourney :))", "startDate": "2020-03-18", "endDate": "2020-03-18", "color": "#8b3ef7" },
+    //     { "id": 2147483651, "name": "OMEGALUL", "startDate": "2020-11-11", "endDate": "2020-12-12", "color": "#0cb099" },
+    //     // { "id": 2147483921, "name": "dannys gay", "startDate": "2020-07-13", "endDate": "2020-07-27", "color": "#99fb24" }
     ]
 
 
@@ -57,7 +57,7 @@ export class CalendarComponent implements OnInit {
 
     async fillCalendar(): Promise<void> {
         const d = new Date();
-        // this.events = await this.getDates().toPromise();
+        this.events = await this.getDates().toPromise();
         // console.log(this.events)
         for (let event of this.events) {
             event.color = '#' + (0x1000000 + (Math.random()) * 0xffffff).toString(16).substr(1, 6);
@@ -208,7 +208,6 @@ export class CalendarComponent implements OnInit {
                             color: event.color,
                             id: event.id
                         })
-
                     }
                 }
 
@@ -258,7 +257,7 @@ export class CalendarComponent implements OnInit {
         this.curDate = new Date(this.curDate.setMonth(this.curDate.getMonth() + change))
         this.updateDates(this.curDate);
         this.updateEvents(this.curDate);
-        console.log(this.displayEvents)
+        // console.log(this.displayEvents)
     }
 
     getDaysInMonth(month, year) {

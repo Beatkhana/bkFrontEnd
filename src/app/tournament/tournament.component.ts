@@ -61,6 +61,7 @@ export class TournamentComponent extends AppComponent implements OnInit {
             this.getTournaments()
                 .subscribe(data => {
                     this.tournament = data[0];
+                    // console.log(this.tournament)
                     if (this.tournament.public_signups == 1) {
                         this.setParticpants();
                     }
@@ -238,7 +239,7 @@ export class editTournament implements OnInit {
 
     ngOnInit() {
         this.id = this.data.tournament.tournamentId;
-        console.log(this.data);
+        // console.log(this.data);
         this.url += this.id;
         // console.log(this.data);
         this.tournamentForm = this.fb.group({
@@ -387,6 +388,7 @@ export class tournamentSettingsDialog implements OnInit {
             type: this.data.tournament.type,
             has_bracket: !!this.data.tournament.has_bracket,
             has_map_pool: !!this.data.tournament.has_map_pool,
+            signup_comment: this.data.tournament.signup_comment
         });
     }
 
@@ -425,6 +427,7 @@ export class signUpDialog implements OnInit {
 
     signUpForm: FormGroup;
     id: number;
+    signUpComment: string = '';
 
     filteredOptions: Observable<any>;
 
@@ -441,6 +444,7 @@ export class signUpDialog implements OnInit {
 
     ngOnInit() {
         this.id = this.data.tournament.tournamentId;
+        this.signUpComment = this.data.tournament.signup_comment;
         this.signUpForm = this.fb.group({
             tournamentId: this.id,
             comment: ''

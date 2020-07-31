@@ -31,7 +31,7 @@
     margin-left: auto;
     margin-right: auto;
     display: grid;
-    grid-template-columns: repeat(3, minmax(50px, 150px));
+    grid-template-columns: repeat(auto-fit, minmax(50px, 150px));
     div {
         color: white;
         // height: 40px;

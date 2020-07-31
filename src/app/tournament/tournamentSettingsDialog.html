@@ -50,8 +50,28 @@
         <input matInput placeholder="Sign up Comment Label" formControlName="signup_comment">
     </mat-form-field>
 
+    <ng-container *ngIf="bracket.value == true">
+        <mat-form-field class="fill">
+            <input matInput placeholder="Number of players in bracket" formControlName="bracket_limit">
+            <mat-error *ngIf="limit.invalid && limit.touched">
+                Must be a multiple of 8
+            </mat-error>
+        </mat-form-field>
+        <br>
+        <mat-form-field appearance="fill">
+            <mat-label>Player sort order</mat-label>
+            <mat-select formControlName="bracket_sort_method">
+                <mat-option value="globalRank">Global Rank</mat-option>
+                <mat-option value="tournamentRank">Tournament Rank</mat-option>
+                <mat-option value="seed">Qualifiers Seed</mat-option>
+            </mat-select>
+        </mat-form-field>
+    </ng-container>
+
+
     <div mat-dialog-actions>
         <button mat-raised-button color="warn" mat-dialog-close>Close</button>
-        <button mat-raised-button color="primary" type="submit" [disabled]="settingsForm.invalid">Update Settings</button>
+        <button mat-raised-button color="primary" type="submit" [disabled]="settingsForm.invalid">Update
+            Settings</button>
     </div>
 </form>

@@ -19,6 +19,9 @@ export class LogsComponent extends AppComponent implements OnInit {
         .subscribe(data => {
                 this.loading = false;
                 this.logs = data;
+                this.logs.sort((a,b) => {
+                    return <any>new Date(b.time) - <any>new Date(a.time);
+                });
                 console.log(data);
             });
     }

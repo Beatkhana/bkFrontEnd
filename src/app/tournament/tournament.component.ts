@@ -413,7 +413,21 @@ export class tournamentSettingsDialog implements OnInit {
             has_map_pool: !!this.data.tournament.has_map_pool,
             signup_comment: this.data.tournament.signup_comment,
             comment_required: !!this.data.tournament.comment_required,
+            bracket_sort_method: this.data.tournament.bracket_sort_method,
+            bracket_limit: [this.data.tournament.bracket_limit, [
+                Validators.required,
+                Validators.pattern('^[0-9]*$'),
+                this.multiple8
+            ]],
         });
+    }
+
+    get bracket() {
+        return this.settingsForm.get('has_bracket');
+    }
+    
+    get limit() {
+        return this.settingsForm.get('bracket_limit');
     }
 
     onSubmit() {
@@ -440,6 +454,12 @@ export class tournamentSettingsDialog implements OnInit {
 
     updateSettings(data: any): Observable<any> {
         return this.http.put(`/api/tournament/${data.tournamentId}/settings`, data);
+    }
+
+    private multiple8(control: FormControl): ValidationErrors | null {
+        const selection: any = control.value;
+        if(selection % 8 == 0) return null;
+        return { requireMatch: true };
     }
 }
 

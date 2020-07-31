@@ -44,6 +44,7 @@ import { editUserDialog, UsersComponent } from './users/users.component';
 import { editCommentDialog, ParticipantsComponent } from './participants/participants.component';
 
 import { NgxLinkifyjsModule } from 'ngx-linkifyjs';
+import { LogsComponent } from './logs/logs.component';
 
 
 @NgModule({
@@ -73,7 +74,8 @@ import { NgxLinkifyjsModule } from 'ngx-linkifyjs';
         editUserDialog,
         tournamentSettingsDialog,
         signUpDialog,
-        ParticipantsComponent
+        ParticipantsComponent,
+        LogsComponent
     ],
     imports: [
         BrowserModule,

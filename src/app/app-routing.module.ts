@@ -14,6 +14,7 @@ import { TeamComponent } from './team/team.component';
 import { UsersComponent } from './users/users.component';
 import { AuthGuardGuard } from './guards/auth-guard.guard';
 import { ParticipantsComponent } from './participants/participants.component';
+import { LogsComponent } from './logs/logs.component';
 
 
 const routes: Routes = [
@@ -31,6 +32,7 @@ const routes: Routes = [
   {path: 'calendar', component: CalendarComponent },
   {path: 'team', component: TeamComponent },
   {path: 'users', component: UsersComponent, canActivate: [AuthGuardGuard]},
+  {path: 'logs', component: LogsComponent, canActivate: [AuthGuardGuard]},
 ];
 
 @NgModule({

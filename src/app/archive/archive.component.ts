@@ -19,6 +19,9 @@ export class ArchiveComponent extends AppComponent implements OnInit {
     async ngOnInit(): Promise<void> {
         this.getTournaments()
             .subscribe(data => {
+                data.sort(function (a, b) {
+                    return <any>new Date(a.startDate) - <any>new Date(b.startDate);
+                });
                 this.tournaments = data;
                 // console.log(data);
                 this.loading = false;

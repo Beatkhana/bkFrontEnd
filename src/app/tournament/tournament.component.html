@@ -23,7 +23,7 @@
         </div>
         <div class="card noHover" style="border-radius: 0px 4px 4px 4px;">
             <div class="card-body" #info *ngIf="isInfo">
-                <img class="tourneyImg" src="\{{ tournament.image | lowercase }}" alt="" />
+                <img class="tourneyImg" src="\{{ tournament.image }}" alt="" />
                 <h1>{{ tournament.name }}</h1>
 
                 <p class="card-text" style="color: #c8825a" *ngIf="tournament.archived == 1">

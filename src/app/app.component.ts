@@ -1,4 +1,4 @@
-import { Component, OnInit, HostListener, ElementRef } from '@angular/core';
+import { Component, OnInit, HostListener, ElementRef, ChangeDetectorRef } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Title, DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -20,6 +20,7 @@ export class AppComponent implements OnInit {
     title = 'BeatKhana!';
 
     user: User = null;
+    updatedUser = false;
 
     discordSvg: SafeHtml;
 
@@ -31,20 +32,27 @@ export class AppComponent implements OnInit {
         public dialog: MatDialog,
         public sanitizer: DomSanitizer,
         public notif: NotificationService,
-        public metaTags: MetaTagService
+        public metaTags: MetaTagService,
+        private cd: ChangeDetectorRef
     ) {
         // console.log(this.user);
-        if (this.user == null) {
-            this.updateUser();
-        }
+        // if (this.user == null) {
+        //     this.updateUser();
+        // }
 
         router.events.subscribe(() => {
             this.burgerActive = false;
+            this.updateUser();
         });
 
-        route.params.subscribe(val => {
-            this.updateUser;
-        });
+        setInterval(()=> {
+            this.updatedUser = false;
+        },30000);
+
+        // route.params.subscribe(val => {
+        //     this.updateUser();
+        // });
+        
         // console.log(this.discordSvg);
         // console.log(discordLogo);
         // this.getSVG()
@@ -65,12 +73,18 @@ export class AppComponent implements OnInit {
     // }
 
     updateUser() {
-        this.logIn()
-            .subscribe(data => {
-                if (data) {
-                    this.user = data[0];
-                }
-            });
+        if(!this.updatedUser){
+            this.updatedUser = true;
+            this.logIn()
+                .subscribe(data => {
+                    if (data) {
+                        this.user = data[0];
+                    }else {
+                        this.user = null;
+                    }
+                    this.cd.detectChanges();
+                });
+        }
     }
 
     public logIn(): Observable<User[]> {

@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Component, Inject, Input, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, Inject, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Observable } from 'rxjs';
@@ -26,7 +26,7 @@ export class ParticipantsComponent implements OnInit {
         }
     }
 
-    constructor(public http: HttpClient, public dialog: MatDialog,private notif: NotificationService) { }
+    constructor(public http: HttpClient, public dialog: MatDialog,private notif: NotificationService,public cd: ChangeDetectorRef) { }
 
     ngOnInit(): void {
         // console.log(this.tournament)
@@ -129,7 +129,8 @@ export class ParticipantsComponent implements OnInit {
         this.getParticipants()
             .subscribe(data => {
                 this.participants = data;
-                this.participants.sort(this.orderGlobal)
+                this.participants.sort(this.orderGlobal);
+                this.cd.detectChanges();
                 // console.log(this.participants);
             })
     }

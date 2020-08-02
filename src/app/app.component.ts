@@ -33,7 +33,7 @@ export class AppComponent implements OnInit {
         public sanitizer: DomSanitizer,
         public notif: NotificationService,
         public metaTags: MetaTagService,
-        private cd: ChangeDetectorRef
+        public cd: ChangeDetectorRef
     ) {
         // console.log(this.user);
         // if (this.user == null) {

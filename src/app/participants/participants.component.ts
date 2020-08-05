@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { ChangeDetectorRef, Component, Inject, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
 import { User } from '../models/user.model';
@@ -26,23 +27,61 @@ export class ParticipantsComponent implements OnInit {
         }
     }
 
-    constructor(public http: HttpClient, public dialog: MatDialog,private notif: NotificationService,public cd: ChangeDetectorRef) { }
+    constructor(public http: HttpClient, public dialog: MatDialog, private notif: NotificationService, public cd: ChangeDetectorRef, public router: Router,) { }
 
     ngOnInit(): void {
-        // console.log(this.tournament)
-        this.participants.sort(this.orderGlobal)
-        this.setParticpants();
+        this.getParticipants()
+            .subscribe(data => {
+                if (this.tournament.state == 'main_stage') {
+                    if (this.tournament.type == 'battle_royale') {
+                        data.sort(this.royaleSort);
+                    } else {
+                        data.sort(this.seedSort);
+                    }
+                } else {
+                    data.sort(this.orderGlobal);
+                }
+                this.participants = data;
+                this.cd.detectChanges();
+                // console.log(this.participants);
+            })
         if (this.curUser == null) {
             this.updateUser();
         }
-        this.participants.sort(this.orderGlobal)
-        
     }
 
-    orderGlobal(a,b) {
-        if(a.globalRank == 0) return 1;
-        if(b.globalRank == 0) return -1;
+    orderGlobal(a, b) {
+        if (b.globalRank == 0) return -1;
+        if (a.globalRank == 0) return 1;
         return a.globalRank - b.globalRank;
+    }
+
+    seedSort(a, b) {
+        if (a.seed == b.seed) {
+            if (b.globalRank == 0) return -1;
+            if (a.globalRank == 0) return 1;
+            return a.globalRank - b.globalRank;
+        } else {
+            if (b.seed == 0) return -1;
+            if (a.seed == 0) return 1;
+            return a.seed - b.seed;
+        }
+    }
+
+    royaleSort(a, b) {
+        if (a.position == 0 && b.position == 0) {
+            if (a.seed == b.seed) {
+                if (b.globalRank == 0) return -1;
+                if (a.globalRank == 0) return 1;
+                return a.globalRank - b.globalRank;
+            } else {
+                if (b.seed == 0) return -1;
+                if (a.seed == 0) return 1;
+                return a.seed - b.seed;
+            }
+        } else {
+            return a.position - b.position;
+        }
     }
 
     updateUser() {
@@ -79,7 +118,7 @@ export class ParticipantsComponent implements OnInit {
                         .subscribe(data => {
                             if (!data.flag) {
                                 this.notif.showSuccess('', 'Successfully removed participant');
-                                this.participants.splice(this.participants.findIndex(x => x.participantId == participantId),1);
+                                this.participants.splice(this.participants.findIndex(x => x.participantId == participantId), 1);
                             } else {
                                 console.error("Error: ", data);
                                 this.notif.showError('', 'Error removing participant');
@@ -100,16 +139,16 @@ export class ParticipantsComponent implements OnInit {
             data: {
                 participantId: participantId,
                 tournament: this.tournament,
-                curUser: this.participants.find(x=> x.participantId == participantId)
+                curUser: this.participants.find(x => x.participantId == participantId)
             }
         });
 
         dialog.afterClosed()
             .subscribe(data => {
                 if (data) {
-                    let userIndex = this.participants.findIndex(x=> x.participantId == data.participantId);
+                    let userIndex = this.participants.findIndex(x => x.participantId == data.participantId);
                     // console.log(this.participants[userIndex])
-                    this.participants[userIndex] = {...this.participants[userIndex], ...data}
+                    this.participants[userIndex] = { ...this.participants[userIndex], ...data }
                     // console.log(this.participants[userIndex])
                     // console.log(data)
                 }
@@ -185,7 +224,7 @@ export class editCommentDialog implements OnInit {
             .subscribe(data => {
                 if (!data.flag) {
                     this.notif.showInfo('', 'Successfully updated sign up');
-                    this.dialogRef.close({...this.signUpForm.value, participantId: this.data.participantId});
+                    this.dialogRef.close({ ...this.signUpForm.value, participantId: this.data.participantId });
                 } else {
                     console.error('Error', data.err)
                     this.notif.showError('', 'Error updaing sign up');

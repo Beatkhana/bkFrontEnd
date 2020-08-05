@@ -2,7 +2,8 @@
     <h1>{{tournament.name}}</h1>
     <h3>Participants</h3>
 
-    <div class="participantGrid">
+    <!-- Base participant display -->
+    <div class="participantGrid" *ngIf="tournament.state == 'qualifiers' || tournament.state == 'awaiting_start'">
         <mat-accordion *ngFor="let user of participants">
             <mat-expansion-panel hideToggle class="playerPanel">
                 <mat-expansion-panel-header>
@@ -14,7 +15,7 @@
                 <p class="card-text" style="float: left;">
                     <b>Global Rank:</b> #{{user.globalRank}} <br>
                     <b>Regional Rank:</b> #{{user.localRank}} <img class="participantFlag" src="\assets/flags/{{user.country}}.png" alt="{{user.country}} Flag" style="height: 20px;border: none;"><br>
-                    <b>Tournament Rank:</b> #{{user.tourneyRank}} <br>
+                    <!-- <b>Tournament Rank:</b> #{{user.tourneyRank}} <br> -->
                     <a href="https://scoresaber.com/u/{{user.ssId}}" target="_blank">Scoresaber</a> <br>
                     <a href="https://twitch.tv/{{user.twitchName}}" target="_blank">Twitch</a> <br>
                     <span *ngIf="isAuthorised || user.comment != null" [innerHTML]="'Comment: ' + (user.comment | linkify: linkOptions) + '\n'" style="white-space: pre-line;"></span>
@@ -22,6 +23,60 @@
                     <button mat-stroked-button color="accent" *ngIf="(curUser != null && user.discordId == curUser.discordId) || isAuthorised" (click)="editComment(user.participantId)">Edit comment</button> &nbsp;
                 </p>
             </mat-expansion-panel>
+        </mat-accordion>
+    </div>
+
+    <!-- Seeded display -->
+    <div class="participantGrid" *ngIf="(tournament.state == 'main_stage' || tournament.state == 'archived') && tournament.type != 'battle_royale'">
+        <ng-container *ngFor="let user of participants">
+            <mat-accordion *ngIf="user.seed != 0">
+                <mat-expansion-panel hideToggle class="playerPanel">
+                    <mat-expansion-panel-header>
+                        <mat-panel-title class="playerName">
+                            <span style="justify-content: left;">#{{user.seed}}</span> &nbsp; {{user.name}} &nbsp;
+                        </mat-panel-title>
+                    </mat-expansion-panel-header>
+                    <img class="participantImg" src="https://new.scoresaber.com{{user.avatar}}">
+                    <p class="card-text" style="float: left;">
+                        <b>Global Rank:</b> #{{user.globalRank}} <br>
+                        <b>Regional Rank:</b> #{{user.localRank}} <img class="participantFlag" src="\assets/flags/{{user.country}}.png" alt="{{user.country}} Flag" style="height: 20px;border: none;"><br>
+                        <b>Seed:</b> #{{user.seed}} <br>
+                        <a href="https://scoresaber.com/u/{{user.ssId}}" target="_blank">Scoresaber</a> <br>
+                        <a href="https://twitch.tv/{{user.twitchName}}" target="_blank">Twitch</a> <br>
+                        <span *ngIf="isAuthorised || user.comment != null" [innerHTML]="'Comment: ' + (user.comment | linkify: linkOptions) + '\n'" style="white-space: pre-line;"></span>
+                        <button mat-stroked-button color="warn" *ngIf="isAuthorised" (click)="deleteParticipant(user.participantId)">Remove Participant</button> &nbsp;
+                        <button mat-stroked-button color="accent" *ngIf="(curUser != null && user.discordId == curUser.discordId) || isAuthorised" (click)="editComment(user.participantId)">Edit comment</button> &nbsp;
+                    </p>
+                </mat-expansion-panel>
+            </mat-accordion>
+        </ng-container>
+    </div>
+
+    <!-- Battle royale -->
+    <div class="participantGrid" *ngIf="(tournament.state == 'main_stage' || tournament.state == 'archived') && tournament.type == 'battle_royale'" [ngClass]="{'battleRoyale' : tournament.type == 'battle_royale'}">
+
+        <mat-accordion>
+            <ng-container *ngFor="let user of participants; let i = index">
+                <mat-expansion-panel hideToggle *ngIf="user.seed != 0" class="playerPanel">
+                    <mat-expansion-panel-header>
+                        <mat-panel-title class="playerName">
+                            #{{user.seed}} <img class="participantImgSmall" src="https://new.scoresaber.com{{user.avatar}}"> {{user.name}}
+                        </mat-panel-title>
+                        <mat-panel-description class="playerSumary">
+                        </mat-panel-description>
+                    </mat-expansion-panel-header>
+                    <p class="card-text">
+                        <b>Seed:</b> #{{user.seed}} <br>
+                        <b>Global Rank:</b> #{{user.globalRank}} <br>
+                        <b>Regional Rank:</b> #{{user.localRank}} <img class="participantFlag" src="\assets/flags/{{user.country}}.png" alt="{{user.country}} Flag" style="height: 20px;border: none;"><br>
+                        <a href="https://scoresaber.com/u/{{user.ssId}}" target="_blank">Scoresaber</a> <br>
+                        <a href="https://twitch.tv/{{user.twitchName}}" target="_blank">Twitch</a> <br>
+                        <span *ngIf="isAuthorised || user.comment != null" [innerHTML]="'Comment: ' + (user.comment | linkify: linkOptions) + '\n'" style="white-space: pre-line;"></span>
+                        <button mat-stroked-button color="warn" *ngIf="isAuthorised" (click)="deleteParticipant(user.participantId)">Remove Participant</button> &nbsp;
+                        <button mat-stroked-button color="accent" *ngIf="(curUser != null && user.discordId == curUser.discordId) || isAuthorised" (click)="editComment(user.participantId)">Edit comment</button> &nbsp;
+                    </p>
+                </mat-expansion-panel>
+            </ng-container>
         </mat-accordion>
     </div>
 </div>

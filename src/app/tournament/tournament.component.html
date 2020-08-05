@@ -17,6 +17,9 @@
             <div *ngIf="tournament.has_map_pool == 1" [routerLink]="['map-pool']" routerLinkActive="isActive">
                 <h3>Map Pool</h3>
             </div>
+            <div *ngIf="tournament.show_quals == 1" [routerLink]="['qualifiers']" routerLinkActive="isActive">
+                <h3>Qualifiers</h3>
+            </div>
             <div *ngIf="tournament.has_bracket == 1" [routerLink]="['bracket']" routerLinkActive="isActive">
                 <h3>Bracket</h3>
             </div>
@@ -66,6 +69,7 @@
             <app-participants [tournament]="tournament" [participants]="participants" *ngIf="isParticipants && tournament.public_signups == 1"></app-participants>
             <app-map-pool [tournament]="tournament" *ngIf="isMapPool && tournament.has_map_pool == 1"></app-map-pool>
             <app-bracket [tournament]="tournament" *ngIf="isBracket && tournament.has_bracket == 1"></app-bracket>
+            <app-qualifiers [tournament]="tournament" *ngIf="isQuals"></app-qualifiers>
         </div>
     </div>
 </ng-template>

@@ -1,0 +1,68 @@
+p.card-text {
+    height: auto;
+}
+
+.playerName {
+    font-family: "Leixo", "Courier New", Courier, monospace;
+    color: #c8825a;
+    align-items: center;
+    // justify-content: center;
+    margin: 0px;
+    vertical-align: text-bottom;
+}
+
+.participantFlag {
+    position: relative;
+    top: 4px;
+}
+
+.playerPanel {
+    border: 1px solid #c8825a;
+    background-color: #111113;
+}
+
+.cutoff {
+    border: 4px dashed #848484;
+    box-sizing: border-box;
+    height: 4px;
+}
+
+.playerSumary {
+    justify-content: right;
+    padding: 10px;
+    color: rgba(255, 255, 255, 0.7) !important;
+}
+
+.participantImg {
+    border-radius: 15px;
+    display: block;
+    height: 48px;
+    width: 48px;
+    margin: 5px 0;
+    float: left;
+    margin: 15px 15px 15px 0px;
+    // height: 100%;
+}
+
+.participantImgSmall {
+    border-radius: 50%;
+    // display: inline-block;
+    height: 24px;
+    width: 24px;
+    margin: 0 10px;
+    // margin: 15px 15px 15px 0px;
+    // height: 100%;
+}
+
+.card-text {
+    padding: 0px;
+}
+
+.mapperName {
+    font-size: smaller;
+    color: #c8825a;
+}
+
+.mat-expansion-panel-header[aria-disabled="true"] {
+    color: #c8825a;
+}

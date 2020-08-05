@@ -28,6 +28,7 @@ export class TournamentComponent extends AppComponent implements OnInit {
     isMapPool = false;
     isBracket = false;
     isParticipants = false;
+    isQuals = false
 
     participants = [];
     isParticipant = true;
@@ -41,13 +42,22 @@ export class TournamentComponent extends AppComponent implements OnInit {
                 this.isBracket = false;
                 this.isInfo = false;
                 this.isParticipants = false;
+                this.isQuals = false;
             } else if (this.router.url.includes('bracket')) {
                 this.isBracket = true;
                 this.isMapPool = false;
                 this.isInfo = false;
                 this.isParticipants = false;
+                this.isQuals = false;
             } else if (this.router.url.includes('participants')) {
                 this.isParticipants = true;
+                this.isBracket = false;
+                this.isMapPool = false;
+                this.isInfo = false;
+                this.isQuals = false;
+            } else if (this.router.url.includes('qualifiers')) {
+                this.isQuals = true;
+                this.isParticipants = false;
                 this.isBracket = false;
                 this.isMapPool = false;
                 this.isInfo = false;
@@ -56,6 +66,7 @@ export class TournamentComponent extends AppComponent implements OnInit {
                 this.isBracket = false;
                 this.isInfo = true;
                 this.isParticipants = false;
+                this.isQuals = false;
             }
             // console.log(this.tourneyId);
             this.getTournaments()
@@ -82,13 +93,22 @@ export class TournamentComponent extends AppComponent implements OnInit {
                 this.isBracket = false;
                 this.isInfo = false;
                 this.isParticipants = false;
+                this.isQuals = false;
             } else if (this.router.url.includes('bracket')) {
                 this.isBracket = true;
                 this.isMapPool = false;
                 this.isInfo = false;
                 this.isParticipants = false;
+                this.isQuals = false;
             } else if (this.router.url.includes('participants')) {
                 this.isParticipants = true;
+                this.isBracket = false;
+                this.isMapPool = false;
+                this.isInfo = false;
+                this.isQuals = false;
+            } else if (this.router.url.includes('qualifiers')) {
+                this.isQuals = true;
+                this.isParticipants = false;
                 this.isBracket = false;
                 this.isMapPool = false;
                 this.isInfo = false;
@@ -97,6 +117,7 @@ export class TournamentComponent extends AppComponent implements OnInit {
                 this.isBracket = false;
                 this.isInfo = true;
                 this.isParticipants = false;
+                this.isQuals = false;
             }
         });
 
@@ -176,7 +197,7 @@ export class TournamentComponent extends AppComponent implements OnInit {
 
         dialog.afterClosed()
             .subscribe(data => {
-                if (data) {}
+                if (data) { }
             });
     }
 
@@ -416,15 +437,25 @@ export class tournamentSettingsDialog implements OnInit {
                 Validators.pattern('^[0-9]*$'),
                 this.multiple8
             ]],
+            quals_cutoff: [this.data.tournament.quals_cutoff, [
+                Validators.required,
+                Validators.pattern('^[0-9]*$')
+            ]],
+            show_quals: !!this.data.tournament.show_quals,
+            has_quals: !!this.data.tournament.has_quals,
         });
     }
 
     get bracket() {
         return this.settingsForm.get('has_bracket');
     }
-    
+
     get limit() {
         return this.settingsForm.get('bracket_limit');
+    }
+
+    get quals() {
+        return this.settingsForm.get('has_quals');
     }
 
     onSubmit() {
@@ -455,7 +486,7 @@ export class tournamentSettingsDialog implements OnInit {
 
     private multiple8(control: FormControl): ValidationErrors | null {
         const selection: any = control.value;
-        if(selection % 8 == 0) return null;
+        if (selection % 8 == 0) return null;
         return { requireMatch: true };
     }
 }

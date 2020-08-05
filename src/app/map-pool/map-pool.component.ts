@@ -269,7 +269,8 @@ export class createPoolDialog implements OnInit {
                     Validators.required
                 ]],
                 description: this.data.mapPool.description,
-                live: this.data.mapPool.live
+                live: this.data.mapPool.live,
+                is_qualifiers: this.data.mapPool.is_qualifiers
             });
         } else {
             this.dialogTitle = "Create Map Pool";
@@ -283,7 +284,8 @@ export class createPoolDialog implements OnInit {
                     Validators.required
                 ]],
                 description: '',
-                live: 0
+                live: 0,
+                is_qualifiers: 0
             });
         }
     }

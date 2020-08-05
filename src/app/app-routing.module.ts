@@ -15,6 +15,7 @@ import { UsersComponent } from './users/users.component';
 import { AuthGuardGuard } from './guards/auth-guard.guard';
 import { ParticipantsComponent } from './participants/participants.component';
 import { LogsComponent } from './logs/logs.component';
+import { QualifiersComponent } from './qualifiers/qualifiers.component';
 
 
 const routes: Routes = [
@@ -25,6 +26,7 @@ const routes: Routes = [
     {path: 'map-pool', component: MapPoolComponent},
     {path: 'bracket', component: BracketComponent},
     {path: 'participants', component: ParticipantsComponent},
+    {path: 'qualifiers', component: QualifiersComponent},
   ]},
   {path: 'profile', component: ProfileComponent },
   {path: 'user/:id', component: UserComponent },

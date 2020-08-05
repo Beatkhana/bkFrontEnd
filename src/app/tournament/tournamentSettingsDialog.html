@@ -1,72 +1,110 @@
 <h1>Tournament Settings</h1>
 <form [formGroup]="settingsForm" novalidate (ngSubmit)="onSubmit()">
     <!-- Value: {{ settingdForm.value | json }} -->
-    <br>
-    <mat-checkbox formControlName="public_signups">
-        Public Signups?
-    </mat-checkbox>
-    <br>
-    <mat-checkbox formControlName="show_signups">
-        Publicly show signups?
-    </mat-checkbox>
-    <br>
-    <mat-checkbox formControlName="public">
-        Is public?
-    </mat-checkbox>
-    <br>
-    <mat-checkbox formControlName="has_bracket">
-        Has Bracket?
-    </mat-checkbox>
-    <br>
-    <mat-checkbox formControlName="has_map_pool">
-        Has Map Pool?
-    </mat-checkbox>
-    <br><br>
-    <mat-form-field appearance="fill">
-        <mat-label>State</mat-label>
-        <mat-select formControlName="state">
-            <mat-option value="awaiting_start">Awaiting Start</mat-option>
-            <mat-option value="qualifiers">Qualifiers</mat-option>
-            <mat-option value="main_stage">Main Stage</mat-option>
-            <mat-option value="archived">Archived</mat-option>
-        </mat-select>
-    </mat-form-field>
-    <br>
-    <mat-form-field appearance="fill">
-        <mat-label>Type</mat-label>
-        <mat-select formControlName="type">
-            <mat-option value="single_elim">Single Elimination</mat-option>
-            <mat-option value="double_elim">Double Elimination</mat-option>
-            <mat-option value="round_robin">Round Robin</mat-option>
-            <mat-option value="battle_royale">Battle Royale</mat-option>
-        </mat-select>
-    </mat-form-field>
-    <br>
-    <mat-checkbox formControlName="comment_required">
-        Comment Required?
-    </mat-checkbox>
-    <br><br>
-    <mat-form-field class="fill">
-        <input matInput placeholder="Sign up Comment Label" formControlName="signup_comment">
-    </mat-form-field>
 
-    <ng-container *ngIf="bracket.value == true">
-        <mat-form-field class="fill">
-            <input matInput placeholder="Number of players in bracket" formControlName="bracket_limit">
-            <mat-error *ngIf="limit.invalid && limit.touched">
-                Must be a multiple of 8
-            </mat-error>
-        </mat-form-field>
-        <br>
-        <mat-form-field appearance="fill">
-            <mat-label>Player sort order</mat-label>
-            <mat-select formControlName="bracket_sort_method">
-                <mat-option value="globalRank">Global Rank</mat-option>
-                <mat-option value="tournamentRank">Tournament Rank</mat-option>
-                <mat-option value="seed">Qualifiers Seed</mat-option>
-            </mat-select>
-        </mat-form-field>
+    <!-- <br>
+    <br>
+
+
+    <ng-container >
+
     </ng-container>
+    <br><br> -->
+
+
+    <mat-tab-group dynamicHeight>
+        <mat-tab label="General">
+            <br>
+            <mat-checkbox formControlName="public_signups">
+                Public Signups?
+            </mat-checkbox>
+            <br>
+            <mat-checkbox formControlName="public">
+                Is public?
+            </mat-checkbox>
+            <br>
+            <mat-checkbox formControlName="has_quals">
+                Has qualifiers?
+            </mat-checkbox>
+            <br>
+            <mat-checkbox formControlName="has_bracket">
+                Has Bracket?
+            </mat-checkbox>
+            <br>
+            <mat-checkbox formControlName="has_map_pool">
+                Has Map Pool?
+            </mat-checkbox>
+        </mat-tab>
+
+        <mat-tab label="Tournament Staging">
+            <br>
+            <mat-form-field appearance="fill">
+                <mat-label>State</mat-label>
+                <mat-select formControlName="state">
+                    <mat-option value="awaiting_start">Awaiting Start</mat-option>
+                    <mat-option value="qualifiers" *ngIf="quals.value == true">Qualifiers</mat-option>
+                    <mat-option value="main_stage">Main Stage</mat-option>
+                    <mat-option value="archived">Archived</mat-option>
+                </mat-select>
+            </mat-form-field>
+            <br>
+            <mat-form-field appearance="fill">
+                <mat-label>Type</mat-label>
+                <mat-select formControlName="type">
+                    <mat-option value="single_elim">Single Elimination</mat-option>
+                    <mat-option value="double_elim">Double Elimination</mat-option>
+                    <mat-option value="round_robin">Round Robin</mat-option>
+                    <mat-option value="battle_royale">Battle Royale</mat-option>
+                </mat-select>
+            </mat-form-field>
+        </mat-tab>
+
+        <mat-tab label="Singup">
+            <br>
+            <mat-checkbox formControlName="show_signups">
+                Publicly show signups?
+            </mat-checkbox>
+            <br>
+            <mat-checkbox formControlName="comment_required">
+                Comment Required?
+            </mat-checkbox>
+            <br><br>
+            <mat-form-field class="fill">
+                <input matInput placeholder="Sign up Comment Label" formControlName="signup_comment">
+            </mat-form-field>
+        </mat-tab>
+
+        <mat-tab label="Qualifiers" *ngIf="quals.value == true">
+            <br>
+            <mat-form-field class="fill">
+                <input matInput placeholder="Cut Off point for qualifiers" formControlName="quals_cutoff">
+            </mat-form-field>
+            <br>
+            <mat-checkbox formControlName="show_quals">
+                Show Qualifiers
+            </mat-checkbox>
+        </mat-tab>
+
+        <mat-tab label="Bracket" *ngIf="bracket.value == true">
+            <br>
+            <mat-form-field class="fill">
+                <input matInput placeholder="Number of players in bracket" formControlName="bracket_limit">
+                <mat-error *ngIf="limit.invalid && limit.touched">
+                    Must be a multiple of 8
+                </mat-error>
+            </mat-form-field>
+            <br>
+            <mat-form-field appearance="fill">
+                <mat-label>Player sort order</mat-label>
+                <mat-select formControlName="bracket_sort_method">
+                    <mat-option value="globalRank">Global Rank</mat-option>
+                    <mat-option value="tournamentRank">Tournament Rank</mat-option>
+                    <mat-option value="seed" *ngIf="quals.value == true">Qualifiers Seed</mat-option>
+                </mat-select>
+            </mat-form-field>
+        </mat-tab>
+    </mat-tab-group>
+
 
 
     <div mat-dialog-actions>

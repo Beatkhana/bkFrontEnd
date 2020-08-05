@@ -1,0 +1,42 @@
+<div class="card-body">
+    <h1>{{tournament.name}}</h1>
+    <h3>Qualifiers</h3>
+
+    <div *ngIf="loading else loaded">
+        <img src="/assets/svg/BeatKhana Logo RGB animated.svg" style="display: block;
+            margin-left: auto;
+            margin-right: auto;
+            width: 70px;
+            border: none;">
+    </div>
+
+    <ng-template #loaded>
+        <br>
+        <mat-accordion>
+            <mat-expansion-panel hideToggle *ngFor="let user of qualsScores; let i = index" class="playerPanel" [disabled]="user.cutoff || user.scores.length == 0" [ngClass]="{'cutoff' : user.cutoff}">
+                <mat-expansion-panel-header>
+
+                    <mat-panel-title class="playerName" *ngIf="!user.cutoff">
+                        #{{user.position}} <img class="participantImgSmall" src="https://new.scoresaber.com{{user.avatar}}"> {{user.name}}
+                    </mat-panel-title>
+                    <mat-panel-description class="playerSumary" *ngIf="!user.cutoff">
+                        <b style="color: #fff">{{user.scoreSum}}</b> &nbsp; ({{user.avgPercentage}}%)
+                    </mat-panel-description>
+                </mat-expansion-panel-header>
+                <p *ngIf="!user.cutoff" class="card-text">
+                    <span *ngFor="let score of user.scores">
+                        <a href="https://beatsaver.com/beatmap/{{score.key}}" target="_blank">
+                            {{score.songName}} - {{score.songAuthor}} 
+                        </a>
+                        <span class="mapperName">[{{score.levelAuthor}}]</span>
+                    <span style="float: right; color: rgba(255, 255, 255, 0.7);">
+                            <b style="color: #fff">{{score.score}}</b> &nbsp; ({{(score.percentage * 100).toFixed(2)}}%)
+                        </span>
+                    <br>
+                    </span>
+                </p>
+            </mat-expansion-panel>
+
+        </mat-accordion>
+    </ng-template>
+</div>

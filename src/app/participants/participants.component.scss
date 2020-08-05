@@ -3,6 +3,40 @@
     display: grid;
     gap: 1rem;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    &.battleRoyale {
+        .playerName {
+            font-family: "Leixo", "Courier New", Courier, monospace;
+            color: #c8825a;
+            align-items: center;
+            justify-content: left;
+            margin: 0px;
+            vertical-align: text-bottom;
+        }
+        .playerSumary {
+            justify-content: right;
+            padding: 10px;
+            color: rgba(255, 255, 255, 0.7) !important;
+        }
+        .participantImg {
+            border-radius: 15px;
+            display: block;
+            height: 48px;
+            width: 48px;
+            margin: 5px 0;
+            float: left;
+            margin: 15px 15px 15px 0px;
+            // height: 100%;
+        }
+        .participantImgSmall {
+            border-radius: 50%;
+            // display: inline-block;
+            height: 24px;
+            width: 24px;
+            margin: 0 10px;
+            // margin: 15px 15px 15px 0px;
+            // height: 100%;
+        }
+    }
     p.card-text {
         height: auto;
     }

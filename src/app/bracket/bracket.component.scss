@@ -1,0 +1,125 @@
+@import url("https://fonts.googleapis.com/css2?family=Ubuntu&display=swap");
+:host ::ng-deep .img {
+    border-radius: 50%;
+}
+
+:host ::ng-deep .blur {
+    filter: url("#glow");
+    fill: #66fcf1;
+}
+
+:host ::ng-deep .matchPath {
+    /* fill: #58616d; */
+    fill: #111113;
+    stroke-width: 3;
+    /* stroke: rgb(0, 170, 200); */
+    stroke: rgb(200, 130, 90);
+    stroke-dasharray: 1000;
+    stroke-dashoffset: 1000;
+    animation: dash 2s linear forwards;
+}
+
+:host ::ng-deep .matchSplit {
+    stroke-width: 1;
+    stroke-dashoffset: 0;
+    animation: none;
+}
+
+:host ::ng-deep .hidden {
+    visibility: hidden;
+}
+
+@keyframes dash {
+    to {
+        stroke-dashoffset: 0;
+    }
+}
+
+:host ::ng-deep .pName {
+    /* fill: #fff; */
+    fill: rgb(200, 130, 90);
+    font-family: "Ubuntu", sans-serif;
+    font-size: 18px;
+    text-shadow: 1px 1px 1px #222;
+}
+
+:host ::ng-deep .matchLabel {
+    fill: #fff;
+    font-family: "Ubuntu", sans-serif;
+    font-size: 12px;
+    text-shadow: 1px 1px 1px #222;
+}
+
+:host ::ng-deep .loserPlaceHolder {
+    fill: rgb(201, 201, 201);
+    font-family: "Ubuntu", sans-serif;
+    font-size: 18px;
+    font-style: italic;
+    text-shadow: 1px 1px 1px #222;
+}
+
+:host ::ng-deep .winner {
+    fill: #daa520;
+}
+
+:host ::ng-deep .loser {
+    fill: #b3b3b3;
+}
+
+:host ::ng-deep .matchLine {
+    fill: none;
+    stroke: rgb(0, 170, 200);
+    /* stroke: rgb(200, 130, 90); */
+    stroke-dasharray: 1000;
+    stroke-dashoffset: 1000;
+    animation: dash 4s linear forwards;
+}
+
+:host ::ng-deep #svgContainer {
+    overflow: scroll;
+    max-height: 80vh;
+    height: 80vh;
+    cursor: grab;
+    position: relative;
+}
+
+:host ::ng-deep .labelText {
+    fill: white;
+    font-family: "Ubuntu", sans-serif;
+    text-shadow: 1px 1px 1px #222;
+    font-size: 16px;
+}
+
+:host ::ng-deep .labelBox {
+    fill: #111113;
+    stroke: rgb(0, 170, 200);
+    stroke-width: 2px;
+}
+
+:host ::ng-deep svg {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    // min-width: 1985px;
+}
+
+:host ::ng-deep .round {
+    height: 100%;
+}
+
+// ::-webkit-scrollbar {
+//     width: 10px;
+//     height: 10px;
+// }
+// ::-webkit-scrollbar-track {
+//     background: #f1f1f100;
+// }
+// ::-webkit-scrollbar-thumb {
+//     background: rgb(78, 78, 78);
+//     border-radius: 5px;
+// }
+// ::-webkit-scrollbar-thumb:hover {
+//     background: #555;
+// }

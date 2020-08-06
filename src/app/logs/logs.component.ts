@@ -30,10 +30,10 @@ export class LogsComponent extends AppComponent implements AfterViewInit {
         this.getLogs()
             .subscribe(data => {
                 this.loading = false;
-                this.logs = data.data;
-                this.logs.sort((a, b) => {
-                    return <any>new Date(b.time) - <any>new Date(a.time);
+                data.data.sort((a, b) => {
+                    return <any>new Date(a.time) - <any>new Date(b.time);
                 });
+                this.logs = data.data;
             });
 
         this.sort.sortChange.subscribe(() => this.paginator.pageIndex = 0);

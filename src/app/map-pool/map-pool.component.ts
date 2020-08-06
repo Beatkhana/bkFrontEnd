@@ -120,7 +120,7 @@ export class MapPoolComponent implements OnInit {
     }
 
     public deleteSong(data): Observable<any> {
-        return this.http.post('api/map-pools/deleteSong', data);
+        return this.http.post(`api/tournament/${this.tournament.tournamentId}/deleteSong`, data);
     }
 
     openCreate() {
@@ -177,7 +177,7 @@ export class MapPoolComponent implements OnInit {
     }
 
     public getPools(): Observable<any[]> {
-        return this.http.get<any[]>('api/map-pools/' + this.tournament.tournamentId);
+        return this.http.get<any[]>(`api/tournament/${this.tournament.tournamentId}/map-pools`);
     }
 
     addSong() {
@@ -340,11 +340,11 @@ export class createPoolDialog implements OnInit {
     }
 
     addPool(data: any): Observable<any> {
-        return this.http.post('/api/tournament/addPool', data);
+        return this.http.post(`/api/tournament/${this.data.tournament.tournamentId}/addPool`, data);
     }
 
     updatePool(data: any): Observable<any> {
-        return this.http.put('/api/map-pools/' + this.data.tournament.tournamentId, data);
+        return this.http.put(`/api/tournament/${this.data.tournament.tournamentId}/map-pools`, data);
     }
 }
 
@@ -410,6 +410,6 @@ export class addSongDialog implements OnInit {
     }
 
     addSong(data: any): Observable<any> {
-        return this.http.post('/api/tournament/addSong', data);
+        return this.http.post(`/api/tournament/${this.data.tournament.tournamentId}/addSong`, data);
     }
 }

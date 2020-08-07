@@ -18,7 +18,7 @@ export class QualifiersComponent implements OnInit {
 	constructor(public http: HttpClient) { }
 
 	ngOnInit(): void {
-		console.log(this.tournament.quals_cutoff);
+		// console.log(this.tournament.quals_cutoff);
 		this.getQuals()
 			.subscribe(res => {
 				// console.log(res);
@@ -51,7 +51,7 @@ export class QualifiersComponent implements OnInit {
 					}
 				}
 				this.loading = false;
-				console.log(this.qualsScores);
+				// console.log(this.qualsScores);
 			})
 	}
 

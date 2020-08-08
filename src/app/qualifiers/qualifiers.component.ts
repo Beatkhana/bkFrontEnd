@@ -44,12 +44,18 @@ export class QualifiersComponent implements OnInit {
 					b.avgPercentage = isNaN(sumBPer / qualsPool.songs.length * 100) ? 0 : (sumBPer / qualsPool.songs.length * 100).toFixed(2);
 					a.scoreSum = sumA;
 					b.scoreSum = sumB;
-					if (sumB == sumA) {
-						if (a.globalRank == 0) return 1;
-						if (b.globalRank == 0) return -1;
-						return a.globalRank - b.globalRank;
+					if(b.avgPercentage == a.avgPercentage) {
+						if (sumB == sumA) {
+							if (a.globalRank == 0) return 1;
+							if (b.globalRank == 0) return -1;
+							return a.globalRank - b.globalRank;
+						}else {
+							return sumB - sumA;
+						}
+					}else {
+						return b.avgPercentage - a.avgPercentage;
 					}
-					return sumB - sumA;
+					
 				});
 
 				this.qualsScores.splice(this.tournament.quals_cutoff, 0, {

@@ -28,6 +28,11 @@ export class QualifiersComponent implements OnInit {
 				for (const user of this.qualsScores) {
 					for (const score of user.scores) {
 						score.score = Math.round(score.score / 2);
+						if(qualsPool.songs.find(x => x.hash == score.songHash).numNotes != 0) {
+							score.percentage = score.score / (qualsPool.songs.find(x => x.hash == score.songHash).numNotes*920-7245)
+						}else {
+							score.percentage = 0;
+						}
 					}
 				}
 				this.qualsScores.sort((a, b) => {

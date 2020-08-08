@@ -400,6 +400,7 @@ export class addSongDialog implements OnInit {
                     this.notif.showSuccess('', 'Successfully added song to pool/s');
                 } else {
                     this.notif.showError('', 'Error adding song to pool/s');
+                    console.log(data.err)
                 }
                 this.dialogRef.close(this.newSongForm.value);
             }, error => {

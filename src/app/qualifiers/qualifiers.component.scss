@@ -71,6 +71,23 @@ p.card-text {
     .playerSumary,
     .playerName,
     .card-text {
-        font-size: 0.8rem;
+        font-size: 0.7rem;
+    }
+    .playerSumary {
+        margin-right: 0px;
+    }
+    .mat-expansion-panel-header {
+        padding-right: 10px;
+    }
+    .rawScore {
+        display: none;
+    }
+    .mapperName {
+        display: none;
+    }
+    .playerName {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 }

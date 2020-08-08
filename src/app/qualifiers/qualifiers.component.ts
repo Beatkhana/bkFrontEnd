@@ -14,22 +14,29 @@ export class QualifiersComponent implements OnInit {
 	qualsScores = [];
 	loading = true;
 
+	pools: any = [];
+
 
 	constructor(public http: HttpClient) { }
 
-	ngOnInit(): void {
-		// console.log(this.tournament.quals_cutoff);
+	async ngOnInit(): Promise<void> {
+		let pools = await this.http.get(`api/tournament/${this.tournament.tournamentId}/map-pools`).toPromise();
+		let qualsPool = Object.values(pools).find(x => x.is_qualifiers == 1);
 		this.getQuals()
 			.subscribe(res => {
-				// console.log(res);
 				this.qualsScores = res;
+				for (const user of this.qualsScores) {
+					for (const score of user.scores) {
+						score.score = Math.round(score.score / 2);
+					}
+				}
 				this.qualsScores.sort((a, b) => {
 					let sumA = this.sumProperty(a.scores, 'score');
 					let sumB = this.sumProperty(b.scores, 'score');
 					let sumAPer = this.sumProperty(a.scores, 'percentage');
 					let sumBPer = this.sumProperty(b.scores, 'percentage');
-					a.avgPercentage = isNaN(sumAPer / a.scores.length * 100) ? 0 : (sumAPer / a.scores.length * 100).toFixed(2);
-					b.avgPercentage = isNaN(sumBPer / b.scores.length * 100) ? 0 : (sumBPer / b.scores.length * 100).toFixed(2);
+					a.avgPercentage = isNaN(sumAPer / qualsPool.songs.length * 100) ? 0 : (sumAPer / qualsPool.songs.length * 100).toFixed(2);
+					b.avgPercentage = isNaN(sumBPer / qualsPool.songs.length * 100) ? 0 : (sumBPer / qualsPool.songs.length * 100).toFixed(2);
 					a.scoreSum = sumA;
 					b.scoreSum = sumB;
 					if (sumB == sumA) {
@@ -51,12 +58,15 @@ export class QualifiersComponent implements OnInit {
 					}
 				}
 				this.loading = false;
-				// console.log(this.qualsScores);
 			})
 	}
 
 	public getQuals(): Observable<any> {
 		return this.http.get(`/api/tournament/${this.tournament.tournamentId}/qualifiers`);
+	}
+
+	async getPools() {
+		return await this.http.get(`api/tournament/${this.tournament.tournamentId}/map-pools`).toPromise();
 	}
 
 	sumProperty(items, prop) {

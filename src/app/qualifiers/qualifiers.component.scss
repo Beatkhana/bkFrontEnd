@@ -28,7 +28,7 @@ p.card-text {
 }
 
 .playerSumary {
-    justify-content: right;
+    justify-content: flex-end;
     padding: 10px;
     color: rgba(255, 255, 255, 0.7) !important;
 }
@@ -65,4 +65,12 @@ p.card-text {
 
 .mat-expansion-panel-header[aria-disabled="true"] {
     color: #c8825a;
+}
+
+@media (max-width: 768px) {
+    .playerSumary,
+    .playerName,
+    .card-text {
+        font-size: 0.8rem;
+    }
 }

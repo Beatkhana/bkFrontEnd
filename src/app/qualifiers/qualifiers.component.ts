@@ -60,7 +60,6 @@ export class QualifiersComponent implements OnInit {
 						score.position = leaderboards[score.songHash].findIndex(x => x.discordId == user.discordId);
 					}
 				}
-				console.log(leaderboards);
 
 				this.qualsScores.sort((a, b) => {
 					let sumA = this.sumProperty(a.scores, 'score');

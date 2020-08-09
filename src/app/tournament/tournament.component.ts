@@ -30,7 +30,7 @@ export class TournamentComponent extends AppComponent implements OnInit {
     isParticipants = false;
     isQuals = false
 
-    participants = [];
+    participants: any = [];
     isParticipant = true;
     participantData = {};
 
@@ -69,23 +69,24 @@ export class TournamentComponent extends AppComponent implements OnInit {
                 this.isQuals = false;
             }
             // console.log(this.tourneyId);
-            this.getTournaments()
-                .subscribe(data => {
-                    this.tournament = data[0];
-                    // console.log(this.tournament)
-                    if (this.tournament.public_signups == 1) {
-                        this.setParticpants();
-                    }
-                    this.loading = false;
-                    this.tournament.safeInfo = this.sanitizer.bypassSecurityTrustHtml(this.tournament.info);
-                    this.setTitle(this.tournament.name + ' | ' + this.title);
+            // this.getTournaments()
+            //     .subscribe(data => {
+            //         this.tournament = data[0];
+            //         // console.log(this.tournament)
+            //         if (this.tournament.public_signups == 1) {
+            //             this.setParticpants();
+            //         }
+            //         this.loading = false;
+            //         this.tournament.safeInfo = this.sanitizer.bypassSecurityTrustHtml(this.tournament.info);
+            //         this.setTitle(this.tournament.name + ' | ' + this.title);
 
-                    // this.checkTwitch()
-                    //     .subscribe(data => {
-                    //         console.log(data);
-                    //     })
-                });
+            //         // this.checkTwitch()
+            //         //     .subscribe(data => {
+            //         //         console.log(data);
+            //         //     })
+            //     });
         });
+        this.test();
 
         this.router.events.subscribe((val) => {
             if (this.router.url.includes('map-pool')) {
@@ -121,6 +122,22 @@ export class TournamentComponent extends AppComponent implements OnInit {
             }
         });
 
+    }
+
+    async test() {
+        const data = await this.http.get<ITournament[]>(this.url + '/' + this.tourneyId).toPromise();
+        this.tournament = data[0];
+        if (this.tournament.public_signups == 1) {
+            const participantData = await this.http.get(`/api/tournament/${this.tournament.tournamentId}/participants`).toPromise();
+            this.participants = participantData;
+            if (this.user != null && !this.participants.some(x => x.discordId == this.user.discordId)) {
+                this.isParticipant = false;
+            }
+        }
+        this.tournament.safeInfo = this.sanitizer.bypassSecurityTrustHtml(this.tournament.info);
+        this.setTitle(this.tournament.name + ' | ' + this.title);
+        // console.log(this.tournament);
+        this.loading = false;
     }
 
     setParticpants() {

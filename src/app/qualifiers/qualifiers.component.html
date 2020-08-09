@@ -25,6 +25,7 @@
                 </mat-expansion-panel-header>
                 <p *ngIf="!user.cutoff" class="card-text">
                     <span *ngFor="let score of user.scores">
+                        <b style="color: #fff">#{{score.position+1}}</b> &nbsp;
                         <a href="https://beatsaver.com/beatmap/{{score.key}}" target="_blank">
                             {{score.songName}} - {{score.songAuthor}} 
                         </a>

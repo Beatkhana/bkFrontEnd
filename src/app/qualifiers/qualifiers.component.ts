@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, Input, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
+import { addSongDialog } from '../map-pool/map-pool.component';
 
 @Component({
 	selector: 'app-qualifiers',
@@ -22,19 +23,45 @@ export class QualifiersComponent implements OnInit {
 	async ngOnInit(): Promise<void> {
 		let pools = await this.http.get(`api/tournament/${this.tournament.tournamentId}/map-pools`).toPromise();
 		let qualsPool = Object.values(pools).find(x => x.is_qualifiers == 1);
+
+		let leaderboards = {};
+
+
 		this.getQuals()
 			.subscribe(res => {
 				this.qualsScores = res;
 				for (const user of this.qualsScores) {
 					for (const score of user.scores) {
-						if(qualsPool.songs.find(x => x.hash == score.songHash).numNotes != 0) {
-							score.percentage = score.score / (qualsPool.songs.find(x => x.hash == score.songHash).numNotes*920-7245)
-						}else {
+						if (qualsPool.songs.find(x => x.hash == score.songHash).numNotes != 0) {
+							score.percentage = score.score / (qualsPool.songs.find(x => x.hash == score.songHash).numNotes * 920 - 7245)
+						} else {
 							score.percentage = 0;
 						}
 						score.score = Math.round(score.score / 2);
+						if (score.songHash in leaderboards) {
+							leaderboards[score.songHash].push({
+								discordId: user.discordId,
+								score: score.score
+							});
+						} else {
+							leaderboards[score.songHash] = [{
+								discordId: user.discordId,
+								score: score.score
+							}];
+						}
 					}
 				}
+				// leadboards.sort((a,b) => a.score)
+				for (const leaderboard of Object.keys(leaderboards)) {
+					leaderboards[leaderboard].sort((a, b) => b.score - a.score);
+				}
+				for (const user of this.qualsScores) {
+					for (const score of user.scores) {
+						score.position = leaderboards[score.songHash].findIndex(x => x.discordId == user.discordId);
+					}
+				}
+				console.log(leaderboards);
+
 				this.qualsScores.sort((a, b) => {
 					let sumA = this.sumProperty(a.scores, 'score');
 					let sumB = this.sumProperty(b.scores, 'score');
@@ -44,18 +71,18 @@ export class QualifiersComponent implements OnInit {
 					b.avgPercentage = isNaN(sumBPer / qualsPool.songs.length * 100) ? 0 : (sumBPer / qualsPool.songs.length * 100).toFixed(2);
 					a.scoreSum = sumA;
 					b.scoreSum = sumB;
-					if(b.avgPercentage == a.avgPercentage) {
+					if (b.avgPercentage == a.avgPercentage) {
 						if (sumB == sumA) {
 							if (a.globalRank == 0) return 1;
 							if (b.globalRank == 0) return -1;
 							return a.globalRank - b.globalRank;
-						}else {
+						} else {
 							return sumB - sumA;
 						}
-					}else {
+					} else {
 						return b.avgPercentage - a.avgPercentage;
 					}
-					
+
 				});
 
 				this.qualsScores.splice(this.tournament.quals_cutoff, 0, {

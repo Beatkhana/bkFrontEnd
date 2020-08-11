@@ -30,6 +30,13 @@ export class ParticipantsComponent implements OnInit {
     constructor(public http: HttpClient, public dialog: MatDialog, private notif: NotificationService, public cd: ChangeDetectorRef, public router: Router,) { }
 
     ngOnInit(): void {
+        this.updateParticipants()
+        if (this.curUser == null) {
+            this.updateUser();
+        }
+    }
+
+    updateParticipants() {
         this.getParticipants()
             .subscribe(data => {
                 if (this.tournament.state == 'main_stage') {
@@ -45,9 +52,6 @@ export class ParticipantsComponent implements OnInit {
                 this.cd.detectChanges();
                 // console.log(this.participants);
             })
-        if (this.curUser == null) {
-            this.updateUser();
-        }
     }
 
     orderGlobal(a, b) {
@@ -69,18 +73,15 @@ export class ParticipantsComponent implements OnInit {
     }
 
     royaleSort(a, b) {
+        if(a.position > b.position) return 1;
+        if(a.position < b.position) return -1;
+
         if (a.position == 0 && b.position == 0) {
-            if (a.seed == b.seed) {
-                if (b.globalRank == 0) return -1;
-                if (a.globalRank == 0) return 1;
-                return a.globalRank - b.globalRank;
-            } else {
-                if (b.seed == 0) return -1;
-                if (a.seed == 0) return 1;
-                return a.seed - b.seed;
-            }
+            if (b.seed == 0) return -1;
+            if (a.seed == 0) return 1;
+            return a.seed - b.seed;
         } else {
-            return a.position - b.position;
+            return b.position - a.position;
         }
     }
 
@@ -131,6 +132,42 @@ export class ParticipantsComponent implements OnInit {
             });
     }
 
+    eliminateParticipant(participantId) {
+        const dialog = this.dialog.open(ConfirmDialogComponent, {
+            // height: '400px',
+            width: '400px',
+            data: {
+                cancelText: 'Cancel',
+                confirmText: 'Confirm',
+                message: 'Are you sure you want to eliminate this user?',
+                title: 'Eliminate Participant?'
+            }
+        });
+
+        dialog.afterClosed()
+            .subscribe(data => {
+                if (data) {
+                    let info = {
+                        participantId: participantId
+                    }
+                    this.elimParticipant(info)
+                        .subscribe(data => {
+                            if (!data.flag) {
+                                this.notif.showSuccess('', 'Successfully eliminated participant');
+                                // this.participants.splice(this.participants.findIndex(x => x.participantId == participantId), 1);
+                                this.updateParticipants();
+                            } else {
+                                console.error("Error: ", data);
+                                this.notif.showError('', 'Error eliminating participant');
+                            }
+                        }, error => {
+                            this.notif.showError('', 'Error eliminating participant');
+                            console.error("Error: ", error);
+                        });
+                }
+            });
+    }
+
     editComment(participantId) {
         const dialog = this.dialog.open(editCommentDialog, {
             minWidth: '60vw',
@@ -157,6 +194,10 @@ export class ParticipantsComponent implements OnInit {
 
     removeParticipant(data: any): Observable<any> {
         return this.http.post(`/api/tournament/${this.tournament.tournamentId}/deleteParticipant`, data)
+    }
+
+    elimParticipant(data: any): Observable<any> {
+        return this.http.post(`/api/tournament/${this.tournament.tournamentId}/elimParticipant`, data)
     }
 
     public logIn(): Observable<User[]> {

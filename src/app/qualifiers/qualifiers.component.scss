@@ -4,6 +4,12 @@ p.card-text {
 
 .playerName {
     font-family: "Leixo", "Courier New", Courier, monospace;
+    >a {
+        color: #c8825a;
+        &:hover {
+            text-decoration: underline;
+        }
+    }
     color: #c8825a;
     align-items: center;
     // justify-content: center;

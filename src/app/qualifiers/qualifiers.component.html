@@ -17,7 +17,7 @@
                 <mat-expansion-panel-header>
 
                     <mat-panel-title class="playerName" *ngIf="!user.cutoff">
-                        #{{user.position}} <img class="participantImgSmall" src="https://new.scoresaber.com{{user.avatar}}"> {{user.name}}
+                        #{{user.position}} <img class="participantImgSmall" src="https://new.scoresaber.com{{user.avatar}}"> <a routerLink="/user/{{user.discordId}}">{{user.name}}</a>
                     </mat-panel-title>
                     <mat-panel-description class="playerSumary" *ngIf="!user.cutoff">
                         <b style="color: #fff">{{user.scoreSum}}</b> &nbsp; ({{user.avgPercentage}}%)

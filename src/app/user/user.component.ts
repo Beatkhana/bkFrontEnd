@@ -25,7 +25,7 @@ export class UserComponent extends AppComponent implements OnInit {
 
                     this.curUser.tournaments = this.curUser.tournaments.split(', ');
                     
-                    console.log(this.curUser)
+                    // console.log(this.curUser)
                     this.setTitle(this.curUser.name+"'s Profile" + this.title);
                 });
         });

@@ -51,9 +51,13 @@
         position: relative;
         top: 4px;
     }
-    .playerPanel {
+    .playerPanel:not(.eliminated) {
         border: 1px solid #c8825a;
         background-color: #111113;
+    }
+    .eliminated {
+        border: 1px solid #dd1c1c;
+        background-color: #2f0d0d;
     }
     .participantImg {
         border-radius: 15px;

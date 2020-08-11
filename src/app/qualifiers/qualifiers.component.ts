@@ -59,6 +59,7 @@ export class QualifiersComponent implements OnInit {
 					for (const score of user.scores) {
 						score.position = leaderboards[score.songHash].findIndex(x => x.discordId == user.discordId);
 					}
+					user.scores.sort((a,b) => a.songHash - b.songHash);
 				}
 
 				this.qualsScores.sort((a, b) => {

@@ -16,21 +16,50 @@ export class BracketComponent extends AppComponent implements OnInit {
     bracketData = [];
     loading = false;
 
-    ngOnInit(): void {
-        this.getBracket()
-            .subscribe(data => {
-                this.bracketData = data
-                // console.log(data);
-                this.generateMatches(data);
-            });
+    isAuth = false;
 
-        // let body = <HTMLDivElement>document.body;
-        // let script = document.createElement('script');
-        // script.innerHTML = '';
-        // script.src = '/assets/bracket.js';
-        // script.async = true;
-        // script.defer = true;
-        // body.appendChild(script);
+    ngOnInit(): void {
+        // this.getBracket()
+        //     .subscribe(data => {
+        //         this.bracketData = data;
+        //         this.generateMatches(data);
+        //     });
+        // this.logIn()
+        //     .subscribe(data => {
+        //         if (data) {
+        //             this.user = data[0];
+        //         } else {
+        //             this.user = null;
+        //         }
+        //         console.log(this.user)
+        //         this.cd.detectChanges();
+        //     });
+        this.initSettings();
+    }
+
+    async initSettings() {
+        const matchesData: any = await this.http.get(`/api/tournament/${this.tournament.tournamentId}/bracketTest`).toPromise();
+        this.bracketData = matchesData;
+
+        const usr: any = await this.http.get(`/api/user`).toPromise();
+        this.user = usr[0];
+        // console.log(this.user);
+        if(this.user.roleIds.includes("1") || this.tournament.owner == this.user.discordId) {
+            this.isAuth = true;
+        }
+        console.log(this.isAuth);
+
+        this.generateMatches(this.bracketData);
+
+        let matchElements = document.getElementsByClassName('match');
+        for (let i = 0; i < matchElements.length; i++) {
+            const element = matchElements[i];
+            element.addEventListener("click", () => this.updateMatch(element.getAttribute('data-matchid')))
+        }
+    }
+
+    public logIn(): Observable<any> {
+        return this.http.get('/api/user');
     }
 
     gMatches = [];
@@ -79,12 +108,8 @@ export class BracketComponent extends AppComponent implements OnInit {
             // console.log(walk);
         });
 
-        // const svgMain = document.getElementById("bracket-svg");
         const svgMain = document.createElement('svg');
         svgMain.setAttribute('id', "bracket-svg");
-        // svgMain.setAttribute('width', 1985);
-        // svgMain.setAttribute('height', 1042);
-        // svgMain.setAttribute('viewBox', "0 0 1985 1042");
         svgMain.classList.add('"bracket-svg"');
 
         var matches = {};
@@ -127,6 +152,8 @@ export class BracketComponent extends AppComponent implements OnInit {
         svgMain.setAttribute("width", `${width}`);
         svgMain.setAttribute("height", `${height}`);
         svgMain.style.minWidth = width + 250 + 'px';
+
+        document.getElementById('svgContainer').setAttribute("style", `height:${height}px`);
 
         // console.log(winnersMatches);
         // console.log(losersMatches);
@@ -298,6 +325,10 @@ export class BracketComponent extends AppComponent implements OnInit {
     createSvgMatch(i, p1Name, p2Name, p1Avatar, p2Avatar, p1Id, p2Id, round, roundElem, singleMatchRound, matchId, p1Score, p2Score, status, losers = false, bye = false) {
         const group = document.createElementNS("http://www.w3.org/2000/svg", "g");
         // var multi = 75 + ((round ** 1.57) * 75);
+
+        
+        
+
         var multi = round != 0 ? (75 * (2 ** round)) : 75;
         var startPos = roundElem.length != 1 ? 0.5 * (2 ** round) * 75 : 0.5 * (2 ** singleMatchRound) * 75;
         if (losers) {
@@ -311,6 +342,13 @@ export class BracketComponent extends AppComponent implements OnInit {
         if (bye) {
             group.classList.add('hidden');
         }
+
+        // if(this.isAuth) {
+        //     // group.onclick = () => this.updateMatch(i);
+        //     console.log('yeye');
+        //     // group.addEventListener("click", (i) => alert(i))
+        //     group.addEventListener('click', this.onClick.bind(this))
+        // }
 
         const filter = document.createElementNS("http://www.w3.org/2000/svg", "filter");
         filter.classList.add('dropShadow');
@@ -419,6 +457,10 @@ export class BracketComponent extends AppComponent implements OnInit {
 
     getBracket(): Observable<any> {
         return this.http.get(`/api/tournament/${this.tournament.tournamentId}/bracketTest`);
+    }
+
+    updateMatch(id) {
+        alert(id);
     }
 
 }

@@ -16,10 +16,12 @@ import { AuthGuardGuard } from './guards/auth-guard.guard';
 import { ParticipantsComponent } from './participants/participants.component';
 import { LogsComponent } from './logs/logs.component';
 import { QualifiersComponent } from './qualifiers/qualifiers.component';
+import { MiniTourneysComponent } from './mini-tourneys/mini-tourneys.component';
 
 
 const routes: Routes = [
   {path: '', component: TournamentsComponent },
+  {path: 'mini-tournaments', component: MiniTourneysComponent },
   {path: 'archive', component: ArchiveComponent },
   {path: 'ranking', component: RankingsComponent },
   {path: 'tournament/:id', component: TournamentComponent, children: [

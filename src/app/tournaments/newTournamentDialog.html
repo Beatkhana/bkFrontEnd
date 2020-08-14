@@ -75,6 +75,11 @@
     <input type="file" (change)="onFileChanged($event)" #fileInput accept="image/png, image/jpeg, image/gif, image/webp, image/svg+xml, image/tiff">
     <br>
     <p class="card-text" style="font-size: small;">*Will be rescaled to 550px wide</p>
+    <br>
+    <mat-checkbox formControlName="is_mini">
+        Is mini tournament?
+    </mat-checkbox>
+    <br>
     <!-- </mat-form-field> -->
 
     <div mat-dialog-actions>

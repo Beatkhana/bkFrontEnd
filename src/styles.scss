@@ -90,6 +90,8 @@ nav {
     list-style-type: none;
     .nav-item {
         text-decoration: none;
+        overflow: hidden;
+        white-space: nowrap;
         padding: 15px 20px;
         color: rgba(255, 255, 255, 0.5);
         font-family: "Leixo", "Courier New", Courier, monospace;

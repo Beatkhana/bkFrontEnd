@@ -309,7 +309,8 @@ export class editTournament implements OnInit {
             image: this.data.tournament.image,
             imgName: '',
             prize: this.data.tournament.prize,
-            info: this.data.tournament.info
+            info: this.data.tournament.info,
+            is_mini: !!this.data.tournament.is_mini
         });
 
         this.getUsers()

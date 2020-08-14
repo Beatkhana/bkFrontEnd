@@ -365,6 +365,7 @@ export class addSongDialog implements OnInit {
     ) { }
     
     isSubmitted = false;
+    beatsaver = false;
 
     ngOnInit() {
         this.newSongForm = this.fb.group({
@@ -374,7 +375,8 @@ export class addSongDialog implements OnInit {
             ]],
             ssLink: ['', [
                 Validators.required
-            ]]
+            ]],
+            diff: ''
         });
 
     }
@@ -389,6 +391,10 @@ export class addSongDialog implements OnInit {
             this.newSongForm.value.poolIds.splice(this.newSongForm.value.poolIds.findIndex((e) => e === poolId), 1);
             // delete this.newSongForm.value.poolIds[];
         }
+    }
+
+    updateVal() {
+        this.beatsaver = this.newSongForm.value.ssLink.includes('beatsaver');
     }
 
     onSubmit() {
@@ -411,6 +417,6 @@ export class addSongDialog implements OnInit {
     }
 
     addSong(data: any): Observable<any> {
-        return this.http.post(`/api/tournament/${this.data.tournament.tournamentId}/addSong`, data);
+        return this.http.post(`/api/tournament/${this.data.tournament.tournamentId}/addSong${this.beatsaver ? 'ByKey' : ''}`, data);
     }
 }

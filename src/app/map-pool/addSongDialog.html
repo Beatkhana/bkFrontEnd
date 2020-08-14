@@ -2,11 +2,25 @@
 <form [formGroup]="newSongForm" novalidate (ngSubmit)="onSubmit()">
     <!-- Value: {{ newSongForm.value | json }} -->
 
-
     <mat-form-field class="fill">
-        <input matInput placeholder="Scoresaber Link" formControlName="ssLink">
+        <input matInput placeholder="Scoresaber/Beatsaver Link" formControlName="ssLink" (input)="updateVal()">
     </mat-form-field>
     <br>
+    <ng-template [ngIf]="beatsaver">
+        <mat-form-field appearance="fill">
+            <mat-label>Difficulty</mat-label>
+            <mat-select formControlName="diff">
+                <mat-option value="Expert+">Expert+</mat-option>
+                <mat-option value="Expert">Expert</mat-option>
+                <mat-option value="Hard">Hard</mat-option>
+                <mat-option value="Normal">Normal</mat-option>
+                <mat-option value="Easy">Easy</mat-option>
+            </mat-select>
+        </mat-form-field>
+        <br>
+    </ng-template>
+
+
     <mat-label>Pool to add to:</mat-label>
     <br>
     <ng-template [ngIf]="true" *ngFor="let pool of data.mapPools | keyvalue">

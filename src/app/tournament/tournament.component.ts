@@ -28,6 +28,7 @@ export class TournamentComponent extends AppComponent implements OnInit {
     isMapPool = false;
     isBracket = false;
     isParticipants = false;
+    canSignup = true;
     isQuals = false
 
     participants: any = [];
@@ -68,23 +69,6 @@ export class TournamentComponent extends AppComponent implements OnInit {
                 this.isParticipants = false;
                 this.isQuals = false;
             }
-            // console.log(this.tourneyId);
-            // this.getTournaments()
-            //     .subscribe(data => {
-            //         this.tournament = data[0];
-            //         // console.log(this.tournament)
-            //         if (this.tournament.public_signups == 1) {
-            //             this.setParticpants();
-            //         }
-            //         this.loading = false;
-            //         this.tournament.safeInfo = this.sanitizer.bypassSecurityTrustHtml(this.tournament.info);
-            //         this.setTitle(this.tournament.name + ' | ' + this.title);
-
-            //         // this.checkTwitch()
-            //         //     .subscribe(data => {
-            //         //         console.log(data);
-            //         //     })
-            //     });
         });
         this.test();
 
@@ -124,15 +108,28 @@ export class TournamentComponent extends AppComponent implements OnInit {
 
     }
 
+    countries: any = null;
+
     async test() {
         const data = await this.http.get<ITournament[]>(this.url + '/' + this.tourneyId).toPromise();
         this.tournament = data[0];
+
+        if(this.tournament.countries != '') {
+            this.countries = this.tournament.countries.toLowerCase().replace(' ', '').split(',');
+            if(!this.countries.includes(this.user.country.toLowerCase())) {
+                this.canSignup = false;
+            }
+        }
+
         if (this.tournament.public_signups == 1) {
             const participantData = await this.http.get(`/api/tournament/${this.tournament.tournamentId}/participants`).toPromise();
             this.participants = participantData;
             if (this.user != null && !this.participants.some(x => x.discordId == this.user.discordId)) {
                 this.isParticipant = false;
             }
+        }
+        if(this.tournament.state == 'archived' || this.tournament.state == 'main_stage') {
+            this.canSignup = false;
         }
         this.tournament.safeInfo = this.sanitizer.bypassSecurityTrustHtml(this.tournament.info);
         this.setTitle(this.tournament.name + ' | ' + this.title);
@@ -196,6 +193,7 @@ export class TournamentComponent extends AppComponent implements OnInit {
                     // console.log("Dialog output:", data);
                     this.tournament = { ...this.tournament, ...data };
                     this.tournament.safeInfo = this.sanitizer.bypassSecurityTrustHtml(this.tournament.info);
+                    this.test();
                 }
             });
     }
@@ -461,6 +459,7 @@ export class tournamentSettingsDialog implements OnInit {
             ]],
             show_quals: !!this.data.tournament.show_quals,
             has_quals: !!this.data.tournament.has_quals,
+            countries: this.data.tournament.countries,
         });
     }
 

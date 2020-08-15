@@ -50,7 +50,7 @@
                 <p class="card-text" *ngIf="tournament.first != null && tournament.archived == 1">
                     <b>Tournament Results:</b> <br> #1 {{tournament.first}} <br> #2 {{tournament.second}} <br> #3 {{tournament.third}} <br>
                 </p>
-                <p *ngIf="tournament.public_signups == 1 && user != null && !isParticipant" class="card-text">
+                <p *ngIf="tournament.public_signups == 1 && user != null && !isParticipant && canSignup" class="card-text">
                     <button mat-stroked-button color="accent" (click)="signUp()">Sign Up!</button>
                 </p>
                 <p *ngIf="user && tournament.owner == user.discordId && !user['roleIds'].includes('1')" class="card-text">

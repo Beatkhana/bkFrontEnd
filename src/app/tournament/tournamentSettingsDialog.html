@@ -59,7 +59,7 @@
             </mat-form-field>
         </mat-tab>
 
-        <mat-tab label="Singup">
+        <mat-tab label="Signup">
             <br>
             <mat-checkbox formControlName="show_signups">
                 Publicly show signups?
@@ -71,6 +71,10 @@
             <br><br>
             <mat-form-field class="fill">
                 <input matInput placeholder="Sign up Comment Label" formControlName="signup_comment">
+            </mat-form-field>
+            <br>
+            <mat-form-field class="fill">
+                <input matInput placeholder="Whitelisted countries (country code seperated by commas e.g. au, gb, us)" formControlName="countries">
             </mat-form-field>
         </mat-tab>
 

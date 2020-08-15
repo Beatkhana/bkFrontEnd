@@ -23,15 +23,14 @@
     stroke-width: 1;
     stroke-dashoffset: 0;
     animation: none;
+    z-index: 5;
 }
 
 :host ::ng-deep .in_progress {
     fill: #111113;
+    z-index: 1;
     stroke-width: 4;
-    //     /* stroke: rgb(0, 170, 200); */
     stroke: rgb(255, 144, 80);
-    // stroke-dasharray: 50;
-    // stroke-dashoffset: 50;
     animation: dash2 2s linear forwards;
     animation-iteration-count: infinite;
 }

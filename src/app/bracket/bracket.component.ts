@@ -69,28 +69,8 @@ export class BracketComponent extends AppComponent implements OnInit {
             const element = matchElements[i];
             element.addEventListener("click", () => this.updateMatch(element.getAttribute('data-matchid')))
         }
-        
+
         this.loading = false;
-        // console.log(document.getElementsByClassName('in_progress'))
-        // let livePaths = document.getElementsByClassName('in_progress');
-        // for (let i = 0; i < livePaths.length; i++) {
-        //     const path: any = livePaths[i];
-        //     console.log(path)
-        //     let length = path.getTotalLength();
-        //     path.style.transition = path.style.WebkitTransition = 'none';
-        //     // Set up the starting positions
-        //     path.style.strokeDasharray = length + ' ' + length;
-        //     path.style.strokeDashoffset = length;
-        //     path.getBoundingClientRect();
-        //     // Define our transition
-        //     path.style.a = path.style.WebkitTransition =
-        //         'stroke-dashoffset 4s ease-in-out';
-        //     // Go!
-        //     path.style.strokeDashoffset = '0';
-        //     setTimeout(() => {
-        //         path.style.strokeDashoffset = '0';
-        //     },4000)
-        // }
     }
 
     public logIn(): Observable<any> {
@@ -426,13 +406,6 @@ export class BracketComponent extends AppComponent implements OnInit {
             group.classList.add('hidden');
         }
 
-        // const filter = document.createElementNS("http://www.w3.org/2000/svg", "filter");
-        // filter.classList.add('dropShadow');
-        // filter.setAttribute('x', '-5');
-        // filter.setAttribute('y', '-5');
-        // filter.innerHTML = '<feGaussianBlur stdDeviation="6" />';
-        // group.appendChild(filter);
-
         const clip1 = document.createElementNS("http://www.w3.org/2000/svg", "clipPath");
         clip1.setAttribute("id", 'clipPath-' + i + '-1');
         clip1.innerHTML = ' <circle r="8" cx="25" cy="-2" />';
@@ -455,16 +428,18 @@ export class BracketComponent extends AppComponent implements OnInit {
 
         var noAnim = "";
         if (this.intervalIteration > 0) {
-            // labelRect.classList.add('noAnim');
             noAnim = "noAnim";
         }
 
-        group.innerHTML += `
-        <path class="matchPath ${noAnim}" d="m 0 12.25 l 0 -12.5 l 15 -15 h 200 l 15 15 l 0 12.5 M 0 12.25 l 0 12.5 l 15 15 h 200 l 15 -15 l 0 -12.5" />\
-        <path class="matchPath ${noAnim} matchSplit" d="m 0 12.25 l 230 0" />\
-        `;
         if (status == 'in_progress') {
-            group.innerHTML += `<path class="matchPath in_progress" id="livePath-${i}" d="m 0 12.25 l 0 -12.5 l 15 -15 h 200 l 15 15 l 0 12.5 M 0 12.25 l 0 12.5 l 15 15 h 200 l 15 -15 l 0 -12.5" />`
+            group.innerHTML += `
+            <path class="matchPath ${noAnim}" d="m 0 12.25 l 0 -12.5 l 15 -15 h 200 l 15 15 l 0 12.5 M 0 12.25 l 0 12.5 l 15 15 h 200 l 15 -15 l 0 -12.5" />
+            <path class="matchPath in_progress" id="livePath-${i}" d="m 0 12.25 l 0 -12.5 l 15 -15 h 200 l 15 15 l 0 12.5 M 0 12.25 l 0 12.5 l 15 15 h 200 l 15 -15 l 0 -12.5" />
+            <path class="matchPath ${noAnim} matchSplit" d="m 0 12.25 l 230 0" />`
+        } else {
+            group.innerHTML += `
+            <path class="matchPath ${noAnim}" d="m 0 12.25 l 0 -12.5 l 15 -15 h 200 l 15 15 l 0 12.5 M 0 12.25 l 0 12.5 l 15 15 h 200 l 15 -15 l 0 -12.5" />
+            <path class="matchPath ${noAnim} matchSplit" d="m 0 12.25 l 230 0" />`;
         }
 
 

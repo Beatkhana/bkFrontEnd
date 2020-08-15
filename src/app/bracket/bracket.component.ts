@@ -457,15 +457,17 @@ export class BracketComponent extends AppComponent implements OnInit {
             <text x="37" y="5" width="147" height="12" class="pName" clip-path="url(#nameClip-${i}-1)">${p1Name}</text>
             `;
         }
+        if(p1Name == null && p1Id != null) p1Name = null;
         if(p2Name == null && p2Id != null) p2Name = p2Id;
         if (p2Name != null) {
             group.innerHTML += `
             <image x="17" y="18"
-                href="https://new.scoresaber.com${p2Avatar}"
-                class="img" height="16" width="16" clip-path="url(#clipPath-${i}-2)" />
+            href="https://new.scoresaber.com${p2Avatar}"
+            class="img" height="16" width="16" clip-path="url(#clipPath-${i}-2)" />
             <text x="37" y="33" width="147" height="12" class="pName" clip-path="url(#nameClip-${i}-2)">${p2Name}</text>
             `;
         }
+        if(p2Name == null && p2Id != null) p2Name = null;
         // console.log(p1Score)
         if (p1Score != 0 || p2Score != 0) {
             if (status == 'complete') {
@@ -509,18 +511,18 @@ export class BracketComponent extends AppComponent implements OnInit {
             }
         }
 
-        if (p1Name == null && losers && p1Loser != undefined) {
+        if ((p1Name == null || p1Name == '') && losers && p1Loser != undefined) {
             group.innerHTML += `
             <text x="37" y="5" width="147" height="12" class="loserPlaceHolder">Loser of ${p1Loser}</text>
             `;
         }
 
-        if (losers && p2Name == null && p2Loser != undefined) {
+        if (losers && (p2Name == null || p2Name == "") && p2Loser != undefined) {
             group.innerHTML += `
             <text x="37" y="33" width="147" height="12" class="loserPlaceHolder">Loser of ${p2Loser}</text>
             `;
         }
-        let labelId = matchId - this.firstId + 1;
+        let labelId = Math.floor((matchId - this.firstId + 1)/10);
 
         let maxRound = Math.max.apply(Math, this.bracketData.map(x => x.round));
         if (round == maxRound && !losers && p1Name == null && p1Loser != undefined) {

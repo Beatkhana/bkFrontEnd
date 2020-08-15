@@ -1,6 +1,9 @@
 <h1>Generate Bracket</h1>
 <form [formGroup]="bracketGenForm" novalidate (ngSubmit)="onSubmit()">
     <!-- Value: {{ signUpForm.value | json }} -->
+    <p class="card-text">
+        By generating a bracket you will completely wipe the existing bracket (if there is one).
+    </p>
     <br>
     <mat-checkbox formControlName="custom">
         Custom Users

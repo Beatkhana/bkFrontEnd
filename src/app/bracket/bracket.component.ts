@@ -1,6 +1,12 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Component, Inject, Input, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { DomSanitizer } from '@angular/platform-browser';
 import { Observable } from 'rxjs';
 import { AppComponent } from '../app.component';
+import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
+import { NotificationService } from '../services/toast.service';
 
 @Component({
     selector: 'app-bracket',
@@ -14,52 +20,131 @@ export class BracketComponent extends AppComponent implements OnInit {
     public tourneyId: string;
 
     bracketData = [];
-    loading = false;
+    loading = true;
 
     isAuth = false;
+    btnText = 'Generate Bracket';
+
+    firstId = 0;
 
     ngOnInit(): void {
-        // this.getBracket()
-        //     .subscribe(data => {
-        //         this.bracketData = data;
-        //         this.generateMatches(data);
-        //     });
-        // this.logIn()
-        //     .subscribe(data => {
-        //         if (data) {
-        //             this.user = data[0];
-        //         } else {
-        //             this.user = null;
-        //         }
-        //         console.log(this.user)
-        //         this.cd.detectChanges();
-        //     });
         this.initSettings();
+        let node = document.createElement('script');
+        node.src = 'https://embed.twitch.tv/embed/v1.js';
+        node.type = 'text/javascript';
+        document.getElementsByTagName('head')[0].appendChild(node);
     }
 
     async initSettings() {
-        const matchesData: any = await this.http.get(`/api/tournament/${this.tournament.tournamentId}/bracketTest`).toPromise();
+        const matchesData: any = await this.http.get(`/api/tournament/${this.tournament.tournamentId}/bracket`).toPromise();
         this.bracketData = matchesData;
-
+        if (matchesData.length > 0) {
+            this.btnText = 'Regenerate Bracket';
+        }
         const usr: any = await this.http.get(`/api/user`).toPromise();
-        this.user = usr[0];
+        this.user = usr != null ? usr[0] : null;
         // console.log(this.user);
-        if(this.user.roleIds.includes("1") || this.tournament.owner == this.user.discordId) {
+        if (this.user != null && (this.user.roleIds.includes("1") || this.tournament.owner == this.user.discordId)) {
             this.isAuth = true;
         }
-        console.log(this.isAuth);
 
-        this.generateMatches(this.bracketData);
+        if (matchesData.length > 0) this.generateMatches(this.bracketData);
 
         let matchElements = document.getElementsByClassName('match');
         for (let i = 0; i < matchElements.length; i++) {
             const element = matchElements[i];
             element.addEventListener("click", () => this.updateMatch(element.getAttribute('data-matchid')))
         }
+        this.loading = false;
+    }
+
+    async updateBracket() {
+        // this.loading = true;
+        const matchesData: any = await this.http.get(`/api/tournament/${this.tournament.tournamentId}/bracket`).toPromise();
+        this.bracketData = matchesData;
+        if (matchesData.length > 0) this.generateMatches(this.bracketData);
+
+        let matchElements = document.getElementsByClassName('match');
+        for (let i = 0; i < matchElements.length; i++) {
+            const element = matchElements[i];
+            element.addEventListener("click", () => this.updateMatch(element.getAttribute('data-matchid')))
+        }
+        
+        this.loading = false;
+        // console.log(document.getElementsByClassName('in_progress'))
+        // let livePaths = document.getElementsByClassName('in_progress');
+        // for (let i = 0; i < livePaths.length; i++) {
+        //     const path: any = livePaths[i];
+        //     console.log(path)
+        //     let length = path.getTotalLength();
+        //     path.style.transition = path.style.WebkitTransition = 'none';
+        //     // Set up the starting positions
+        //     path.style.strokeDasharray = length + ' ' + length;
+        //     path.style.strokeDashoffset = length;
+        //     path.getBoundingClientRect();
+        //     // Define our transition
+        //     path.style.a = path.style.WebkitTransition =
+        //         'stroke-dashoffset 4s ease-in-out';
+        //     // Go!
+        //     path.style.strokeDashoffset = '0';
+        //     setTimeout(() => {
+        //         path.style.strokeDashoffset = '0';
+        //     },4000)
+        // }
     }
 
     public logIn(): Observable<any> {
         return this.http.get('/api/user');
+    }
+
+    async genBracket() {
+        const dialog = this.dialog.open(ConfirmDialogComponent, {
+            // height: '400px',
+            width: '400px',
+            data: {
+                cancelText: 'Cancel',
+                confirmText: 'Generate',
+                message: 'Are you sure you want to create a bracket?' + (this.bracketData.length > 0 ? ' This will overwite the current bracket' : ''),
+                title: 'Create Bracket?'
+            }
+        });
+
+        dialog.afterClosed()
+            .subscribe(async data => {
+                if (data) {
+                    try {
+                        const bracketGen: any = await this.http.post(`/api/tournament/${this.tournament.tournamentId}/generateBracket`, { tournamentId: this.tournament.tournamentId, data: null }).toPromise();
+                        if (!bracketGen.flag) {
+                            this.notif.showSuccess('', 'Successfully created bracket');
+                            this.initSettings();
+                        } else {
+                            console.error("Error: ", data);
+                            this.notif.showError('', 'Error creating bracket');
+                        }
+                    } catch (error) {
+                        console.error("Error: ", data);
+                        this.notif.showError('', 'Error creating bracket');
+                    }
+                }
+            });
+    }
+
+    updateMatch(id) {
+        const dialog = this.dialog.open(updateMatchDialog, {
+            minWidth: '60vw',
+            width: '60vw',
+            maxHeight: '90vh',
+            maxWidth: '95vw',
+            panelClass: 'matchPanel',
+            data: { ...this.bracketData.find(x => x.id == id), isAuth: this.isAuth }
+        });
+        dialog.afterClosed()
+            .subscribe(async data => {
+                this.intervalIteration = 1;
+                this.updateBracket();
+                // if (data) {
+                // }
+            });
     }
 
     gMatches = [];
@@ -107,6 +192,8 @@ export class BracketComponent extends AppComponent implements OnInit {
             slider.scrollTop = scrollDown - walk2;
             // console.log(walk);
         });
+
+        this.firstId = data[0].id;
 
         const svgMain = document.createElement('svg');
         svgMain.setAttribute('id', "bracket-svg");
@@ -223,7 +310,7 @@ export class BracketComponent extends AppComponent implements OnInit {
                 matchLine.setAttribute('d', `M${curX} ${curY} l${xDist / 4} 0 l${xDist / 2} ${yDist} l${xDist / 4} 0`);
                 matchLine.setAttribute('stroke-width', "1px");
                 matchLine.classList.add("matchLine");
-                if (match['bye']) {
+                if (match['bye'] || (winnersMatches[i + 1][Math.floor(j / 2)] != undefined && winnersMatches[i + 1][Math.floor(j / 2)]['bye'])) {
                     matchLine.classList.add("hidden");
                 }
                 if (this.intervalIteration > 0) {
@@ -284,7 +371,7 @@ export class BracketComponent extends AppComponent implements OnInit {
                 }
                 matchLine.setAttribute('stroke-width', "1px");
                 matchLine.classList.add("matchLine");
-                if (match['bye']) {
+                if (match['bye'] || (losersMatches[i + 1][Math.floor(j / 2)] != undefined && losersMatches[i + 1][Math.floor(j / 2)]['bye'])) {
                     matchLine.classList.add("hidden");
                 }
                 if (this.intervalIteration > 0) {
@@ -324,10 +411,6 @@ export class BracketComponent extends AppComponent implements OnInit {
 
     createSvgMatch(i, p1Name, p2Name, p1Avatar, p2Avatar, p1Id, p2Id, round, roundElem, singleMatchRound, matchId, p1Score, p2Score, status, losers = false, bye = false) {
         const group = document.createElementNS("http://www.w3.org/2000/svg", "g");
-        // var multi = 75 + ((round ** 1.57) * 75);
-
-        
-        
 
         var multi = round != 0 ? (75 * (2 ** round)) : 75;
         var startPos = roundElem.length != 1 ? 0.5 * (2 ** round) * 75 : 0.5 * (2 ** singleMatchRound) * 75;
@@ -343,18 +426,12 @@ export class BracketComponent extends AppComponent implements OnInit {
             group.classList.add('hidden');
         }
 
-        // if(this.isAuth) {
-        //     // group.onclick = () => this.updateMatch(i);
-        //     console.log('yeye');
-        //     // group.addEventListener("click", (i) => alert(i))
-        //     group.addEventListener('click', this.onClick.bind(this))
-        // }
-
-        const filter = document.createElementNS("http://www.w3.org/2000/svg", "filter");
-        filter.classList.add('dropShadow');
-        filter.setAttribute('x', '-5');
-        filter.setAttribute('y', '-5');
-        filter.innerHTML = '<feGaussianBlur stdDeviation="6" />';
+        // const filter = document.createElementNS("http://www.w3.org/2000/svg", "filter");
+        // filter.classList.add('dropShadow');
+        // filter.setAttribute('x', '-5');
+        // filter.setAttribute('y', '-5');
+        // filter.innerHTML = '<feGaussianBlur stdDeviation="6" />';
+        // group.appendChild(filter);
 
         const clip1 = document.createElementNS("http://www.w3.org/2000/svg", "clipPath");
         clip1.setAttribute("id", 'clipPath-' + i + '-1');
@@ -366,22 +443,37 @@ export class BracketComponent extends AppComponent implements OnInit {
         clip2.innerHTML = ' <circle r="8" cx="25" cy="26" />';
         group.appendChild(clip2);
 
+        const nameClip1 = document.createElementNS("http://www.w3.org/2000/svg", "clipPath");
+        nameClip1.setAttribute("id", 'nameClip-' + i + '-1');
+        nameClip1.innerHTML = '<rect x="37" y="-10" width="120" height="20"/>';
+        group.appendChild(nameClip1);
+
+        const nameClip2 = document.createElementNS("http://www.w3.org/2000/svg", "clipPath");
+        nameClip2.setAttribute("id", 'nameClip-' + i + '-2');
+        nameClip2.innerHTML = '<rect x="37" y="20" width="120" height="20"/>';
+        group.appendChild(nameClip2);
+
         var noAnim = "";
         if (this.intervalIteration > 0) {
             // labelRect.classList.add('noAnim');
             noAnim = "noAnim";
         }
 
-        group.innerHTML += `<path class="blur" d="m 0 12.25 l 0 -12.5 l 15 -15 h 200 l 15 15 l 0 12.5 M 0 12.25 l 0 12.5 l 15 15 h 200 l 15 -15 l 0 -12.5" />\
+        group.innerHTML += `
         <path class="matchPath ${noAnim}" d="m 0 12.25 l 0 -12.5 l 15 -15 h 200 l 15 15 l 0 12.5 M 0 12.25 l 0 12.5 l 15 15 h 200 l 15 -15 l 0 -12.5" />\
-        <path class="matchPath ${noAnim} matchSplit" d="m 0 12.25 l 230 0" />`;
+        <path class="matchPath ${noAnim} matchSplit" d="m 0 12.25 l 230 0" />\
+        `;
+        if (status == 'in_progress') {
+            group.innerHTML += `<path class="matchPath in_progress" id="livePath-${i}" d="m 0 12.25 l 0 -12.5 l 15 -15 h 200 l 15 15 l 0 12.5 M 0 12.25 l 0 12.5 l 15 15 h 200 l 15 -15 l 0 -12.5" />`
+        }
+
 
         if (p1Name != null) {
             group.innerHTML += `
             <image x="17" y="-10"
                 href="https://new.scoresaber.com${p1Avatar}"
                 class="img" height="16" width="16" clip-path="url(#clipPath-${i}-1)" />
-            <text x="37" y="5" width="147" height="12" class="pName">${p1Name}</text>
+            <text x="37" y="5" width="147" height="12" class="pName" clip-path="url(#nameClip-${i}-1)">${p1Name}</text>
             `;
         }
         if (p2Name != null) {
@@ -389,7 +481,7 @@ export class BracketComponent extends AppComponent implements OnInit {
             <image x="17" y="18"
                 href="https://new.scoresaber.com${p2Avatar}"
                 class="img" height="16" width="16" clip-path="url(#clipPath-${i}-2)" />
-            <text x="37" y="33" width="147" height="12" class="pName">${p2Name}</text>
+            <text x="37" y="33" width="147" height="12" class="pName" clip-path="url(#nameClip-${i}-2)">${p2Name}</text>
             `;
         }
         // console.log(p1Score)
@@ -407,13 +499,14 @@ export class BracketComponent extends AppComponent implements OnInit {
             `;
         }
 
+        let roundMatches = this.bracketData.filter(x => x.round == 0).length;
         if (round == 0) {
             var p1Loser = (i + 1) * 2 - 1;
             var p2Loser = (i + 1) * 2;
         } else if (round % 2 == 1) {
             if (((round + 1) % 3) % 2 == 0) {
                 var p1Loser = 0;
-                var x = 16;
+                var x = roundMatches;
                 for (let k = 0; k < (Math.floor(round / 2) + 1) + 1; k++) {
                     p1Loser += x;
                     x /= 2;
@@ -421,7 +514,7 @@ export class BracketComponent extends AppComponent implements OnInit {
                 p1Loser -= i;
             } else {
                 var p1Loser = 1;
-                var x = 16;
+                var x = roundMatches;
                 for (let k = 0; k < (Math.floor(round / 2) + 1); k++) {
                     p1Loser += x;
                     x /= 2;
@@ -432,35 +525,126 @@ export class BracketComponent extends AppComponent implements OnInit {
                     p1Loser += i - 1;
                 }
             }
-
-            // var p1Loser = 16 * (Math.floor(round / 2) + 1);
         }
 
-        // console.log(p1Name, losers, p1Loser)
-
-        if (p1Name == '' && losers && p1Loser != undefined) {
+        if (p1Name == null && losers && p1Loser != undefined) {
             group.innerHTML += `
             <text x="37" y="5" width="147" height="12" class="loserPlaceHolder">Loser of ${p1Loser}</text>
             `;
         }
 
-        if (losers && p2Name == '' && p2Loser != undefined) {
+        if (losers && p2Name == null && p2Loser != undefined) {
             group.innerHTML += `
             <text x="37" y="33" width="147" height="12" class="loserPlaceHolder">Loser of ${p2Loser}</text>
             `;
         }
+        let labelId = matchId - this.firstId + 1;
 
-        group.innerHTML += `<text x="3" y="16" width="147" height="12" class="matchLabel">${matchId}</text>`;
-        group.appendChild(filter);
+        let maxRound = Math.max.apply(Math, this.bracketData.map(x => x.round));
+        if (round == maxRound && !losers && p1Name == null && p1Loser != undefined) {
+            group.innerHTML += `
+            <text x="37" y="33" width="147" height="12" class="loserPlaceHolder" style="font-size: 12px;">Loser of ${labelId - 1} (If neccessary)</text>
+            `;
+        }
+
+        // labelId = round * 
+
+        group.innerHTML += `<text x="3" y="16" width="147" height="12" class="matchLabel">${labelId}</text>`;
         return group;
     }
 
     getBracket(): Observable<any> {
         return this.http.get(`/api/tournament/${this.tournament.tournamentId}/bracketTest`);
     }
+}
 
-    updateMatch(id) {
-        alert(id);
+declare let Twitch: any;
+@Component({
+    selector: 'updateMatchDialog',
+    templateUrl: './updateMatchDialog.html',
+    styleUrls: ['./bracket.component.scss']
+})
+export class updateMatchDialog implements OnInit {
+
+    scoreForm: FormGroup;
+
+    filteredOptions: Observable<any>;
+
+    constructor(
+        private fb: FormBuilder,
+        public http: HttpClient,
+        @Inject(MAT_DIALOG_DATA) public data: any,
+        private dialogRef: MatDialogRef<updateMatchDialog>,
+        private notif: NotificationService,
+        private sanitizer: DomSanitizer
+    ) {
+
     }
 
+    status = 'update';
+
+
+    ngOnInit() {
+        console.log(this.data)
+        this.scoreForm = this.fb.group({
+            p1Score: this.data.p1Score,
+            p2Score: this.data.p2Score,
+            status: 'update',
+            matchId: this.data.id
+        });
+
+        var options1 = {
+            channel: this.data.p1Twitch,
+            theme: 'dark',
+
+        };
+        var player1 = new Twitch.Player("P1twitch", options1);
+        player1.setVolume(0.5);
+
+        var options2 = {
+            channel: this.data.p2Twitch,
+            theme: 'dark',
+
+        };
+        var player2 = new Twitch.Player("P2twitch", options2);
+        player2.setVolume(0);
+    }
+
+    sanitize(url: string) {
+        return this.sanitizer.bypassSecurityTrustResourceUrl(url);
+    }
+
+    isTheatre = false;
+    theatreBtn = 'Theatre Mode';
+
+    theatre() {
+        if (!this.isTheatre) this.dialogRef.updateSize("95vw");
+        if (this.isTheatre) this.dialogRef.updateSize("60vw");
+        this.isTheatre = !this.isTheatre;
+        this.theatreBtn = this.isTheatre ? 'Regular Mode' : 'Theatre Mode';
+    }
+
+    onSubmit(status) {
+        this.scoreForm.value.status = status;
+        this.updateScore(this.scoreForm.value)
+            .subscribe(data => {
+                if (!data.flag) {
+                    this.notif.showInfo('', 'Successfully updated score');
+                    // this.dialogRef.close(this.scoreForm.value);
+                } else {
+                    console.error('Error', data.err)
+                    this.notif.showError('', 'Error updaing score');
+                    // this.dialogRef.close(false);
+                }
+            }, error => {
+                this.notif.showError('', 'Error updaing score');
+                console.error("Error: ", error);
+                // this.dialogRef.close(false);
+            });
+    }
+
+    updateScore(data: any): Observable<any> {
+        return this.http.put(`/api/tournament/${this.data.tournamentId}/bracket/${this.data.id}`, data);
+    }
 }
+

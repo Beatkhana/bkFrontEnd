@@ -37,7 +37,7 @@ import { SignUpComponent } from './sign-up/sign-up.component';
 import { CalendarComponent } from './calendar/calendar.component';
 
 import { ToastrModule } from 'ngx-toastr';
-import { BracketComponent } from './bracket/bracket.component';
+import { BracketComponent, updateMatchDialog } from './bracket/bracket.component';
 import { addSongDialog, createPoolDialog, MapPoolComponent } from './map-pool/map-pool.component';
 import { TeamComponent } from './team/team.component';
 import { editUserDialog, UsersComponent } from './users/users.component';
@@ -68,6 +68,7 @@ import { MiniTourneysComponent } from './mini-tourneys/mini-tourneys.component';
         editCommentDialog,
         CalendarComponent,
         BracketComponent,
+        updateMatchDialog,
         MapPoolComponent,
         createPoolDialog,
         addSongDialog,

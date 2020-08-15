@@ -2,10 +2,19 @@
     <h1>{{tournament.name}}</h1>
     <h3>Bracket</h3>
     <br>
-    <div id="svgContainer">
-        <svg id="bracket-svg" class="bracket-svg" width="1985" height="1042" viewBox="0 0 1985 1042"> </svg>
-
+    <div *ngIf="loading">
+        <img src="/assets/svg/BeatKhana Logo RGB animated.svg" style="display: block;
+            margin-left: auto;
+            margin-right: auto;
+            width: 70px;
+            border: none;">
     </div>
+
+    <div id="svgContainer" [hidden]="loading || bracketData.length == 0">
+        <svg id="bracket-svg" class="bracket-svg" width="1985" height="1042" viewBox="0 0 1985 1042"> </svg>
+    </div>
+    <h5 [hidden]="bracketData.length != 0 || loading">This tournament currently does not have a bracket</h5>
+    <button mat-stroked-button color="primary" *ngIf="isAuth" (click)="genBracket()">{{btnText}}</button>
 </div>
 <script>
     const slider = document.querySelector('#svgContainer');

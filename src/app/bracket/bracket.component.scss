@@ -25,6 +25,17 @@
     animation: none;
 }
 
+:host ::ng-deep .in_progress {
+    fill: #111113;
+    stroke-width: 4;
+    //     /* stroke: rgb(0, 170, 200); */
+    stroke: rgb(255, 144, 80);
+    // stroke-dasharray: 50;
+    // stroke-dashoffset: 50;
+    animation: dash2 2s linear forwards;
+    animation-iteration-count: infinite;
+}
+
 :host ::ng-deep .hidden {
     visibility: hidden;
 }
@@ -32,6 +43,17 @@
 @keyframes dash {
     to {
         stroke-dashoffset: 0;
+    }
+}
+
+@keyframes dash2 {
+    from {
+        stroke-dashoffset: 267.4265px;
+        stroke-dasharray: 133.71325;
+    }
+    to {
+        stroke-dashoffset: 0px;
+        stroke-dasharray: 133.71325;
     }
 }
 
@@ -109,17 +131,67 @@
     height: 100%;
 }
 
-// ::-webkit-scrollbar {
-//     width: 10px;
-//     height: 10px;
-// }
-// ::-webkit-scrollbar-track {
-//     background: #f1f1f100;
-// }
-// ::-webkit-scrollbar-thumb {
-//     background: rgb(78, 78, 78);
-//     border-radius: 5px;
-// }
-// ::-webkit-scrollbar-thumb:hover {
-//     background: #555;
-// }
+:host ::ng-deep .noAnim {
+    animation: none !important;
+    stroke-dashoffset: 0;
+}
+
+.matchInfo {
+    display: grid;
+    gap: 5px;
+    grid-template-columns: 1fr 1fr;
+     :first-child {
+        float: left;
+    }
+     :last-child {
+        float: right;
+    }
+    .userImg {
+        border-radius: 15px;
+        display: block;
+        height: 64px;
+        width: 64px;
+        margin: 15px;
+        border: 3px solid rgb(200, 130, 90);
+    }
+    .playerText {
+        padding: 15px;
+    }
+    .playerName {
+        font-family: "Leixo", "Courier New", Courier, monospace;
+        color: #c8825a;
+        &.winner {
+            color: #daa520;
+        }
+        &.loser {
+            color: #b3b3b3;
+        }
+        &:hover {
+            text-decoration: underline;
+        }
+        text-decoration: none;
+        // align-items: center;
+        margin: 0px;
+        font-size: 24px;
+    }
+    .participantFlag {
+        position: relative;
+        top: 4px;
+    }
+    .twitch {
+        // width: 49%;
+        padding-top: 56.25%;
+        position: relative;
+        margin: 0px;
+        width: 100%;
+        display: inline-block;
+    }
+}
+
+:host ::ng-deep iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}

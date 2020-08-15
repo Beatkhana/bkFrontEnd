@@ -1,0 +1,53 @@
+<h1>Match Info</h1>
+<div class="matchInfo">
+    <div>
+        <img class="userImg" src="https://new.scoresaber.com{{data.p1Avatar}}" style="float: left;">
+        <p class="playerText" style="float: left;">
+            <a routerLink="/user/{{data.p1}}" class="playerName" [ngClass]="{'winner' : (data.status == 'complete' && data.p1Score > data.p2Score), 'loser': (data.status == 'complete' && data.p1Score < data.p2Score)}" mat-dialog-close>{{data.p1Name}} </a>
+            <span class="playerName" [ngClass]="{'winner' : (data.status == 'complete' && data.p1Score > data.p2Score), 'loser': (data.status == 'complete' && data.p1Score < data.p2Score)}">&nbsp; [{{data.p1Score}}]</span>
+            <br> <b>Global Rank:</b> {{data.p1Rank}}
+            <br> <b>Seed:</b> {{data.p1Seed}}
+            <br> <b>Country:</b> {{data.p1Country | uppercase}}
+            <img class="participantFlag" src="\assets/flags/{{data.p1Country}}.png" alt="{{data.p1Country}} Flag" style="height: 20px;border: none;"><br>
+        </p>
+        <div class="twitch" id='P1twitch'></div>
+    </div>
+    <div>
+        <img class="userImg" src="https://new.scoresaber.com{{data.p2Avatar}}" style="float: right;">
+        <p class="playerText" style="float: right;text-align: right;">
+            <a routerLink="/user/{{data.p2}}" class="playerName" style="float: right" [ngClass]="{'winner' : (data.status == 'complete' && data.p1Score < data.p2Score), 'loser': (data.status == 'complete' && data.p1Score > data.p2Score)}" mat-dialog-close> {{data.p2Name}}</a>
+            <span class="playerName" [ngClass]="{'winner' : (data.status == 'complete' && data.p1Score < data.p2Score), 'loser': (data.status == 'complete' && data.p1Score > data.p2Score)}">[{{data.p2Score}}] &nbsp;</span>
+            <br> <b>Global Rank:</b> {{data.p2Rank}}
+            <br> <b>Seed:</b> {{data.p2Seed}}
+            <br> <b>Country:</b> {{data.p2Country | uppercase}}
+            <img class="participantFlag" src="\assets/flags/{{data.p2Country}}.png" alt="{{data.p2Country}} Flag" style="height: 20px;border: none;"><br>
+        </p>
+        <div class="twitch" id='P2twitch'>
+            <!-- <iframe frameborder="0" scrolling="no" [src]="sanitize('https://player.twitch.tv/?channel='+data.p2Twitch+'&autoplay=true')" height="100%" width="100%">
+            </iframe> -->
+        </div>
+    </div>
+</div>
+
+<form [formGroup]="scoreForm" novalidate *ngIf="data.isAuth">
+    <!-- Value: {{ signUpForm.value | json }} -->
+    <br>
+    <mat-form-field class="fill" style="width: 49%; float: left;">
+        <mat-label>{{data.p1Name}}'s Score</mat-label>
+        <input matInput formControlName="p1Score" autocomplete="off">
+    </mat-form-field>
+    <!-- <br> -->
+    <mat-form-field class="fill" style="width: 49%; float: right;">
+        <mat-label>{{data.p2Name}}'s Score</mat-label>
+        <input matInput formControlName="p2Score" autocomplete="off">
+    </mat-form-field>
+    <br>
+    <div mat-dialog-actions style="display: block;">
+        <!-- <button mat-raised-button color="warn" mat-dialog-close>Close</button> -->
+        <button mat-raised-button color="primary" type="submit" [disabled]="scoreForm.invalid" (click)="onSubmit('update')">Update Match</button>
+        <button mat-raised-button color="primary" type="submit" [disabled]="scoreForm.invalid" (click)="onSubmit('complete')">Complete Match</button>
+    </div>
+    <br>
+</form>
+<br>
+<button mat-stroked-button color="primary" type="submit" (click)="theatre()">{{theatreBtn}}</button> &nbsp; <button mat-raised-button color="warn" mat-dialog-close>Close</button>

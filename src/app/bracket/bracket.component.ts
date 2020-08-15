@@ -27,12 +27,18 @@ export class BracketComponent extends AppComponent implements OnInit {
 
     firstId = 0;
 
+    interval;
+
     ngOnInit(): void {
         this.initSettings();
         let node = document.createElement('script');
         node.src = 'https://embed.twitch.tv/embed/v1.js';
         node.type = 'text/javascript';
         document.getElementsByTagName('head')[0].appendChild(node);
+    }
+
+    ngOnDestroy() {
+        clearInterval(this.interval);
     }
 
     async initSettings() {
@@ -56,7 +62,7 @@ export class BracketComponent extends AppComponent implements OnInit {
             element.addEventListener("click", () => this.updateMatch(element.getAttribute('data-matchid')))
         }
         this.loading = false;
-        setInterval(() => {
+        this.interval = setInterval(() => {
             this.intervalIteration += 1;
             this.updateBracket();
         },10000)
@@ -66,7 +72,7 @@ export class BracketComponent extends AppComponent implements OnInit {
         // this.loading = true;
         const matchesData: any = await this.http.get(`/api/tournament/${this.tournament.tournamentId}/bracket`).toPromise();
         this.bracketData = matchesData;
-        
+
         if (matchesData.length > 0) this.generateMatches(this.bracketData);
 
         let matchElements = document.getElementsByClassName('matchReady');
@@ -408,7 +414,7 @@ export class BracketComponent extends AppComponent implements OnInit {
         if (bye) {
             group.classList.add('hidden');
         }
-        if(p1Id && p2Id) {
+        if (p1Id && p2Id) {
             group.classList.add('matchReady');
         }
 
@@ -448,7 +454,7 @@ export class BracketComponent extends AppComponent implements OnInit {
             <path class="matchPath ${noAnim} matchSplit" d="m 0 12.25 l 230 0" />`;
         }
 
-        if(p1Name == null && p1Id != null) p1Name = p1Id;
+        if (p1Name == null && p1Id != null) p1Name = p1Id;
         if (p1Name != null) {
             group.innerHTML += `
             <image x="17" y="-10"
@@ -457,8 +463,8 @@ export class BracketComponent extends AppComponent implements OnInit {
             <text x="37" y="5" width="147" height="12" class="pName" clip-path="url(#nameClip-${i}-1)">${p1Name}</text>
             `;
         }
-        if(p1Name == null && p1Id != null) p1Name = null;
-        if(p2Name == null && p2Id != null) p2Name = p2Id;
+        if (p1Name == null && p1Id != null) p1Name = null;
+        if (p2Name == null && p2Id != null) p2Name = p2Id;
         if (p2Name != null) {
             group.innerHTML += `
             <image x="17" y="18"
@@ -467,7 +473,7 @@ export class BracketComponent extends AppComponent implements OnInit {
             <text x="37" y="33" width="147" height="12" class="pName" clip-path="url(#nameClip-${i}-2)">${p2Name}</text>
             `;
         }
-        if(p2Name == null && p2Id != null) p2Name = null;
+        if (p2Name == null && p2Id != null) p2Name = null;
         // console.log(p1Score)
         if (p1Score != 0 || p2Score != 0) {
             if (status == 'complete') {
@@ -522,7 +528,7 @@ export class BracketComponent extends AppComponent implements OnInit {
             <text x="37" y="33" width="147" height="12" class="loserPlaceHolder">Loser of ${p2Loser}</text>
             `;
         }
-        let labelId = Math.floor((matchId - this.firstId + 1)/10);
+        let labelId = Math.floor((matchId - this.firstId + 1) / 10);
 
         let maxRound = Math.max.apply(Math, this.bracketData.map(x => x.round));
         if (round == maxRound && !losers && p1Name == null && p1Loser != undefined) {
@@ -576,19 +582,19 @@ export class updateMatchDialog implements OnInit {
             matchId: this.data.id
         });
 
-        if(this.data.p1Name || this.data.p2Name) {
+        if (this.data.p1Name || this.data.p2Name) {
             var options1 = {
                 channel: this.data.p1Twitch,
                 theme: 'dark',
-    
+
             };
             var player1 = new Twitch.Player("P1twitch", options1);
             player1.setVolume(0.5);
-    
+
             var options2 = {
                 channel: this.data.p2Twitch,
                 theme: 'dark',
-    
+
             };
             var player2 = new Twitch.Player("P2twitch", options2);
             player2.setVolume(0);
@@ -661,7 +667,7 @@ export class generateBracketDialog implements OnInit {
     async onSubmit() {
         let players = this.bracketGenForm.value.players != null ? this.bracketGenForm.value.players.replace(' ', '').split('\n') : null;
         try {
-            const bracketGen: any = await this.http.post(`/api/tournament/${this.data.tournamentId}/generateBracket`, { tournamentId: this.data.tournamentId, data: players}).toPromise();
+            const bracketGen: any = await this.http.post(`/api/tournament/${this.data.tournamentId}/generateBracket`, { tournamentId: this.data.tournamentId, data: players }).toPromise();
             if (!bracketGen.flag) {
                 this.notif.showSuccess('', 'Successfully created bracket');
                 this.dialogRef.close(false);
@@ -671,7 +677,7 @@ export class generateBracketDialog implements OnInit {
                 this.dialogRef.close(false);
             }
         } catch (error) {
-            console.error("Error: ",  error);
+            console.error("Error: ", error);
             this.notif.showError('', 'Error creating bracket');
             this.dialogRef.close(false);
         }

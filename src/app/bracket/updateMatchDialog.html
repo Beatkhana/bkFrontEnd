@@ -1,5 +1,5 @@
 <h1>Match Info</h1>
-<div class="matchInfo">
+<div class="matchInfo" *ngIf="data.p1Name != null">
     <div>
         <img class="userImg" src="https://new.scoresaber.com{{data.p1Avatar}}" style="float: left;">
         <p class="playerText" style="float: left;">
@@ -28,17 +28,31 @@
         </div>
     </div>
 </div>
+<div class="matchInfo" *ngIf="data.p1Name == null && data.p1 != null">
+    <div>
+        <p class="playerText" style="float: left;">
+            <span class="playerName" [ngClass]="{'winner' : (data.status == 'complete' && data.p1Score > data.p2Score), 'loser': (data.status == 'complete' && data.p1Score < data.p2Score)}">{{data.p1}} [{{data.p2Score}}] &nbsp;</span>
+        </p>
+    </div>
+    <div>
+        <p class="playerText" style="float: right;text-align: right;">
+            <span class="playerName" [ngClass]="{'winner' : (data.status == 'complete' && data.p1Score < data.p2Score), 'loser': (data.status == 'complete' && data.p1Score > data.p2Score)}">{{data.p2}} [{{data.p2Score}}] &nbsp;</span>
+        </p>
+    </div>
+</div>
 
 <form [formGroup]="scoreForm" novalidate *ngIf="data.isAuth">
     <!-- Value: {{ signUpForm.value | json }} -->
     <br>
     <mat-form-field class="fill" style="width: 49%; float: left;">
-        <mat-label>{{data.p1Name}}'s Score</mat-label>
+        <mat-label *ngIf="data.p1Name != null">{{data.p1Name}}'s Score</mat-label>
+        <mat-label *ngIf="data.p1 != null && data.p1Name == null">{{data.p1}}'s Score</mat-label>
         <input matInput formControlName="p1Score" autocomplete="off">
     </mat-form-field>
     <!-- <br> -->
     <mat-form-field class="fill" style="width: 49%; float: right;">
-        <mat-label>{{data.p2Name}}'s Score</mat-label>
+        <mat-label *ngIf="data.p2Name != null">{{data.p2Name}}'s Score</mat-label>
+        <mat-label *ngIf="data.p2 != null && data.p2Name == null">{{data.p2}}'s Score</mat-label>
         <input matInput formControlName="p2Score" autocomplete="off">
     </mat-form-field>
     <br>

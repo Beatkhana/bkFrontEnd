@@ -116,7 +116,7 @@ export class TournamentComponent extends AppComponent implements OnInit {
 
         if(this.tournament.countries != '') {
             this.countries = this.tournament.countries.toLowerCase().replace(' ', '').split(',');
-            if(!this.countries.includes(this.user.country.toLowerCase())) {
+            if(this.user != null &&!this.countries.includes(this.user.country.toLowerCase())) {
                 this.canSignup = false;
             }
         }

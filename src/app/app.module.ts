@@ -37,7 +37,7 @@ import { SignUpComponent } from './sign-up/sign-up.component';
 import { CalendarComponent } from './calendar/calendar.component';
 
 import { ToastrModule } from 'ngx-toastr';
-import { BracketComponent, updateMatchDialog } from './bracket/bracket.component';
+import { BracketComponent, generateBracketDialog, updateMatchDialog } from './bracket/bracket.component';
 import { addSongDialog, createPoolDialog, MapPoolComponent } from './map-pool/map-pool.component';
 import { TeamComponent } from './team/team.component';
 import { editUserDialog, UsersComponent } from './users/users.component';
@@ -47,6 +47,7 @@ import { NgxLinkifyjsModule } from 'ngx-linkifyjs';
 import { LogsComponent } from './logs/logs.component';
 import { QualifiersComponent } from './qualifiers/qualifiers.component';
 import { MiniTourneysComponent } from './mini-tourneys/mini-tourneys.component';
+import { RulesComponent } from './rules/rules.component';
 
 
 @NgModule({
@@ -69,6 +70,7 @@ import { MiniTourneysComponent } from './mini-tourneys/mini-tourneys.component';
         CalendarComponent,
         BracketComponent,
         updateMatchDialog,
+        generateBracketDialog,
         MapPoolComponent,
         createPoolDialog,
         addSongDialog,
@@ -80,7 +82,8 @@ import { MiniTourneysComponent } from './mini-tourneys/mini-tourneys.component';
         ParticipantsComponent,
         LogsComponent,
         QualifiersComponent,
-        MiniTourneysComponent
+        MiniTourneysComponent,
+        RulesComponent
     ],
     imports: [
         BrowserModule,

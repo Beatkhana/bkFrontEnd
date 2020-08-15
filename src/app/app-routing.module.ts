@@ -17,13 +17,15 @@ import { ParticipantsComponent } from './participants/participants.component';
 import { LogsComponent } from './logs/logs.component';
 import { QualifiersComponent } from './qualifiers/qualifiers.component';
 import { MiniTourneysComponent } from './mini-tourneys/mini-tourneys.component';
+import { RulesComponent } from './rules/rules.component';
 
 
 const routes: Routes = [
   {path: '', component: TournamentsComponent },
   {path: 'mini-tournaments', component: MiniTourneysComponent },
   {path: 'archive', component: ArchiveComponent },
-  {path: 'ranking', component: RankingsComponent },
+  {path: 'rules', component: RulesComponent },
+  // {path: 'ranking', component: RankingsComponent },
   {path: 'tournament/:id', component: TournamentComponent, children: [
     {path: 'map-pool', component: MapPoolComponent},
     {path: 'bracket', component: BracketComponent},

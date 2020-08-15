@@ -49,22 +49,27 @@ export class BracketComponent extends AppComponent implements OnInit {
         }
 
         if (matchesData.length > 0) this.generateMatches(this.bracketData);
-
-        let matchElements = document.getElementsByClassName('match');
+        // console.log(matchesData)
+        let matchElements = document.getElementsByClassName('matchReady');
         for (let i = 0; i < matchElements.length; i++) {
             const element = matchElements[i];
             element.addEventListener("click", () => this.updateMatch(element.getAttribute('data-matchid')))
         }
         this.loading = false;
+        setInterval(() => {
+            this.intervalIteration += 1;
+            this.updateBracket();
+        },10000)
     }
 
     async updateBracket() {
         // this.loading = true;
         const matchesData: any = await this.http.get(`/api/tournament/${this.tournament.tournamentId}/bracket`).toPromise();
         this.bracketData = matchesData;
+        
         if (matchesData.length > 0) this.generateMatches(this.bracketData);
 
-        let matchElements = document.getElementsByClassName('match');
+        let matchElements = document.getElementsByClassName('matchReady');
         for (let i = 0; i < matchElements.length; i++) {
             const element = matchElements[i];
             element.addEventListener("click", () => this.updateMatch(element.getAttribute('data-matchid')))
@@ -78,34 +83,32 @@ export class BracketComponent extends AppComponent implements OnInit {
     }
 
     async genBracket() {
-        const dialog = this.dialog.open(ConfirmDialogComponent, {
-            // height: '400px',
-            width: '400px',
-            data: {
-                cancelText: 'Cancel',
-                confirmText: 'Generate',
-                message: 'Are you sure you want to create a bracket?' + (this.bracketData.length > 0 ? ' This will overwite the current bracket' : ''),
-                title: 'Create Bracket?'
-            }
+        const dialog = this.dialog.open(generateBracketDialog, {
+            minWidth: '50vw',
+            // width: '50vw',
+            maxHeight: '90vh',
+            maxWidth: '95vw',
+            data: this.tournament
         });
 
         dialog.afterClosed()
             .subscribe(async data => {
-                if (data) {
-                    try {
-                        const bracketGen: any = await this.http.post(`/api/tournament/${this.tournament.tournamentId}/generateBracket`, { tournamentId: this.tournament.tournamentId, data: null }).toPromise();
-                        if (!bracketGen.flag) {
-                            this.notif.showSuccess('', 'Successfully created bracket');
-                            this.initSettings();
-                        } else {
-                            console.error("Error: ", data);
-                            this.notif.showError('', 'Error creating bracket');
-                        }
-                    } catch (error) {
-                        console.error("Error: ", data);
-                        this.notif.showError('', 'Error creating bracket');
-                    }
-                }
+                this.updateBracket();
+                // if (data) {
+                //     try {
+                //         const bracketGen: any = await this.http.post(`/api/tournament/${this.tournament.tournamentId}/generateBracket`, { tournamentId: this.tournament.tournamentId, data: null }).toPromise();
+                //         if (!bracketGen.flag) {
+                //             this.notif.showSuccess('', 'Successfully created bracket');
+                //             this.initSettings();
+                //         } else {
+                //             console.error("Error: ", data);
+                //             this.notif.showError('', 'Error creating bracket');
+                //         }
+                //     } catch (error) {
+                //         console.error("Error: ", data);
+                //         this.notif.showError('', 'Error creating bracket');
+                //     }
+                // }
             });
     }
 
@@ -405,6 +408,9 @@ export class BracketComponent extends AppComponent implements OnInit {
         if (bye) {
             group.classList.add('hidden');
         }
+        if(p1Id && p2Id) {
+            group.classList.add('matchReady');
+        }
 
         const clip1 = document.createElementNS("http://www.w3.org/2000/svg", "clipPath");
         clip1.setAttribute("id", 'clipPath-' + i + '-1');
@@ -442,15 +448,16 @@ export class BracketComponent extends AppComponent implements OnInit {
             <path class="matchPath ${noAnim} matchSplit" d="m 0 12.25 l 230 0" />`;
         }
 
-
+        if(p1Name == null && p1Id != null) p1Name = p1Id;
         if (p1Name != null) {
             group.innerHTML += `
             <image x="17" y="-10"
-                href="https://new.scoresaber.com${p1Avatar}"
-                class="img" height="16" width="16" clip-path="url(#clipPath-${i}-1)" />
+            href="https://new.scoresaber.com${p1Avatar}"
+            class="img" height="16" width="16" clip-path="url(#clipPath-${i}-1)" />
             <text x="37" y="5" width="147" height="12" class="pName" clip-path="url(#nameClip-${i}-1)">${p1Name}</text>
             `;
         }
+        if(p2Name == null && p2Id != null) p2Name = p2Id;
         if (p2Name != null) {
             group.innerHTML += `
             <image x="17" y="18"
@@ -550,8 +557,7 @@ export class updateMatchDialog implements OnInit {
         public http: HttpClient,
         @Inject(MAT_DIALOG_DATA) public data: any,
         private dialogRef: MatDialogRef<updateMatchDialog>,
-        private notif: NotificationService,
-        private sanitizer: DomSanitizer
+        private notif: NotificationService
     ) {
 
     }
@@ -560,7 +566,7 @@ export class updateMatchDialog implements OnInit {
 
 
     ngOnInit() {
-        console.log(this.data)
+        // console.log(this.data)
         this.scoreForm = this.fb.group({
             p1Score: this.data.p1Score,
             p2Score: this.data.p2Score,
@@ -568,25 +574,23 @@ export class updateMatchDialog implements OnInit {
             matchId: this.data.id
         });
 
-        var options1 = {
-            channel: this.data.p1Twitch,
-            theme: 'dark',
-
-        };
-        var player1 = new Twitch.Player("P1twitch", options1);
-        player1.setVolume(0.5);
-
-        var options2 = {
-            channel: this.data.p2Twitch,
-            theme: 'dark',
-
-        };
-        var player2 = new Twitch.Player("P2twitch", options2);
-        player2.setVolume(0);
-    }
-
-    sanitize(url: string) {
-        return this.sanitizer.bypassSecurityTrustResourceUrl(url);
+        if(this.data.p1Name || this.data.p2Name) {
+            var options1 = {
+                channel: this.data.p1Twitch,
+                theme: 'dark',
+    
+            };
+            var player1 = new Twitch.Player("P1twitch", options1);
+            player1.setVolume(0.5);
+    
+            var options2 = {
+                channel: this.data.p2Twitch,
+                theme: 'dark',
+    
+            };
+            var player2 = new Twitch.Player("P2twitch", options2);
+            player2.setVolume(0);
+        }
     }
 
     isTheatre = false;
@@ -616,6 +620,59 @@ export class updateMatchDialog implements OnInit {
                 console.error("Error: ", error);
                 // this.dialogRef.close(false);
             });
+    }
+
+    updateScore(data: any): Observable<any> {
+        return this.http.put(`/api/tournament/${this.data.tournamentId}/bracket/${this.data.id}`, data);
+    }
+}
+
+@Component({
+    selector: 'generateBracketDialog',
+    templateUrl: './generateBracketDialog.html',
+    styleUrls: ['./bracket.component.scss']
+})
+export class generateBracketDialog implements OnInit {
+
+    bracketGenForm: FormGroup;
+
+    filteredOptions: Observable<any>;
+
+    constructor(
+        private fb: FormBuilder,
+        public http: HttpClient,
+        @Inject(MAT_DIALOG_DATA) public data: any,
+        private dialogRef: MatDialogRef<generateBracketDialog>,
+        private notif: NotificationService,
+        private sanitizer: DomSanitizer
+    ) { }
+
+
+    ngOnInit() {
+        // console.log(this.data)
+        this.bracketGenForm = this.fb.group({
+            custom: false,
+            players: null
+        });
+    }
+
+    async onSubmit() {
+        let players = this.bracketGenForm.value.players != null ? this.bracketGenForm.value.players.replace(' ', '').split('\n') : null;
+        try {
+            const bracketGen: any = await this.http.post(`/api/tournament/${this.data.tournamentId}/generateBracket`, { tournamentId: this.data.tournamentId, data: players}).toPromise();
+            if (!bracketGen.flag) {
+                this.notif.showSuccess('', 'Successfully created bracket');
+                this.dialogRef.close(false);
+            } else {
+                console.error("Error: ", bracketGen.err);
+                this.notif.showError('', 'Error creating bracket');
+                this.dialogRef.close(false);
+            }
+        } catch (error) {
+            console.error("Error: ",  error);
+            this.notif.showError('', 'Error creating bracket');
+            this.dialogRef.close(false);
+        }
     }
 
     updateScore(data: any): Observable<any> {

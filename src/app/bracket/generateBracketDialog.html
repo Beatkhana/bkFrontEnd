@@ -1,0 +1,23 @@
+<h1>Generate Bracket</h1>
+<form [formGroup]="bracketGenForm" novalidate (ngSubmit)="onSubmit()">
+    <!-- Value: {{ signUpForm.value | json }} -->
+    <br>
+    <mat-checkbox formControlName="custom">
+        Custom Users
+    </mat-checkbox>
+    <br><br>
+    <p class="card-text" *ngIf="bracketGenForm.value.custom">
+        By selecting custom users you overwrite any signed up users and users will not have their progress recorded.
+        <br> Other tournament bracket settings will also apply here such as the player limit and random sort
+        <br> If this is your intention then continue by adding each seperate player name on a new line below.
+    </p>
+    <mat-form-field *ngIf="bracketGenForm.value.custom">
+        <mat-label>Enter each user on a new line</mat-label>
+        <textarea matInput rows="8" formControlName="players"></textarea>
+    </mat-form-field>
+
+    <div mat-dialog-actions>
+        <button mat-raised-button color="warn" mat-dialog-close>Close</button>
+        <button mat-raised-button color="primary" type="submit" [disabled]="bracketGenForm.invalid">Generate</button>
+    </div>
+</form>

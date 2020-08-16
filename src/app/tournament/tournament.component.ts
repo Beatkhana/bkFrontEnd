@@ -114,6 +114,9 @@ export class TournamentComponent extends AppComponent implements OnInit {
         const data = await this.http.get<ITournament[]>(this.url + '/' + this.tourneyId).toPromise();
         this.tournament = data[0];
 
+        const usr: any = await this.http.get(`/api/user`).toPromise();
+        this.user = usr != null ? usr[0] : null;
+
         if(this.tournament.countries != '') {
             this.countries = this.tournament.countries.toLowerCase().replace(' ', '').split(',');
             if(this.user != null &&!this.countries.includes(this.user.country.toLowerCase())) {

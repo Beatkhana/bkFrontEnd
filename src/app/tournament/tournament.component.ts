@@ -29,7 +29,8 @@ export class TournamentComponent extends AppComponent implements OnInit {
     isBracket = false;
     isParticipants = false;
     canSignup = true;
-    isQuals = false
+    isQuals = false;
+    isSignedUp = false;
 
     participants: any = [];
     isParticipant = true;
@@ -44,30 +45,42 @@ export class TournamentComponent extends AppComponent implements OnInit {
                 this.isInfo = false;
                 this.isParticipants = false;
                 this.isQuals = false;
+                this.isSignedUp = false;
+            } else if (this.router.url.includes('allParticipants')) {
+                this.isSignedUp = true;
+                this.isQuals = false;
+                this.isParticipants = false;
+                this.isBracket = false;
+                this.isMapPool = false;
+                this.isInfo = false;
             } else if (this.router.url.includes('bracket')) {
                 this.isBracket = true;
                 this.isMapPool = false;
                 this.isInfo = false;
                 this.isParticipants = false;
                 this.isQuals = false;
+                this.isSignedUp = false;
             } else if (this.router.url.includes('participants')) {
                 this.isParticipants = true;
                 this.isBracket = false;
                 this.isMapPool = false;
                 this.isInfo = false;
                 this.isQuals = false;
+                this.isSignedUp = false;
             } else if (this.router.url.includes('qualifiers')) {
                 this.isQuals = true;
                 this.isParticipants = false;
                 this.isBracket = false;
                 this.isMapPool = false;
                 this.isInfo = false;
+                this.isSignedUp = false;
             } else {
                 this.isMapPool = false;
                 this.isBracket = false;
                 this.isInfo = true;
                 this.isParticipants = false;
                 this.isQuals = false;
+                this.isSignedUp = false;
             }
         });
         this.test();
@@ -79,30 +92,42 @@ export class TournamentComponent extends AppComponent implements OnInit {
                 this.isInfo = false;
                 this.isParticipants = false;
                 this.isQuals = false;
+                this.isSignedUp = false;
+            } else if (this.router.url.includes('allParticipants')) {
+                this.isSignedUp = true;
+                this.isQuals = false;
+                this.isParticipants = false;
+                this.isBracket = false;
+                this.isMapPool = false;
+                this.isInfo = false;
             } else if (this.router.url.includes('bracket')) {
                 this.isBracket = true;
                 this.isMapPool = false;
                 this.isInfo = false;
                 this.isParticipants = false;
                 this.isQuals = false;
+                this.isSignedUp = false;
             } else if (this.router.url.includes('participants')) {
                 this.isParticipants = true;
                 this.isBracket = false;
                 this.isMapPool = false;
                 this.isInfo = false;
                 this.isQuals = false;
+                this.isSignedUp = false;
             } else if (this.router.url.includes('qualifiers')) {
                 this.isQuals = true;
                 this.isParticipants = false;
                 this.isBracket = false;
                 this.isMapPool = false;
                 this.isInfo = false;
+                this.isSignedUp = false;
             } else {
                 this.isMapPool = false;
                 this.isBracket = false;
                 this.isInfo = true;
                 this.isParticipants = false;
                 this.isQuals = false;
+                this.isSignedUp = false;
             }
         });
 

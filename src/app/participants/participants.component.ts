@@ -17,6 +17,7 @@ export class ParticipantsComponent implements OnInit {
 
     @Input() tournament;
     @Input() participants: Array<any>;
+    @Input() all: boolean = false;
 
     isAuthorised = false;
     curUser: User = null;
@@ -39,7 +40,8 @@ export class ParticipantsComponent implements OnInit {
     updateParticipants() {
         this.getParticipants()
             .subscribe(data => {
-                if (this.tournament.state == 'main_stage') {
+                console.log(this.all)
+                if (this.tournament.state == 'main_stage' && !this.all) {
                     if (this.tournament.type == 'battle_royale') {
                         data.sort(this.royaleSort);
                     } else {
@@ -216,7 +218,7 @@ export class ParticipantsComponent implements OnInit {
     }
 
     getParticipants(): Observable<any> {
-        return this.http.get(`/api/tournament/${this.tournament.tournamentId}/participants`);
+        return this.http.get(`/api/tournament/${this.tournament.tournamentId}/${ this.all ? 'allParticipants' : 'participants'}`);
     }
 
 }

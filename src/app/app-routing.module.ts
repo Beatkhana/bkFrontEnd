@@ -30,6 +30,7 @@ const routes: Routes = [
     {path: 'map-pool', component: MapPoolComponent},
     {path: 'bracket', component: BracketComponent},
     {path: 'participants', component: ParticipantsComponent},
+    {path: 'allParticipants', component: ParticipantsComponent},
     {path: 'qualifiers', component: QualifiersComponent},
   ]},
   {path: 'profile', component: ProfileComponent },

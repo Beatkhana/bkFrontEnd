@@ -43,6 +43,7 @@ export class MapPoolComponent implements OnInit {
     }
 
     mapPools = [];
+    poolValues = [];
 
     ngOnInit(): void {
         this.getPools()
@@ -51,7 +52,7 @@ export class MapPoolComponent implements OnInit {
                 this.mapPools = data;
                 this.curPoolId = Object.keys(this.mapPools)[0];
                 this.poolsLen = Object.keys(this.mapPools).length;
-                // console.log(data)
+                this.poolValues = Object.values(this.mapPools);
             });
     }
 

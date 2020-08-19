@@ -13,12 +13,12 @@
     </div>
     <ng-template #loaded>
         <mat-tab-group animationDuration="300ms" dynamicHeight (selectedTabChange)="tabClick($event)">
-            <mat-tab *ngFor="let pool of mapPools | keyvalue" id="{{pool.value.id}}">
+            <mat-tab *ngFor="let pool of poolValues" id="{{pool.id}}">
                 <ng-template mat-tab-label>
-                    <span>{{pool.value.poolName}}</span>
-                    <img src="{{pool.value.image}}" style="width: 24px;height: 24px;border: none;margin-left: 5px;">
+                    <span>{{pool.poolName}}</span>
+                    <img src="{{pool.image}}" style="width: 24px;height: 24px;border: none;margin-left: 5px;">
                 </ng-template>
-                <table *ngIf="pool.value.songs.length > 0 else noSongs" mat-table [dataSource]="pool.value.songs" class="card-text">
+                <table *ngIf="pool.songs.length > 0 else noSongs" mat-table [dataSource]="pool.songs" class="card-text">
                     <ng-container matColumnDef="image">
                         <th mat-header-cell *matHeaderCellDef style="width: 2%;"> &nbsp;&nbsp;&nbsp; Song </th>
                         <td mat-cell *matCellDef="let song" style="width: 2%;">

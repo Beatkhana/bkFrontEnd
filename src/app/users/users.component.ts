@@ -117,7 +117,7 @@ export class editUserDialog implements OnInit {
         },
         {
             id: "3",
-            name: 'Map Pool'
+            name: 'Tournament Host'
         },
         {
             id: "4",

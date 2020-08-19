@@ -25,14 +25,13 @@
             </p>
         </div>
 
-        <div *ngIf="user && user['roleIds'].includes('1')" class="card">
+        <div *ngIf="user && (user['roleIds'].includes('1') || user['roleIds'].includes('3'))" class="card">
             <a (click)="openDialog()" style="cursor: pointer;">
                 <i class="fas fa-plus-circle card-img-top" style="font-size: 200px;border: 2px solid #c8825a; text-align: center;"></i>
                 <h5 class="card-title">
                     Add new tournament
                 </h5>
             </a>
-            <!-- <button mat-button (click)="openDialog()">Launch dialog</button> -->
         </div>
         <h4 *ngIf="tournaments.length == 0">There are currently no active tournaments please check back later</h4>
     </ng-template>

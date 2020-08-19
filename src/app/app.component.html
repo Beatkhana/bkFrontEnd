@@ -31,7 +31,7 @@
                     </li>
                     <li *ngIf="user" class="nav-item has-dropdown noHover">
                         <button class="nav-link dropdown-toggle">
-                            <img class="userImg" src="https://new.scoresaber.com{{ user.avatar }}"
+                            <img class="userImg" src="{{ user.avatar }}"
                                 style="display: inline;" height="64" width="64">
 
                         </button>
@@ -79,7 +79,7 @@
                     <hr>
                     <ul class="navbar-nav mobile">
                         <li *ngIf="user">
-                            <img class="userImg" src="https://new.scoresaber.com{{ user.avatar }} " style="display: inline-box;" height="64" width="64">
+                            <img class="userImg" src="{{ user.avatar }} " style="display: inline-box;" height="64" width="64">
                         </li>
                         <li *ngIf="user">
                             <a routerLink="/profile" class="nav-item ">View Profile</a>

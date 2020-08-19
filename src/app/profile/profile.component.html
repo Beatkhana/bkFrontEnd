@@ -9,7 +9,7 @@
     <div class="container">
         <div class="card noHover">
             <div class="card-body">
-                <img class="profileImg" src="https://new.scoresaber.com{{ user.avatar }}" />
+                <img class="profileImg" src="{{ user.avatar }}" />
                 <h1>
                     {{ user.name }}
                     <img class="countryImg" src="\assets/flags/{{user.country | uppercase}}.png" alt="">

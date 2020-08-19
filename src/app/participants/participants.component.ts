@@ -51,6 +51,14 @@ export class ParticipantsComponent implements OnInit {
                     data.sort(this.orderGlobal);
                 }
                 this.participants = data;
+                for (const member of this.participants) {
+                    if(member.avatar.includes('api') || member.avatar.includes('oculus')) {
+                        member.avatar = "https://new.scoresaber.com" + member.avatar;
+                    } else {
+                        member.avatar = `/${member.avatar}` + (member.avatar.substring(0, 2) == 'a_' ? '.gif' : '.webp');
+                        member.avatar = `https://cdn.discordapp.com/avatars/${member.discordId}${ member.avatar }`
+                    }
+                }
                 this.cd.detectChanges();
                 // console.log(this.participants);
             })

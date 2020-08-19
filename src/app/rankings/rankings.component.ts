@@ -22,6 +22,14 @@ export class RankingsComponent extends AppComponent implements OnInit {
             .subscribe(data => {
                 this.page += 1;
                 this.users = data.data;
+                for (const member of this.users) {
+                    if(member.avatar.includes('api') || member.avatar.includes('oculus')) {
+                        member.avatar = "https://new.scoresaber.com" + member.avatar;
+                    } else {
+                        member.avatar = `/${member.avatar}` + (member.avatar.substring(0, 2) == 'a_' ? '.gif' : '.webp');
+                        member.avatar = `https://cdn.discordapp.com/avatars/${member.discordId}${ member.avatar }`
+                    }
+                }
                 this.loading = false;
                 // console.log(data)
             });

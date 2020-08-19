@@ -19,6 +19,12 @@ export class ProfileComponent extends AppComponent implements OnInit {
 
     ngOnInit(): void {
         this.setTitle(this.title);
+        if(this.user.avatar.includes('api') || this.user.avatar.includes('oculus')) {
+            this.user.avatar = "https://new.scoresaber.com" + this.user.avatar;
+        } else {
+            this.user.avatar = `/${this.user.avatar}` + (this.user.avatar.substring(0, 2) == 'a_' ? '.gif' : '.webp');
+            this.user.avatar = `https://cdn.discordapp.com/avatars/${this.user.discordId}${ this.user.avatar }`
+        }
     }
 
     editUser(id) {

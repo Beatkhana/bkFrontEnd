@@ -62,10 +62,10 @@ export class BracketComponent extends AppComponent implements OnInit {
             element.addEventListener("click", () => this.updateMatch(element.getAttribute('data-matchid')))
         }
         this.loading = false;
-        this.interval = setInterval(() => {
-            this.intervalIteration += 1;
-            this.updateBracket();
-        },10000)
+        // this.interval = setInterval(() => {
+        //     this.intervalIteration += 1;
+        //     this.updateBracket();
+        // }, 10000)
     }
 
     async updateBracket() {
@@ -251,6 +251,22 @@ export class BracketComponent extends AppComponent implements OnInit {
 
             for (let j = 0; j < round.length; j++) {
                 const match = round[j];
+                if (match['p1Avatar'] != null) {
+                    if (match['p1Avatar'].includes('api') || match['p1Avatar'].includes('oculus')) {
+                        match['p1Avatar'] = "https://new.scoresaber.com" + match['p1Avatar'];
+                    } else {
+                        match['p1Avatar'] = `/${match['p1Avatar']}` + (match['p1Avatar'].substring(0, 2) == 'a_' ? '.gif' : '.webp');
+                        match['p1Avatar'] = `https://cdn.discordapp.com/avatars/${match['p1']}${match['p1Avatar']}`
+                    }
+                }
+                if (match['p2Avatar'] != null) {
+                    if (match['p2Avatar'].includes('api') || match['p2Avatar'].includes('oculus')) {
+                        match['p2Avatar'] = "https://new.scoresaber.com" + match['p2Avatar'];
+                    } else {
+                        match['p2Avatar'] = `/${match['p2Avatar']}` + (match['p2Avatar'].substring(0, 2) == 'a_' ? '.gif' : '.webp');
+                        match['p2Avatar'] = `https://cdn.discordapp.com/avatars/${match['p2']}${match['p2Avatar']}`
+                    }
+                }
                 let svgMatch = this.createSvgMatch(j, match['p1Name'], match['p2Name'], match['p1Avatar'], match['p2Avatar'], match['p1'], match['p2'], i, round, singleMatchRound, match['id'], match['p1Score'], match['p2Score'], match['status'], false, match['bye']);
                 gRound.appendChild(svgMatch);
             }
@@ -265,6 +281,22 @@ export class BracketComponent extends AppComponent implements OnInit {
 
             for (let j = 0; j < round.length; j++) {
                 const match = round[j];
+                if (match['p1Avatar'] != null) {
+                    if (match['p1Avatar'].includes('api') || match['p1Avatar'].includes('oculus')) {
+                        match['p1Avatar'] = "https://new.scoresaber.com" + match['p1Avatar'];
+                    } else {
+                        match['p1Avatar'] = `/${match['p1Avatar']}` + (match['p1Avatar'].substring(0, 2) == 'a_' ? '.gif' : '.webp');
+                        match['p1Avatar'] = `https://cdn.discordapp.com/avatars/${match['p1']}${match['p1Avatar']}`
+                    }
+                }
+                if (match['p2Avatar'] != null) {
+                    if (match['p2Avatar'].includes('api') || match['p2Avatar'].includes('oculus')) {
+                        match['p2Avatar'] = "https://new.scoresaber.com" + match['p2Avatar'];
+                    } else {
+                        match['p2Avatar'] = `/${match['p2Avatar']}` + (match['p2Avatar'].substring(0, 2) == 'a_' ? '.gif' : '.webp');
+                        match['p2Avatar'] = `https://cdn.discordapp.com/avatars/${match['p2']}${match['p2Avatar']}`
+                    }
+                }
                 let svgMatch = this.createSvgMatch(j, match['p1Name'], match['p2Name'], match['p1Avatar'], match['p2Avatar'], match['p1'], match['p2'], i, round, singleMatchRound, match['id'], match['p1Score'], match['p2Score'], match['status'], true, match['bye']);
                 gRound.appendChild(svgMatch);
             }
@@ -458,7 +490,7 @@ export class BracketComponent extends AppComponent implements OnInit {
         if (p1Name != null) {
             group.innerHTML += `
             <image x="17" y="-10"
-            href="https://new.scoresaber.com${p1Avatar}"
+            href="${p1Avatar}"
             class="img" height="16" width="16" clip-path="url(#clipPath-${i}-1)" />
             <text x="37" y="5" width="147" height="12" class="pName" clip-path="url(#nameClip-${i}-1)">${p1Name}</text>
             `;
@@ -468,7 +500,7 @@ export class BracketComponent extends AppComponent implements OnInit {
         if (p2Name != null) {
             group.innerHTML += `
             <image x="17" y="18"
-            href="https://new.scoresaber.com${p2Avatar}"
+            href="${p2Avatar}"
             class="img" height="16" width="16" clip-path="url(#clipPath-${i}-2)" />
             <text x="37" y="33" width="147" height="12" class="pName" clip-path="url(#nameClip-${i}-2)">${p2Name}</text>
             `;

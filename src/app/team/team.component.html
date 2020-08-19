@@ -5,7 +5,7 @@
                 <h2>{{role.value.label}}</h2>
                 <div class="usrRow">
                     <p class="card-text" *ngFor="let user of role.value.users">
-                        <img class="teamImg" src="https://new.scoresaber.com{{user.avatar}}">
+                        <img class="teamImg" src="{{user.avatar}}">
                         <span class="teamName">{{user.name}}</span><br>
                         <span style="font-size:smaller;">{{ user.roleNames.join(', ') }}</span><br>
                         <a href="https://discord.com/users/{{ user.discordId }}"><i class="fab fa-discord"></i></a>

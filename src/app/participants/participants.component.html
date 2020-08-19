@@ -11,7 +11,7 @@
                         {{user.name}} &nbsp;
                     </mat-panel-title>
                 </mat-expansion-panel-header>
-                <img class="participantImg" src="https://new.scoresaber.com{{user.avatar}}">
+                <img class="participantImg" src="{{user.avatar}}">
                 <p class="card-text" style="float: left;">
                     <b>Global Rank:</b> #{{user.globalRank}} <br>
                     <b>Regional Rank:</b> #{{user.localRank}} <img class="participantFlag" src="\assets/flags/{{user.country}}.png" alt="{{user.country}} Flag" style="height: 20px;border: none;"><br>
@@ -36,7 +36,7 @@
                             <span style="justify-content: left;">#{{user.seed}}</span> &nbsp; {{user.name}} &nbsp;
                         </mat-panel-title>
                     </mat-expansion-panel-header>
-                    <img class="participantImg" src="https://new.scoresaber.com{{user.avatar}}">
+                    <img class="participantImg" src="{{user.avatar}}">
                     <p class="card-text" style="float: left;">
                         <b>Global Rank:</b> #{{user.globalRank}} <br>
                         <b>Regional Rank:</b> #{{user.localRank}} <img class="participantFlag" src="\assets/flags/{{user.country}}.png" alt="{{user.country}} Flag" style="height: 20px;border: none;"><br>
@@ -60,7 +60,7 @@
                 <mat-expansion-panel hideToggle *ngIf="user.seed != 0" class="playerPanel" [ngClass]="{'eliminated' : user.position != 0}">
                     <mat-expansion-panel-header>
                         <mat-panel-title class="playerName">
-                            #{{user.seed}} <img class="participantImgSmall" src="https://new.scoresaber.com{{user.avatar}}"> {{user.name}}
+                            #{{user.seed}} <img class="participantImgSmall" src="{{user.avatar}}"> {{user.name}}
                         </mat-panel-title>
                         <mat-panel-description class="playerSumary">
                         </mat-panel-description>

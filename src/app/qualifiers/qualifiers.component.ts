@@ -31,6 +31,12 @@ export class QualifiersComponent implements OnInit {
 			.subscribe(res => {
 				this.qualsScores = res;
 				for (const user of this.qualsScores) {
+					if(user.avatar.includes('api') || user.avatar.includes('oculus')) {
+                        user.avatar = "https://new.scoresaber.com" + user.avatar;
+                    } else {
+                        user.avatar = `/${user.avatar}` + (user.avatar.substring(0, 2) == 'a_' ? '.gif' : '.webp');
+                        user.avatar = `https://cdn.discordapp.com/avatars/${user.discordId}${ user.avatar }`
+                    }
 					for (const score of user.scores) {
 						if (qualsPool.songs.find(x => x.hash == score.songHash).numNotes != 0) {
 							score.percentage = score.score / (qualsPool.songs.find(x => x.hash == score.songHash).numNotes * 920 - 7245)

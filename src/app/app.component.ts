@@ -79,6 +79,12 @@ export class AppComponent implements OnInit {
                 .subscribe(data => {
                     if (data) {
                         this.user = data[0];
+                        if(this.user.avatar.includes('api') || this.user.avatar.includes('oculus')) {
+                            this.user.avatar = "https://new.scoresaber.com" + this.user.avatar;
+                        } else {
+                            this.user.avatar = `/${this.user.avatar}` + (this.user.avatar.substring(0, 2) == 'a_' ? '.gif' : '.webp');
+                            this.user.avatar = `https://cdn.discordapp.com/avatars/${this.user.discordId}${ this.user.avatar }`
+                        }
                     }else {
                         this.user = null;
                     }

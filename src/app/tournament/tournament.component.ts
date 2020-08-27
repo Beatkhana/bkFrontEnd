@@ -322,7 +322,7 @@ export class editTournament implements OnInit {
 
     ngOnInit() {
         this.id = this.data.tournament.tournamentId;
-        // console.log(this.data);
+        console.log(this.data);
         this.url += this.id;
         // console.log(this.data);
         this.tournamentForm = this.fb.group({
@@ -384,25 +384,29 @@ export class editTournament implements OnInit {
     }
 
     public formatDate(date) {
-        var d = new Date(date),
-            month = '' + (d.getMonth()),
-            day = '' + d.getDate(),
-            year = d.getFullYear();
+        var d = new Date(date)
+        //     month = '' + (d.getMonth()),
+        //     day = '' + d.getDate(),
+        //     year = d.getFullYear();
 
-        if (month.length < 2)
-            month = '0' + month;
-        if (day.length < 2)
-            day = '0' + day;
+        // if (month.length < 2)
+        //     month = '0' + month;
+        // if (day.length < 2)
+        //     day = '0' + day;
 
-        // return [year, month, day].join('-');
-        return new Date(Date.UTC(year, parseInt(month), parseInt(day)))
+        // // return [year, month, day].join('-');
+        // return new Date(Date.UTC(year, parseInt(month), parseInt(day)))
+        return d.toISOString().slice(0, 19).replace('T', ' ');
     }
 
     onSubmit() {
         this.isSubmitted = true;
-        this.tournamentForm.value.date = this.formatDate(this.tournamentForm.value.date.toString())
-        this.tournamentForm.value.endDate = this.formatDate(this.tournamentForm.value.endDate.toString())
+        // this.tournamentForm.value.date = this.formatDate(this.tournamentForm.value.date.toString())
+        // this.tournamentForm.value.endDate = this.formatDate(this.tournamentForm.value.endDate.toString())
+        // this.tournamentForm.value.date = this.tournamentForm.value.date.toISOString().slice(0, 19).replace('T', ' '); 
+        // this.tournamentForm.value.endDate = this.tournamentForm.value.endDate.toISOString().slice(0, 19).replace('T', ' ');
         // console.log
+        console.log(this.tournamentForm.value);
         this.updateTournament(this.tournamentForm.value)
             .subscribe(data => {
                 if (!data.flag) {
@@ -411,6 +415,8 @@ export class editTournament implements OnInit {
                     console.error('Error', data.err)
                     this.notif.showError('', 'Error updating tournament');
                 }
+                data.data.date = new Date(Date.parse(data.data.date + '+00:00'));
+                data.data.endDate = new Date(Date.parse(data.data.endDate + '+00:00'));
                 this.dialogRef.close(data.data);
             }, error => {
                 this.notif.showError('', 'Error updating tournament');

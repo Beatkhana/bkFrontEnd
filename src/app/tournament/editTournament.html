@@ -7,7 +7,7 @@
         <input matInput placeholder="Tournament Name" formControlName="name">
     </mat-form-field>
     <br>
-    <mat-form-field>
+    <!-- <mat-form-field>
         <mat-label>Start Date (local)</mat-label>
         <input matInput [matDatepicker]="dp3" readonly formControlName="date" (focus)="dp3.open()" (click)="dp3.open()">
         <mat-datepicker-toggle matSuffix [for]="dp3"></mat-datepicker-toggle>
@@ -19,6 +19,28 @@
         <input matInput [matDatepicker]="dp1" readonly formControlName="endDate" (focus)="dp1.open()" (click)="dp1.open()">
         <mat-datepicker-toggle matSuffix [for]="dp1"></mat-datepicker-toggle>
         <mat-datepicker #dp1 disabled="false"></mat-datepicker>
+    </mat-form-field> -->
+    <mat-form-field>
+        <mat-label>Start Date (local)</mat-label>
+        <!-- <input matInput [matDatepicker]="dp3" readonly formControlName="date" (focus)="dp3.open()" (click)="dp3.open()">
+        <mat-datepicker-toggle matSuffix [for]="dp3"></mat-datepicker-toggle>
+        <mat-datepicker #dp3 disabled="false"></mat-datepicker> -->
+
+        <input matInput [ngxMatDatetimePicker]="picker" readonly formControlName="date" (focus)="picker.open()" (click)="picker.open()">
+        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+        <ngx-mat-datetime-picker #picker [showSeconds]="false" [defaultTime]="[12,0,0]">
+        </ngx-mat-datetime-picker>
+    </mat-form-field>
+    <br>
+    <mat-form-field>
+        <mat-label>End Date (local)</mat-label>
+        <!-- <input matInput [matDatepicker]="dp1" readonly formControlName="endDate" (focus)="dp1.open()" (click)="dp1.open()">
+        <mat-datepicker-toggle matSuffix [for]="dp1"></mat-datepicker-toggle>
+        <mat-datepicker #dp1 disabled="false"></mat-datepicker> -->
+        <input matInput [ngxMatDatetimePicker]="picker2" readonly formControlName="endDate" (focus)="picker2.open()" (click)="picker2.open()">
+        <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+        <ngx-mat-datetime-picker #picker2 [showSeconds]="false" [defaultTime]="[12,0,0]">
+        </ngx-mat-datetime-picker>
     </mat-form-field>
 
     <br>

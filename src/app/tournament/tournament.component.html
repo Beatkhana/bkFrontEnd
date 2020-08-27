@@ -40,7 +40,7 @@
                 </div>
 
                 <p class="card-text">
-                    Date: {{ tournament.startDate | date: 'dd/MM/yyyy'}} -> {{ tournament.endDate | date: 'dd/MM/yyyy'}}<br />
+                    Date: {{ tournament.startDate | date: 'short'}} -> {{ tournament.endDate | date: 'short'}}<br />
                     <span *ngIf="tournament.info != null; else noPrize">
                         Prize pool: {{ tournament.prize }} <br />
                     </span>

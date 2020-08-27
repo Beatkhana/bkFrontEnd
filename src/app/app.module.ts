@@ -49,6 +49,12 @@ import { QualifiersComponent } from './qualifiers/qualifiers.component';
 import { MiniTourneysComponent } from './mini-tourneys/mini-tourneys.component';
 import { RulesComponent } from './rules/rules.component';
 
+import {
+    NgxMatDatetimePickerModule,
+    NgxMatNativeDateModule,
+    NgxMatTimepickerModule
+} from '@angular-material-components/datetime-picker';
+
 
 @NgModule({
     declarations: [
@@ -114,7 +120,10 @@ import { RulesComponent } from './rules/rules.component';
             countDuplicates: true,
             resetTimeoutOnDuplicate: true
         }),
-        NgxLinkifyjsModule.forRoot()
+        NgxLinkifyjsModule.forRoot(),
+        NgxMatDatetimePickerModule,
+        NgxMatTimepickerModule,
+        NgxMatNativeDateModule,
     ],
     providers: [],
     bootstrap: [AppComponent]

@@ -180,8 +180,8 @@ export class newTournamentDialog implements OnInit {
     onSubmit() {
         this.isSubmitted = true
         this.tournamentForm.value.is_mini = +this.tournamentForm.value.is_mini;
-        this.tournamentForm.value.date = this.formatDate(this.tournamentForm.value.date.toString())
-        this.tournamentForm.value.endDate = this.formatDate(this.tournamentForm.value.endDate.toString())
+        // this.tournamentForm.value.date = this.formatDate(this.tournamentForm.value.date.toString())
+        // this.tournamentForm.value.endDate = this.formatDate(this.tournamentForm.value.endDate.toString())
         
         this.addTournament(this.tournamentForm.value)
             .subscribe(data => {

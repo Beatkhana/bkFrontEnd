@@ -18,6 +18,7 @@ export class TeamComponent extends AppComponent implements OnInit {
     displayRoles = {
         1: {label: 'Admins', id: 1, users: []},
         2: {label: 'Staff', id: 2, users: []},
+        6: {label: 'Mini Tournament Team', id: 6, users: []},
     }
 
     ngOnInit(): void {

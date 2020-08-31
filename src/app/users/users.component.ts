@@ -127,6 +127,10 @@ export class editUserDialog implements OnInit {
             id: "5",
             name: 'Competitor'
         },
+        {
+            id: "6",
+            name: 'Mini Tournament Team'
+        },
     ]
 
     constructor(

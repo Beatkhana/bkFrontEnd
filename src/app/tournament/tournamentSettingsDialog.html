@@ -57,6 +57,22 @@
                     <mat-option value="battle_royale">Battle Royale</mat-option>
                 </mat-select>
             </mat-form-field>
+            <br>
+            <ng-container *ngIf="type.value == 'battle_royale'">
+                <mat-form-field appearance="fill">
+                    <mat-label>Player sort order</mat-label>
+                    <mat-select formControlName="sort_method">
+                        <mat-option value="globalRank">Global Rank</mat-option>
+                        <mat-option value="date">Sign Up Order</mat-option>
+                        <mat-option value="random">Random</mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <br>
+                <mat-form-field class="fill">
+                    <input matInput placeholder="Number of players in tournament" formControlName="standard_cutoff">
+                </mat-form-field>
+            </ng-container>
+
         </mat-tab>
 
         <mat-tab label="Signup">

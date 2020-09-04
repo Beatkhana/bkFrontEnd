@@ -1,6 +1,6 @@
 <h1 mat-dialog-title>Create New Tournament</h1>
 <form [formGroup]="tournamentForm" novalidate (ngSubmit)="onSubmit()">
-    Value: {{ tournamentForm.value | json }}
+    <!-- Value: {{ tournamentForm.value | json }} -->
 
     <mat-form-field class="fill">
         <input matInput placeholder="Tournament Name" formControlName="name">

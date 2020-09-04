@@ -41,6 +41,7 @@ export class ParticipantsComponent implements OnInit {
         this.getParticipants()
             .subscribe(data => {
                 console.log(this.all)
+                console.log(data);
                 if (this.tournament.state == 'main_stage' && !this.all) {
                     if (this.tournament.type == 'battle_royale') {
                         data.sort(this.royaleSort);
@@ -48,7 +49,11 @@ export class ParticipantsComponent implements OnInit {
                         data.sort(this.seedSort);
                     }
                 } else {
-                    data.sort(this.orderGlobal);
+                    if(this.tournament.sort_method == 'globalRank') {
+                        data.sort(this.orderGlobal);
+                    } else if (this.tournament.sort_method == 'date') {
+                        data.sort(this.dateSort);
+                    }
                 }
                 this.participants = data;
                 for (const member of this.participants) {
@@ -68,6 +73,10 @@ export class ParticipantsComponent implements OnInit {
         if (b.globalRank == 0) return -1;
         if (a.globalRank == 0) return 1;
         return a.globalRank - b.globalRank;
+    }
+
+    dateSort(a, b) {
+        return a.participantId - b.participantId;
     }
 
     seedSort(a, b) {

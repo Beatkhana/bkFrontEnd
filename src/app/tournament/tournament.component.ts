@@ -494,6 +494,8 @@ export class tournamentSettingsDialog implements OnInit {
             show_quals: !!this.data.tournament.show_quals,
             has_quals: !!this.data.tournament.has_quals,
             countries: this.data.tournament.countries,
+            sort_method: this.data.tournament.sort_method,
+            standard_cutoff: this.data.tournament.standard_cutoff,
         });
     }
 
@@ -507,6 +509,10 @@ export class tournamentSettingsDialog implements OnInit {
 
     get quals() {
         return this.settingsForm.get('has_quals');
+    }
+
+    get type() {
+        return this.settingsForm.get('type');
     }
 
     onSubmit() {

@@ -15,7 +15,7 @@
                 </h5>
             </a>
             <p class="card-text">
-                Date: {{tournament.startDate | date: 'dd/MM/yyyy'}} <br> Prize: {{tournament.prize}} <br>
+                Date: {{tournament.startDate | date: 'd/MM/yy, h:mm a'}} <br> Prize: {{tournament.prize}} <br>
                 <a href="{{tournament.discord}}">Discord</a><br>
                 <a href="{{tournament.twitchLink}}">Twitch</a><br>
                 <span *ngIf="tournament.public == 0" style="color:rgb(209, 23, 23);font-style: italic;">*Private</span>

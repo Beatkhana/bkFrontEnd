@@ -40,7 +40,7 @@
                 </div>
 
                 <p class="card-text">
-                    Date: {{ tournament.startDate | date: 'short'}} -> {{ tournament.endDate | date: 'short'}}<br />
+                    Date: {{ tournament.startDate | date: 'd/MM/yy, h:mm a'}} -> {{ tournament.endDate | date: 'd/MM/yy, h:mm a'}}<br />
                     <span *ngIf="tournament.info != null; else noPrize">
                         Prize pool: {{ tournament.prize }} <br />
                     </span>
@@ -55,6 +55,9 @@
                 </p>
                 <p *ngIf="tournament.public_signups == 1 && user != null && !isParticipant && canSignup" class="card-text">
                     <button mat-stroked-button color="accent" (click)="signUp()">Sign Up!</button>
+                </p>
+                <p *ngIf="tournament.public_signups == 1 && user == null" class="card-text">
+                    Please login to signup for this tournament.
                 </p>
                 <p *ngIf="user && tournament.owner == user.discordId && !user['roleIds'].includes('1')" class="card-text">
                     <button mat-stroked-button color="primary" (click)="openEdit()">Edit Tournament</button> &nbsp;

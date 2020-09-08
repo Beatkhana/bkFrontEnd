@@ -20,6 +20,9 @@
                     background: rgba(255, 255, 255, 0.465); height: 10px;">
                         event :)
                     </div> -->
+                    <!-- <div *ngFor="let n of numSequence(6); let i = index;" class="row" style="grid-row: {{i + 1}}">
+
+                    </div> -->
 
                     <div *ngFor="let event of displayEvents" class="event" [routerLink]="['/tournament',event.id]" style="grid-area: {{event.row + 1}} / {{event.start}} / auto / {{event.end}}; z-index: 10;
                     background: {{event.color}}80; margin-top: {{event.top}}px">

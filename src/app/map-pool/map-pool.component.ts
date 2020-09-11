@@ -170,7 +170,7 @@ export class MapPoolComponent implements OnInit {
         var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(playlist));
         var downloadAnchorNode = document.createElement('a');
         downloadAnchorNode.setAttribute("href", dataStr);
-        downloadAnchorNode.setAttribute("download", this.mapPools[this.curPoolId].poolName + ".json");
+        downloadAnchorNode.setAttribute("download", `${this.tournament.name}_` + this.mapPools[this.curPoolId].poolName + ".json");
         document.body.appendChild(downloadAnchorNode);
         downloadAnchorNode.click();
         downloadAnchorNode.remove();

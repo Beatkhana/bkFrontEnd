@@ -1,7 +1,7 @@
 import { Component, OnInit, HostListener, ElementRef, ChangeDetectorRef } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Title, DomSanitizer, SafeHtml } from '@angular/platform-browser';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, NavigationStart, Router } from '@angular/router';
 
 import { User } from './models/user.model'
 import { Observable } from 'rxjs';
@@ -23,6 +23,8 @@ export class AppComponent implements OnInit {
     updatedUser = false;
 
     discordSvg: SafeHtml;
+
+    showDefault = true;
 
     public constructor(
         public titleService: Title,
@@ -48,6 +50,12 @@ export class AppComponent implements OnInit {
         setInterval(()=> {
             this.updatedUser = false;
         },30000);
+
+        router.events.forEach((event) => {
+            if (event instanceof NavigationStart) {
+                this.showDefault = !(event.url.includes('overlay') || event.url.includes('coordinator'));
+            }
+        });
 
         // route.params.subscribe(val => {
         //     this.updateUser();

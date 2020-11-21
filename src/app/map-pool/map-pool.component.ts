@@ -25,7 +25,7 @@ export class MapPoolComponent implements OnInit {
 
     user: User = null;
 
-    columnsToDisplay = ['image', 'songName', 'diff', 'bsaver', 'oneClick'];
+    columnsToDisplay = ['image', 'songName', 'diff', 'bsaver', 'oneClick', 'code'];
 
     curPoolId = '0';
     curPoolLive = false;
@@ -76,6 +76,10 @@ export class MapPoolComponent implements OnInit {
     public logIn(): Observable<User[]> {
         // console.log('/api/discordAuth?code=' + code);
         return this.http.get<User[]>('/api/user');
+    }
+
+    copyCode(code: string) {
+        navigator.clipboard.writeText(code);
     }
 
     delete(songId) {

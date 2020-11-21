@@ -1,10 +1,10 @@
 <h1>Match Info</h1>
-<div class="matchInfo" *ngIf="data.p1Name != null">
+<div class="matchInfo" *ngIf="data.p1.name != null">
     <div>
         <img class="userImg" src="https://new.scoresaber.com{{data.p1Avatar}}" style="float: left;">
         <p class="playerText" style="float: left;">
-            <a routerLink="/user/{{data.p1}}" class="playerName" [ngClass]="{'winner' : (data.status == 'complete' && data.p1Score > data.p2Score), 'loser': (data.status == 'complete' && data.p1Score < data.p2Score)}" mat-dialog-close>{{data.p1Name}} </a>
-            <span class="playerName" [ngClass]="{'winner' : (data.status == 'complete' && data.p1Score > data.p2Score), 'loser': (data.status == 'complete' && data.p1Score < data.p2Score)}">&nbsp; [{{data.p1Score}}]</span>
+            <a routerLink="/user/{{data.p1.id}}" class="playerName" [ngClass]="{'winner' : (data.status == 'complete' && data.p1.score > data.p2.score), 'loser': (data.status == 'complete' && data.p1.score < data.p2.score)}" mat-dialog-close>{{data.p1.name || data.p1.id}} </a>
+            <span class="playerName" [ngClass]="{'winner' : (data.status == 'complete' && data.p1.score > data.p2.score), 'loser': (data.status == 'complete' && data.p1.score < data.p2.score)}">&nbsp; [{{data.p1.score}}]</span>
             <br> <b>Global Rank:</b> {{data.p1Rank}}
             <br> <b>Seed:</b> {{data.p1Seed}}
             <br> <b>Country:</b> {{data.p1Country | uppercase}}
@@ -15,8 +15,8 @@
     <div>
         <img class="userImg" src="https://new.scoresaber.com{{data.p2Avatar}}" style="float: right;">
         <p class="playerText" style="float: right;text-align: right;">
-            <a routerLink="/user/{{data.p2}}" class="playerName" style="float: right" [ngClass]="{'winner' : (data.status == 'complete' && data.p1Score < data.p2Score), 'loser': (data.status == 'complete' && data.p1Score > data.p2Score)}" mat-dialog-close> {{data.p2Name}}</a>
-            <span class="playerName" [ngClass]="{'winner' : (data.status == 'complete' && data.p1Score < data.p2Score), 'loser': (data.status == 'complete' && data.p1Score > data.p2Score)}">[{{data.p2Score}}] &nbsp;</span>
+            <a routerLink="/user/{{data.p2.id}}" class="playerName" style="float: right" [ngClass]="{'winner' : (data.status == 'complete' && data.p1.score < data.p2.score), 'loser': (data.status == 'complete' && data.p1.score > data.p2.score)}" mat-dialog-close> {{data.p2.name || data.p2.id}}</a>
+            <span class="playerName" [ngClass]="{'winner' : (data.status == 'complete' && data.p1.score < data.p2.score), 'loser': (data.status == 'complete' && data.p1.score > data.p2.score)}">[{{data.p2.score}}] &nbsp;</span>
             <br> <b>Global Rank:</b> {{data.p2Rank}}
             <br> <b>Seed:</b> {{data.p2Seed}}
             <br> <b>Country:</b> {{data.p2Country | uppercase}}
@@ -28,15 +28,15 @@
         </div>
     </div>
 </div>
-<div class="matchInfo" *ngIf="data.p1Name == null && data.p1 != null">
+<div class="matchInfo" *ngIf="data.p1.name == null && data.p1 != null">
     <div>
         <p class="playerText" style="float: left;">
-            <span class="playerName" [ngClass]="{'winner' : (data.status == 'complete' && data.p1Score > data.p2Score), 'loser': (data.status == 'complete' && data.p1Score < data.p2Score)}">{{data.p1}} [{{data.p2Score}}] &nbsp;</span>
+            <span class="playerName" [ngClass]="{'winner' : (data.status == 'complete' && data.p1.score > data.p2.score), 'loser': (data.status == 'complete' && data.p1.score < data.p2.score)}">{{data.p1.id}} [{{data.p1.score}}] &nbsp;</span>
         </p>
     </div>
     <div>
         <p class="playerText" style="float: right;text-align: right;">
-            <span class="playerName" [ngClass]="{'winner' : (data.status == 'complete' && data.p1Score < data.p2Score), 'loser': (data.status == 'complete' && data.p1Score > data.p2Score)}">{{data.p2}} [{{data.p2Score}}] &nbsp;</span>
+            <span class="playerName" [ngClass]="{'winner' : (data.status == 'complete' && data.p1.score < data.p2.score), 'loser': (data.status == 'complete' && data.p1.score > data.p2.score)}">{{data.p2.id}} [{{data.p2.score}}] &nbsp;</span>
         </p>
     </div>
 </div>
@@ -45,14 +45,14 @@
     <!-- Value: {{ signUpForm.value | json }} -->
     <br>
     <mat-form-field class="fill" style="width: 49%; float: left;">
-        <mat-label *ngIf="data.p1Name != null">{{data.p1Name}}'s Score</mat-label>
-        <mat-label *ngIf="data.p1 != null && data.p1Name == null">{{data.p1}}'s Score</mat-label>
+        <mat-label *ngIf="data.p1.name || data.p1.id != null">{{data.p1.name || data.p1.id}}'s Score</mat-label>
+        <mat-label *ngIf="data.p1 != null && data.p1.name || data.p1.id == null">{{data.p1}}'s Score</mat-label>
         <input matInput formControlName="p1Score" autocomplete="off">
     </mat-form-field>
     <!-- <br> -->
     <mat-form-field class="fill" style="width: 49%; float: right;">
-        <mat-label *ngIf="data.p2Name != null">{{data.p2Name}}'s Score</mat-label>
-        <mat-label *ngIf="data.p2 != null && data.p2Name == null">{{data.p2}}'s Score</mat-label>
+        <mat-label *ngIf="data.p2.name || data.p2.id != null">{{data.p2.name || data.p2.id}}'s Score</mat-label>
+        <mat-label *ngIf="data.p2 != null && data.p2.name || data.p2.id == null">{{data.p2}}'s Score</mat-label>
         <input matInput formControlName="p2Score" autocomplete="off">
     </mat-form-field>
     <br>

@@ -1,136 +1,94 @@
 import { HttpClient } from '@angular/common/http';
-import { Component, Inject, Input, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { DomSanitizer } from '@angular/platform-browser';
-import { Observable } from 'rxjs';
-import { AppComponent } from '../app.component';
-import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
-import { NotificationService } from '../services/toast.service';
-import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
+import { AfterViewInit, Component } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+import { WebSocketSubject, webSocket } from 'rxjs/webSocket';
 import { bracketMatch } from '../_models/bracket.model';
 
 @Component({
-    selector: 'app-bracket',
-    templateUrl: './bracket.component.html',
-    styleUrls: ['./bracket.component.scss']
+    selector: 'app-overlay',
+    templateUrl: './overlay.component.html',
+    styleUrls: ['./overlay.component.scss']
 })
-export class BracketComponent extends AppComponent implements OnInit {
+export class OverlayComponent implements AfterViewInit {
 
-    private url = '/api/tournament';
-    @Input() tournament;
-    public tourneyId: string;
+    canvas;
+    body = document.body;
+    svgData;
 
-    ws: WebSocketSubject<any> = webSocket(`${location.protocol == 'http:' ? 'ws' : 'wss'}://` + location.host + '/api/ws');
+    matchId: Number | string;
+    stage: any;
+    tourneyId: any;
+
+    matchData: any;
+
+    settings: any;
+    viewSeason = '1';
+    seasons: number[] = [];
 
     bracketData = [];
-    loading = true;
 
-    isAuth = false;
-    btnText = 'Generate Bracket';
+    constructor(private route: ActivatedRoute, private http: HttpClient) { }
 
-    firstId = 0;
+    myWebSocket: WebSocketSubject<any> = webSocket(`${location.protocol == 'http:' ? 'ws' : 'wss'}://` + location.host + '/api/ws');
 
-    interval;
+    async ngAfterViewInit(): Promise<void> {
+        this.canvas = document.getElementById("fakeCanvas");
+        this.route.params.subscribe(params => {
+            this.matchId = params['matchId'];
+            this.stage = params['stage'];
+            this.tourneyId = params['tourneyId'];
+        });
 
-    ngOnInit(): void {
-        this.initSettings();
-        let node = document.createElement('script');
-        node.src = 'https://embed.twitch.tv/embed/v1.js';
-        node.type = 'text/javascript';
-        document.getElementsByTagName('head')[0].appendChild(node);
-        this.ws.subscribe(
+        if (!(this.stage == 'bracket' && this.matchId == 'display')) {
+            // await this.draw();
+            // await this.getMatchData();
+        } else {
+            // await this.setSettings();
+            this.initSettings();
+        }
+
+        this.myWebSocket.subscribe(
             msg => {
-                // console.log(msg);
                 if(msg.bracketMatch) this.updateDrawnMatch(msg.bracketMatch);
+                // if (msg.matchUpdate && msg.matchUpdate.id == this.matchId) this.update(msg.matchUpdate);
+                // if (msg.bracketMatch && msg.bracketMatch.id == this.matchId) this.update(msg.bracketMatch);
+                // if (msg.taPacket) this.handlePacket(msg.taPacket);
                 // if (msg.bracketUpdate && this.bracketData.length > 0) {
                 //     this.bracketData = msg.bracketUpdate;
                 //     this.intervalIteration = 1;
                 //     this.generateMatches(this.bracketData);
-                //     let matchElements = document.getElementsByClassName('matchReady');
-                //     for (let i = 0; i < matchElements.length; i++) {
-                //         const element = matchElements[i];
-                //         element.addEventListener("click", () => this.openMatch(element.getAttribute('data-matchid')))
-                //     }
                 // }
             },
-            err => console.log(err)
+            err => console.log('err: ', err),
+            () => console.log('complete')
         );
-    }
 
-    ngOnDestroy() {
-        clearInterval(this.interval);
-        this.ws.complete(); 
+        // console.log(this.router.url)
     }
 
     async initSettings() {
-        const matchesData: any = await this.http.get(`/api/tournament/${this.tournament.tournamentId}/bracket`).toPromise();
+        const matchesData: any = await this.http.get(`/api/tournament/${this.tourneyId}/bracket`).toPromise();
         this.bracketData = matchesData;
-        if (matchesData.length > 0) {
-            this.btnText = 'Regenerate Bracket';
-        }
-        const usr: any = await this.http.get(`/api/user`).toPromise();
-        this.user = usr != null ? usr[0] : null;
-        // console.log(this.user);
-        if (this.user != null && (this.user.roleIds.includes("1") || this.tournament.owner == this.user.discordId)) {
-            this.isAuth = true;
-        }
+        // if (matchesData.length > 0) {
+        //     this.btnText = 'Regenerate Bracket';
+        // }
+        // const usr: any = await this.http.get(`/api/user`).toPromise();
+        // this.user = usr != null ? usr[0] : null;
+        // // console.log(this.user);
+        // if (this.user != null && (this.user.roleIds.includes("1") || this.tournament.owner == this.user.discordId)) {
+        //     this.isAuth = true;
+        // }
 
         if (matchesData.length > 0) this.generateMatches(this.bracketData);
         this.intervalIteration = 1;
         // console.log(matchesData.filter(x => x.round == 0).length);
         // console.log(matchesData)
-        let matchElements = document.getElementsByClassName('matchReady');
-        for (let i = 0; i < matchElements.length; i++) {
-            const element = matchElements[i];
-            element.addEventListener("click", () => this.updateMatch(element.getAttribute('data-matchid')))
-        }
-        this.loading = false;
-    }
-
-    async updateBracket() {
-        const matchesData: any = await this.http.get(`/api/tournament/${this.tournament.tournamentId}/bracket`).toPromise();
-        this.bracketData = matchesData;
-
-        if (matchesData.length > 0) this.generateMatches(this.bracketData);
-
-        let matchElements = document.getElementsByClassName('matchReady');
-        for (let i = 0; i < matchElements.length; i++) {
-            const element = matchElements[i];
-            element.addEventListener("click", () => this.updateMatch(element.getAttribute('data-matchid')))
-        }
-
-        this.loading = false;
-    }
-
-    public logIn(): Observable<any> {
-        return this.http.get('/api/user');
-    }
-
-    async genBracket() {
-        const dialog = this.dialog.open(generateBracketDialog, {
-            minWidth: '50vw',
-            // width: '50vw',
-            maxHeight: '90vh',
-            maxWidth: '95vw',
-            data: this.tournament
-        });
-
-        dialog.afterClosed()
-            .subscribe(async data => {
-                this.updateBracket();
-            });
-    }
-
-    updateMatch(id) {
-        const dialog = this.dialog.open(updateMatchDialog, {
-            minWidth: '60vw',
-            width: '60vw',
-            maxHeight: '90vh',
-            maxWidth: '95vw',
-            panelClass: 'matchPanel',
-            data: { ...this.bracketData.find(x => x.id == id), isAuth: this.isAuth }
-        });
+        // let matchElements = document.getElementsByClassName('matchReady');
+        // for (let i = 0; i < matchElements.length; i++) {
+        //     const element = matchElements[i];
+        //     element.addEventListener("click", () => this.updateMatch(element.getAttribute('data-matchid')))
+        // }
+        // this.loading = false;
     }
 
     updateDrawnMatch(data: bracketMatch) {
@@ -139,7 +97,7 @@ export class BracketComponent extends AppComponent implements OnInit {
 
         // }
         let index = this.bracketData.findIndex(x => x.id == data.id);
-        this.bracketData[index] = {...this.bracketData[index],...data};
+        this.bracketData[index] = { ...this.bracketData[index], ...data };
         matchElem.querySelector('.pName.p1').innerHTML = data.p1.name || data.p1.id;
         matchElem.querySelector('.pName.p2').innerHTML = data.p2.name || data.p2.id;
         if (data.status == 'in_progress') {
@@ -147,8 +105,8 @@ export class BracketComponent extends AppComponent implements OnInit {
         } else {
             (<SVGPathElement>matchElem.querySelector('.in_progress')).style.display = 'none';
         }
-        if(data.p1.score != data.p2.score && data.status == 'complete') {
-            if(data.p1.score > data.p2.score) {
+        if (data.p1.score != data.p2.score && data.status == 'complete') {
+            if (data.p1.score > data.p2.score) {
                 matchElem.querySelector('.pScore.p1').classList.add('winner');
                 matchElem.querySelector('.pScore.p2').classList.add('loser');
             } else {
@@ -163,10 +121,10 @@ export class BracketComponent extends AppComponent implements OnInit {
         matchElem.querySelector('.img.p1').setAttribute('href', data.p1.avatar);
         matchElem.querySelector('.img.p2').setAttribute('href', data.p2.avatar);
 
-        if(data.p1.id && data.p2.id) {
-            matchElem.classList.add('matchReady');
-            matchElem.addEventListener("click", () => this.updateMatch(matchElem.getAttribute('data-matchid')));
-        }
+        // if (data.p1.id && data.p2.id) {
+        //     matchElem.classList.add('matchReady');
+        //     matchElem.addEventListener("click", () => this.updateMatch(matchElem.getAttribute('data-matchid')));
+        // }
     }
 
     gMatches = [];
@@ -176,7 +134,7 @@ export class BracketComponent extends AppComponent implements OnInit {
     losersMatches = [];
 
     intervalIteration = 0;
-    
+
     generateMatches(data) {
         const slider: any = document.querySelector('#svgContainer');
         let isDown = false;
@@ -215,7 +173,7 @@ export class BracketComponent extends AppComponent implements OnInit {
             // console.log(walk);
         });
 
-        this.firstId = data[0].id;
+        // this.firstId = data[0].id;
 
         const svgMain = document.createElement('svg');
         svgMain.setAttribute('id', "bracket-svg");
@@ -510,7 +468,7 @@ export class BracketComponent extends AppComponent implements OnInit {
         }
 
         // if (status == 'in_progress') {
-            group.innerHTML += `
+        group.innerHTML += `
             <path class="matchPath ${noAnim}" d="m 0 12.25 l 0 -12.5 l 15 -15 h 200 l 15 15 l 0 12.5 M 0 12.25 l 0 12.5 l 15 15 h 200 l 15 -15 l 0 -12.5" />
             <path class="matchPath in_progress" ${status != 'in_progress' ? 'style="display:none;"' : ''} id="livePath-${i}" d="m 0 12.25 l 0 -12.5 l 15 -15 h 200 l 15 15 l 0 12.5 M 0 12.25 l 0 12.5 l 15 15 h 200 l 15 -15 l 0 -12.5" />
             <path class="matchPath ${noAnim} matchSplit" d="m 0 12.25 l 230 0" />`
@@ -522,7 +480,7 @@ export class BracketComponent extends AppComponent implements OnInit {
 
         if (p1Name == null && p1Id != null) p1Name = p1Id;
         // if (p1Name != null) {
-            group.innerHTML += `
+        group.innerHTML += `
             <image x="17" y="-10"
             ${p1Avatar ? `href="${p1Avatar}"` : ''}            
             class="img p1" height="16" width="16" clip-path="url(#clipPath-${i}-1)" />
@@ -532,7 +490,7 @@ export class BracketComponent extends AppComponent implements OnInit {
         if (p1Name == null && p1Id != null) p1Name = null;
         if (p2Name == null && p2Id != null) p2Name = p2Id;
         // if (p2Name != null) {
-            group.innerHTML += `
+        group.innerHTML += `
             <image x="17" y="18"
             ${p2Avatar ? `href="${p2Avatar}"` : ''}            
             class="img p2" height="16" width="16" clip-path="url(#clipPath-${i}-2)" />
@@ -628,10 +586,6 @@ export class BracketComponent extends AppComponent implements OnInit {
         return group;
     }
 
-    getBracket(): Observable<any> {
-        return this.http.get(`/api/tournament/${this.tournament.tournamentId}/bracketTest`);
-    }
-
     private calcLabel(losers: boolean, firstRoundCount: number, round: number, matchNum: number, minRound: number) {
         let labelId = 1;
         let prevRound = firstRoundCount;
@@ -663,146 +617,5 @@ export class BracketComponent extends AppComponent implements OnInit {
         }
         return labelId;
     }
+
 }
-
-declare let Twitch: any;
-@Component({
-    selector: 'updateMatchDialog',
-    templateUrl: './updateMatchDialog.html',
-    styleUrls: ['./bracket.component.scss']
-})
-export class updateMatchDialog implements OnInit {
-
-    scoreForm: FormGroup;
-
-    filteredOptions: Observable<any>;
-
-    constructor(
-        private fb: FormBuilder,
-        public http: HttpClient,
-        @Inject(MAT_DIALOG_DATA) public data: any,
-        private dialogRef: MatDialogRef<updateMatchDialog>,
-        private notif: NotificationService
-    ) {
-
-    }
-
-    status = 'update';
-
-
-    async ngOnInit() {
-        console.log(this.data)
-        // console.log(await this.http.get(`/api/tournament/${this.data.tournamentId}/bracket/${this.data.id}`).toPromise());
-        this.scoreForm = this.fb.group({
-            p1Score: this.data.p1.score,
-            p2Score: this.data.p2.score,
-            status: 'update',
-            matchId: this.data.id
-        });
-
-        if (this.data.p1.name || this.data.p2.name) {
-            var options1 = {
-                channel: this.data.p1.twitch,
-                theme: 'dark',
-
-            };
-            var player1 = new Twitch.Player("P1twitch", options1);
-            player1.setVolume(0.5);
-
-            var options2 = {
-                channel: this.data.p2.twitch,
-                theme: 'dark',
-
-            };
-            var player2 = new Twitch.Player("P2twitch", options2);
-            player2.setVolume(0);
-        }
-    }
-
-    isTheatre = false;
-    theatreBtn = 'Theatre Mode';
-
-    theatre() {
-        if (!this.isTheatre) this.dialogRef.updateSize("95vw");
-        if (this.isTheatre) this.dialogRef.updateSize("60vw");
-        this.isTheatre = !this.isTheatre;
-        this.theatreBtn = this.isTheatre ? 'Regular Mode' : 'Theatre Mode';
-    }
-
-    onSubmit(status) {
-        this.scoreForm.value.status = status;
-        this.updateScore(this.scoreForm.value)
-            .subscribe(data => {
-                // if (!data.flag) {
-                this.notif.showInfo('', 'Successfully updated score');
-                    // this.dialogRef.close(this.scoreForm.value);
-                // } else {
-                //     console.error('Error', data.err)
-                //     this.notif.showError('', 'Error updaing score');
-                //     // this.dialogRef.close(false);
-                // }
-            }, error => {
-                this.notif.showError('', 'Error updaing score');
-                console.error("Error: ", error);
-                // this.dialogRef.close(false);
-            });
-    }
-
-    updateScore(data: any): Observable<any> {
-        return this.http.put(`/api/tournament/${this.data.tournamentId}/bracket/${this.data.id}`, data);
-    }
-}
-
-@Component({
-    selector: 'generateBracketDialog',
-    templateUrl: './generateBracketDialog.html',
-    styleUrls: ['./bracket.component.scss']
-})
-export class generateBracketDialog implements OnInit {
-
-    bracketGenForm: FormGroup;
-
-    filteredOptions: Observable<any>;
-
-    constructor(
-        private fb: FormBuilder,
-        public http: HttpClient,
-        @Inject(MAT_DIALOG_DATA) public data: any,
-        private dialogRef: MatDialogRef<generateBracketDialog>,
-        private notif: NotificationService,
-        private sanitizer: DomSanitizer
-    ) { }
-
-
-    ngOnInit() {
-        // console.log(this.data)
-        this.bracketGenForm = this.fb.group({
-            custom: false,
-            players: null
-        });
-    }
-
-    async onSubmit() {
-        let players = this.bracketGenForm.value.players != null ? this.bracketGenForm.value.players.replace(' ', '').split('\n') : null;
-        try {
-            const bracketGen: any = await this.http.post(`/api/tournament/${this.data.tournamentId}/generateBracket`, { tournamentId: this.data.tournamentId, data: players }).toPromise();
-            if (!bracketGen.flag) {
-                this.notif.showSuccess('', 'Successfully created bracket');
-                this.dialogRef.close(false);
-            } else {
-                console.error("Error: ", bracketGen.err);
-                this.notif.showError('', 'Error creating bracket');
-                this.dialogRef.close(false);
-            }
-        } catch (error) {
-            console.error("Error: ", error);
-            this.notif.showError('', 'Error creating bracket');
-            this.dialogRef.close(false);
-        }
-    }
-
-    updateScore(data: any): Observable<any> {
-        return this.http.put(`/api/tournament/${this.data.tournamentId}/bracket/${this.data.id}`, data);
-    }
-}
-

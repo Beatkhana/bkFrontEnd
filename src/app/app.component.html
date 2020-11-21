@@ -1,4 +1,4 @@
-<header>
+<header *ngIf="showDefault">
     <nav>
         <div class="container">
             <div>
@@ -97,7 +97,7 @@
     </nav>
 </header>
 <router-outlet></router-outlet>
-<footer>
+<footer *ngIf="showDefault">
     <p>
         <strong>BeatKhana!</strong>
         <br><br>

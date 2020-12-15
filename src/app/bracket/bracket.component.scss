@@ -69,8 +69,13 @@
     /* fill: #fff; */
     fill: rgb(200, 130, 90);
     font-family: "Ubuntu", sans-serif;
-    font-size: 18px;
+    font-size: 13px;
     text-shadow: 1px 1px 1px #222;
+    transition: fill 300ms;
+}
+
+:host ::ng-deep .highlight {
+    fill: rgb(0, 170, 200);
 }
 
 :host ::ng-deep .matchLabel {

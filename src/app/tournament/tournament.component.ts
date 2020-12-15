@@ -36,6 +36,12 @@ export class TournamentComponent extends AppComponent implements OnInit {
     isParticipant = true;
     participantData = {};
 
+    linkOptions = {
+        target: {
+            url: "_blank"
+        }
+    }
+
     ngOnInit(): void {
         this.route.paramMap.subscribe(params => {
             this.tourneyId = params.get('id');
@@ -496,6 +502,7 @@ export class tournamentSettingsDialog implements OnInit {
             countries: this.data.tournament.countries,
             sort_method: this.data.tournament.sort_method,
             standard_cutoff: this.data.tournament.standard_cutoff,
+            ta_url: this.data.tournament.ta_url
         });
     }
 

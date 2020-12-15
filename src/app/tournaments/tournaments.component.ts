@@ -22,6 +22,11 @@ export class TournamentsComponent extends AppComponent implements OnInit {
     public tournaments = [];
     loading = true;
 
+    linkOptions = {
+        target: {
+            url: "_blank"
+        }
+    }
 
 
     ngOnInit(): void {

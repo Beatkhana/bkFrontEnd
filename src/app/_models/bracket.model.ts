@@ -4,7 +4,8 @@ export interface bracketMatch {
     matchNum: number,
     round: number,
     p1: matchPlayer,
-    p2: matchPlayer
+    p2: matchPlayer,
+    bye: number
 }
 
 export interface matchPlayer {

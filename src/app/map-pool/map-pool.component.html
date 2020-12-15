@@ -57,7 +57,7 @@
                     <ng-container matColumnDef="code">
                         <th mat-header-cell *matHeaderCellDef> </th>
                         <td mat-cell *matCellDef="let song">
-                            <button mat-button color="accent" (click)="copyCode(song.id)">Copy BSR</button>
+                            <button mat-button color="accent" (click)="copyCode(song.id)">Copy Key</button>
                         </td>
                     </ng-container>
                     <ng-container matColumnDef="delete" *ngIf="isAuthorised">

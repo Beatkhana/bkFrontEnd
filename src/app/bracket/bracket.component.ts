@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, Inject, Input, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { DomSanitizer } from '@angular/platform-browser';
 import { Observable } from 'rxjs';
 import { AppComponent } from '../app.component';
@@ -9,6 +9,7 @@ import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.compone
 import { NotificationService } from '../services/toast.service';
 import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
 import { bracketMatch } from '../_models/bracket.model';
+import { map, startWith } from 'rxjs/operators';
 
 @Component({
     selector: 'app-bracket',
@@ -29,8 +30,6 @@ export class BracketComponent extends AppComponent implements OnInit {
     isAuth = false;
     btnText = 'Generate Bracket';
 
-    firstId = 0;
-
     interval;
 
     ngOnInit(): void {
@@ -41,18 +40,7 @@ export class BracketComponent extends AppComponent implements OnInit {
         document.getElementsByTagName('head')[0].appendChild(node);
         this.ws.subscribe(
             msg => {
-                // console.log(msg);
-                if(msg.bracketMatch) this.updateDrawnMatch(msg.bracketMatch);
-                // if (msg.bracketUpdate && this.bracketData.length > 0) {
-                //     this.bracketData = msg.bracketUpdate;
-                //     this.intervalIteration = 1;
-                //     this.generateMatches(this.bracketData);
-                //     let matchElements = document.getElementsByClassName('matchReady');
-                //     for (let i = 0; i < matchElements.length; i++) {
-                //         const element = matchElements[i];
-                //         element.addEventListener("click", () => this.openMatch(element.getAttribute('data-matchid')))
-                //     }
-                // }
+                if (msg.bracketMatch) this.updateDrawnMatch(msg.bracketMatch);
             },
             err => console.log(err)
         );
@@ -60,7 +48,7 @@ export class BracketComponent extends AppComponent implements OnInit {
 
     ngOnDestroy() {
         clearInterval(this.interval);
-        this.ws.complete(); 
+        this.ws.complete();
     }
 
     async initSettings() {
@@ -76,11 +64,11 @@ export class BracketComponent extends AppComponent implements OnInit {
             this.isAuth = true;
         }
 
-        if (matchesData.length > 0) this.generateMatches(this.bracketData);
+        if (matchesData.length > 0) BracketComponent.generateMatches(this.bracketData, this.intervalIteration);
         this.intervalIteration = 1;
         // console.log(matchesData.filter(x => x.round == 0).length);
         // console.log(matchesData)
-        let matchElements = document.getElementsByClassName('matchReady');
+        let matchElements = document.getElementsByClassName('match');
         for (let i = 0; i < matchElements.length; i++) {
             const element = matchElements[i];
             element.addEventListener("click", () => this.updateMatch(element.getAttribute('data-matchid')))
@@ -92,9 +80,9 @@ export class BracketComponent extends AppComponent implements OnInit {
         const matchesData: any = await this.http.get(`/api/tournament/${this.tournament.tournamentId}/bracket`).toPromise();
         this.bracketData = matchesData;
 
-        if (matchesData.length > 0) this.generateMatches(this.bracketData);
+        if (matchesData.length > 0) BracketComponent.generateMatches(this.bracketData, this.intervalIteration);
 
-        let matchElements = document.getElementsByClassName('matchReady');
+        let matchElements = document.getElementsByClassName('match');
         for (let i = 0; i < matchElements.length; i++) {
             const element = matchElements[i];
             element.addEventListener("click", () => this.updateMatch(element.getAttribute('data-matchid')))
@@ -139,7 +127,7 @@ export class BracketComponent extends AppComponent implements OnInit {
 
         // }
         let index = this.bracketData.findIndex(x => x.id == data.id);
-        this.bracketData[index] = {...this.bracketData[index],...data};
+        this.bracketData[index] = { ...this.bracketData[index], ...data };
         matchElem.querySelector('.pName.p1').innerHTML = data.p1.name || data.p1.id;
         matchElem.querySelector('.pName.p2').innerHTML = data.p2.name || data.p2.id;
         if (data.status == 'in_progress') {
@@ -147,8 +135,8 @@ export class BracketComponent extends AppComponent implements OnInit {
         } else {
             (<SVGPathElement>matchElem.querySelector('.in_progress')).style.display = 'none';
         }
-        if(data.p1.score != data.p2.score && data.status == 'complete') {
-            if(data.p1.score > data.p2.score) {
+        if (data.p1.score != data.p2.score && data.status == 'complete') {
+            if (data.p1.score > data.p2.score) {
                 matchElem.querySelector('.pScore.p1').classList.add('winner');
                 matchElem.querySelector('.pScore.p2').classList.add('loser');
             } else {
@@ -163,21 +151,21 @@ export class BracketComponent extends AppComponent implements OnInit {
         matchElem.querySelector('.img.p1').setAttribute('href', data.p1.avatar);
         matchElem.querySelector('.img.p2').setAttribute('href', data.p2.avatar);
 
-        if(data.p1.id && data.p2.id) {
+        if (data.p1.id && data.p2.id) {
             matchElem.classList.add('matchReady');
             matchElem.addEventListener("click", () => this.updateMatch(matchElem.getAttribute('data-matchid')));
         }
     }
 
-    gMatches = [];
+    // gMatches = [];
 
     matches = [];
     winnersMatches = [];
     losersMatches = [];
 
     intervalIteration = 0;
-    
-    generateMatches(data) {
+
+    static generateMatches(bracketMatches, intervalIteration) {
         const slider: any = document.querySelector('#svgContainer');
         let isDown = false;
         let startX;
@@ -215,7 +203,7 @@ export class BracketComponent extends AppComponent implements OnInit {
             // console.log(walk);
         });
 
-        this.firstId = data[0].id;
+        // this.firstId = data[0].id;
 
         const svgMain = document.createElement('svg');
         svgMain.setAttribute('id', "bracket-svg");
@@ -223,15 +211,15 @@ export class BracketComponent extends AppComponent implements OnInit {
 
         var matches = {};
 
-        for (let i = 0; i < data.length; i++) {
-            const element = data[i];
+        for (let i = 0; i < bracketMatches.length; i++) {
+            const element = bracketMatches[i];
             // matches
             if (!matches[element['round']]) {
                 matches[element['round']] = [];
             }
 
             matches[element['round']].push(element);
-            this.gMatches.push(element);
+            // this.gMatches.push(element);
         }
 
         // console.log(matches);
@@ -254,13 +242,13 @@ export class BracketComponent extends AppComponent implements OnInit {
             }
         }
 
-        const height = losersMatches.length > 0 ? winnersMatches[0].length * 75 + losersMatches[0].length * 75 + 200 : winnersMatches[0].length * 75 + 200;
+        const height = losersMatches.length > 0 ? winnersMatches[0].length * 60 + losersMatches[0].length * 60 + 200 : winnersMatches[0].length * 60 + 200;
         const width = losersMatches.length > 0 ? losersMatches.length * 200 + 150 : winnersMatches.length * 200 + 150;
 
         svgMain.setAttribute("viewBox", `0 0 ${width} ${height}`);
         svgMain.setAttribute("width", `${width}`);
         svgMain.setAttribute("height", `${height}`);
-        svgMain.style.minWidth = width + 250 + 'px';
+        svgMain.style.minWidth = width + 220 + 'px';
 
         document.getElementById('svgContainer').setAttribute("style", `height:${height}px`);
 
@@ -278,29 +266,13 @@ export class BracketComponent extends AppComponent implements OnInit {
         for (let i = 0; i < winnersMatches.length; i++) {
             const round = matches[i];
             const gRound = document.createElementNS("http://www.w3.org/2000/svg", "g");
-            gRound.setAttribute("transform", "translate(" + (i * 250 - 100) + ", 30)");
+            gRound.setAttribute("transform", "translate(" + (i * 220 - 100) + ", 30)");
             // gRound.setAttribute("data-matchId", match['id']);
             gRound.classList.add('round-' + i);
 
             for (let j = 0; j < round.length; j++) {
                 const match = round[j];
-                if (match.p1.avatar != null) {
-                    if (match.p1.avatar.includes('api') || match.p1.avatar.includes('oculus')) {
-                        match.p1.avatar = "https://new.scoresaber.com" + match.p1.avatar;
-                    } else {
-                        match.p1.avatar = `/${match.p1.avatar}` + (match.p1.avatar.substring(0, 2) == 'a_' ? '.gif' : '.webp');
-                        match.p1.avatar = `https://cdn.discordapp.com/avatars/${match.p1.id}${match.p1.avatar}`
-                    }
-                }
-                if (match.p2.avatar != null) {
-                    if (match.p2.avatar.includes('api') || match.p2.avatar.includes('oculus')) {
-                        match.p2.avatar = "https://new.scoresaber.com" + match.p2.avatar;
-                    } else {
-                        match.p2.avatar = `/${match.p2.avatar}` + (match.p2.avatar.substring(0, 2) == 'a_' ? '.gif' : '.webp');
-                        match.p2.avatar = `https://cdn.discordapp.com/avatars/${match.p2.id}${match.p2.avatar}`
-                    }
-                }
-                let svgMatch = this.createSvgMatch(j, match.p1.name, match.p2.name, match.p1.avatar, match.p2.avatar, match.p1.id, match.p2.id, i, match['matchNum'], round, singleMatchRound, match['id'], match.p1.score, match.p2.score, match['status'], false, match['bye']);
+                let svgMatch = BracketComponent.createSvgMatch(j, match, bracketMatches, round, singleMatchRound, intervalIteration, false);
                 gRound.appendChild(svgMatch);
             }
             svgMain.appendChild(gRound);
@@ -309,28 +281,12 @@ export class BracketComponent extends AppComponent implements OnInit {
         for (let i = 0; i < losersMatches.length; i++) {
             const round = losersMatches[i];
             const gRound = document.createElementNS("http://www.w3.org/2000/svg", "g");
-            gRound.setAttribute("transform", "translate(" + (i * 250 - 100) + ", " + (winnersMatches[0].length * 75 + 150) + ")");
+            gRound.setAttribute("transform", "translate(" + (i * 220 - 100) + ", " + (winnersMatches[0].length * 60 + 150) + ")");
             gRound.classList.add('round-' + i);
 
             for (let j = 0; j < round.length; j++) {
-                const match = round[j];
-                if (match.p1.avatar != null) {
-                    if (match.p1.avatar.includes('api') || match.p1.avatar.includes('oculus')) {
-                        match.p1.avatar = "https://new.scoresaber.com" + match.p1.avatar;
-                    } else {
-                        match.p1.avatar = `/${match.p1.avatar}` + (match.p1.avatar.substring(0, 2) == 'a_' ? '.gif' : '.webp');
-                        match.p1.avatar = `https://cdn.discordapp.com/avatars/${match.p1.id}${match.p1.avatar}`
-                    }
-                }
-                if (match.p2.avatar != null) {
-                    if (match.p2.avatar.includes('api') || match.p2.avatar.includes('oculus')) {
-                        match.p2.avatar = "https://new.scoresaber.com" + match.p2.avatar;
-                    } else {
-                        match.p2.avatar = `/${match.p2.avatar}` + (match.p2.avatar.substring(0, 2) == 'a_' ? '.gif' : '.webp');
-                        match.p2.avatar = `https://cdn.discordapp.com/avatars/${match.p2.id}${match.p2.avatar}`
-                    }
-                }
-                let svgMatch = this.createSvgMatch(j, match.p1.name, match.p2.name, match.p1.avatar, match.p2.avatar, match.p1.id, match.p2.id, i, match['matchNum'], round, singleMatchRound, match['id'], match.p1.score, match.p2.score, match['status'], true, match['bye']);
+                const match: bracketMatch = round[j];
+                let svgMatch = BracketComponent.createSvgMatch(j, match, bracketMatches, round, singleMatchRound, intervalIteration, true);
                 gRound.appendChild(svgMatch);
             }
             svgMain.appendChild(gRound);
@@ -340,23 +296,24 @@ export class BracketComponent extends AppComponent implements OnInit {
         gLines.classList.add('lines');
         const gHeaders = document.createElementNS("http://www.w3.org/2000/svg", "g");
         gHeaders.classList.add('headers');
+        // console.log(bracketMatches)
         for (let i = 0; i < winnersMatches.length - 1; i++) {
             const round = matches[i];
 
             for (let j = 0; j < round.length; j++) {
                 const match = round[j];
-                var multi = i != 0 ? (75 * (2 ** i)) : 75;
-                // var startPos = 0.5 * (2 ** i) * 75;
-                var startPos = round.length != 1 ? 0.5 * (2 ** i) * 75 + 30 : 0.5 * (2 ** singleMatchRound) * 75 + 30;
+                var multi = i != 0 ? (60 * (2 ** i)) : 60;
+                // var startPos = 0.5 * (2 ** i) * 60;
+                var startPos = round.length != 1 ? 0.5 * (2 ** i) * 60 + 30 : 0.5 * (2 ** singleMatchRound) * 60 + 30;
 
                 let curY = (multi * j) + startPos + 10;
-                let curX = (i * 250 - 100) + 184;
+                let curX = (i * 220 - 100) + 184;
 
-                var multi2 = (i + 1) != 0 ? (75 * (2 ** (i + 1))) : 75;
-                var startPos2 = round.length != 1 ? 0.5 * (2 ** (i + 1)) * 75 + 30 : 0.5 * (2 ** singleMatchRound) * 75 + 30;
+                var multi2 = (i + 1) != 0 ? (60 * (2 ** (i + 1))) : 60;
+                var startPos2 = round.length != 1 ? 0.5 * (2 ** (i + 1)) * 60 + 30 : 0.5 * (2 ** singleMatchRound) * 60 + 30;
 
                 let nextY = (multi2 * Math.floor(j / 2)) + startPos2 + 10;
-                let nextX = ((i + 1) * 250 - 100);
+                let nextX = ((i + 1) * 220 - 100);
 
                 let xDist = nextX - curX;
                 let yDist = nextY - curY;
@@ -367,20 +324,20 @@ export class BracketComponent extends AppComponent implements OnInit {
                 if (match['bye'] || (winnersMatches[i + 1][Math.floor(j / 2)] != undefined && winnersMatches[i + 1][Math.floor(j / 2)]['bye'])) {
                     matchLine.classList.add("hidden");
                 }
-                if (this.intervalIteration > 0) {
+                if (intervalIteration > 0) {
                     matchLine.classList.add('noAnim');
                 }
                 gLines.appendChild(matchLine);
             }
 
             const roundLabel = document.createElementNS("http://www.w3.org/2000/svg", "g");
-            roundLabel.setAttribute("transform", "translate(" + (i * 250 - 100) + ", 0)");
+            roundLabel.setAttribute("transform", "translate(" + (i * 220 - 100) + ", 0)");
             const labelRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
             labelRect.setAttribute("width", '184');
             labelRect.setAttribute("height", '30');
             labelRect.classList.add('labelBox');
             labelRect.classList.add('matchPath');
-            if (this.intervalIteration > 0) {
+            if (intervalIteration > 0) {
                 labelRect.classList.add('noAnim');
             }
             roundLabel.appendChild(labelRect);
@@ -401,19 +358,19 @@ export class BracketComponent extends AppComponent implements OnInit {
             const round = losersMatches[i];
 
             for (let j = 0; j < round.length; j++) {
-                const match = round[j];
-                var multi = i != 0 ? (75 * (2 ** Math.floor(i / 2))) : 75;
-                // var startPos = 0.5 * (2 ** i) * 75;
-                var startPos = round.length != 1 ? 0.5 * (2 ** Math.floor(i / 2)) * 75 + (winnersMatches[0].length * 75 + 150) : 0.5 * (2 ** (Math.floor(singleMatchRound / 2) + 1)) * 75 + (winnersMatches[0].length * 75 + 150);
+                const match: bracketMatch = round[j];
+                var multi = i != 0 ? (60 * (2 ** Math.floor(i / 2))) : 60;
+                // var startPos = 0.5 * (2 ** i) * 60;
+                var startPos = round.length != 1 ? 0.5 * (2 ** Math.floor(i / 2)) * 60 + (winnersMatches[0].length * 60 + 150) : 0.5 * (2 ** (Math.floor(singleMatchRound / 2) + 1)) * 60 + (winnersMatches[0].length * 60 + 150);
 
                 let curY = (multi * j) + startPos + 10;
-                let curX = (i * 250 - 100) + 184;
+                let curX = (i * 220 - 100) + 184;
 
-                var multi2 = (i + 1) != 0 ? (75 * (2 ** (Math.floor(i / 2) + 1))) : 75;
-                var startPos2 = round.length != 1 ? 0.5 * (2 ** (Math.floor(i / 2) + 1)) * 75 + +(winnersMatches[0].length * 75 + 150) : 0.5 * (2 ** (Math.floor(singleMatchRound / 2) + 1)) * 75 + (winnersMatches[0].length * 75 + 150);
+                var multi2 = (i + 1) != 0 ? (60 * (2 ** (Math.floor(i / 2) + 1))) : 60;
+                var startPos2 = round.length != 1 ? 0.5 * (2 ** (Math.floor(i / 2) + 1)) * 60 + +(winnersMatches[0].length * 60 + 150) : 0.5 * (2 ** (Math.floor(singleMatchRound / 2) + 1)) * 60 + (winnersMatches[0].length * 60 + 150);
 
                 let nextY = (multi2 * Math.floor(j / 2)) + startPos2 + 10;
-                let nextX = ((i + 1) * 250 - 100);
+                let nextX = ((i + 1) * 220 - 100);
 
                 let xDist = nextX - curX;
                 let yDist = nextY - curY;
@@ -428,20 +385,20 @@ export class BracketComponent extends AppComponent implements OnInit {
                 if (match['bye'] || (losersMatches[i + 1][Math.floor(j / 2)] != undefined && losersMatches[i + 1][Math.floor(j / 2)]['bye'])) {
                     matchLine.classList.add("hidden");
                 }
-                if (this.intervalIteration > 0) {
+                if (intervalIteration > 0) {
                     matchLine.classList.add('noAnim');
                 }
                 gLines.appendChild(matchLine);
             }
 
             const roundLabel = document.createElementNS("http://www.w3.org/2000/svg", "g");
-            roundLabel.setAttribute("transform", "translate(" + (i * 250 - 100) + ", " + (winnersMatches[0].length * 75 + 120) + ")");
+            roundLabel.setAttribute("transform", "translate(" + (i * 220 - 100) + ", " + (winnersMatches[0].length * 60 + 120) + ")");
             const labelRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
             labelRect.setAttribute("width", '184');
             labelRect.setAttribute("height", '30');
             labelRect.classList.add('labelBox');
             labelRect.classList.add('matchPath');
-            if (this.intervalIteration > 0) {
+            if (intervalIteration > 0) {
                 labelRect.classList.add('noAnim');
             }
             roundLabel.appendChild(labelRect);
@@ -461,26 +418,42 @@ export class BracketComponent extends AppComponent implements OnInit {
         svgMain.appendChild(gLines);
 
         document.getElementById('svgContainer').innerHTML = svgMain.outerHTML;
+
+        document.querySelectorAll('.pName').forEach(elem => {
+            elem.addEventListener('mouseover', function() {
+                document.querySelectorAll(`.pName`).forEach((name) => {
+                    if(name.innerHTML == elem.innerHTML) name.classList.add('highlight');
+                });
+            });
+            elem.addEventListener('mouseout', function() {
+                document.querySelectorAll(`.pName`).forEach((name) => {
+                    if(name.innerHTML == elem.innerHTML) name.classList.remove('highlight');
+                });
+            });
+        });
     }
 
-    createSvgMatch(i, p1Name, p2Name, p1Avatar, p2Avatar, p1Id, p2Id, round, matchNum, roundElem, singleMatchRound, matchId, p1Score, p2Score, status, losers = false, bye = false) {
+    static createSvgMatch(i, bracketMatch: bracketMatch, bracketData: bracketMatch[], roundElem, singleMatchRound: number, intervalIteration = 0, losers = false) {
         const group = document.createElementNS("http://www.w3.org/2000/svg", "g");
 
-        var multi = round != 0 ? (75 * (2 ** round)) : 75;
-        var startPos = roundElem.length != 1 ? 0.5 * (2 ** round) * 75 : 0.5 * (2 ** singleMatchRound) * 75;
+        let firstRoundCount = bracketData.filter(x => x.round == 0).length;
+        let round = bracketMatch.round;
+        if (losers) round = bracketMatch.round * -1 - 1;
+
+        var multi = round != 0 ? (60 * (2 ** round)) : 60;
+        var startPos = roundElem.length != 1 ? 0.5 * (2 ** round) * 60 : 0.5 * (2 ** singleMatchRound) * 60;
         if (losers) {
-            var multi = round != 0 ? (75 * (2 ** Math.floor(round / 2))) : 75;
-            var startPos = roundElem.length != 1 ? 0.5 * (2 ** Math.floor(round / 2)) * 75 : 0.5 * (2 ** (Math.floor(singleMatchRound / 2) + 1)) * 75;
+            var multi = round != 0 ? (60 * (2 ** Math.floor(round / 2))) : 60;
+            var startPos = roundElem.length != 1 ? 0.5 * (2 ** Math.floor(round / 2)) * 60 : 0.5 * (2 ** (Math.floor(singleMatchRound / 2) + 1)) * 60;
         }
         group.setAttribute("transform", "translate(0, " + ((multi * i) + startPos) + ") scale(0.8)");
-        group.setAttribute("data-matchId", matchId);
-        group.id = matchId;
-        // group.classList.add('match-' + i);
+        group.setAttribute("data-matchId", bracketMatch.id);
+        group.id = bracketMatch.id;
         group.classList.add('match');
-        if (bye) {
+        if (bracketMatch.bye) {
             group.classList.add('hidden');
         }
-        if (p1Id && p2Id) {
+        if (bracketMatch.p1.id && bracketMatch.p2.id) {
             group.classList.add('matchReady');
         }
 
@@ -496,73 +469,65 @@ export class BracketComponent extends AppComponent implements OnInit {
 
         const nameClip1 = document.createElementNS("http://www.w3.org/2000/svg", "clipPath");
         nameClip1.setAttribute("id", 'nameClip-' + i + '-1');
-        nameClip1.innerHTML = '<rect x="37" y="-10" width="120" height="20"/>';
+        nameClip1.innerHTML = '<rect x="37" y="-10" width="160" height="20"/>';
         group.appendChild(nameClip1);
 
         const nameClip2 = document.createElementNS("http://www.w3.org/2000/svg", "clipPath");
         nameClip2.setAttribute("id", 'nameClip-' + i + '-2');
-        nameClip2.innerHTML = '<rect x="37" y="20" width="120" height="20"/>';
+        nameClip2.innerHTML = '<rect x="37" y="20" width="160" height="20"/>';
         group.appendChild(nameClip2);
 
         var noAnim = "";
-        if (this.intervalIteration > 0) {
+        if (intervalIteration > 0) {
             noAnim = "noAnim";
         }
 
-        // if (status == 'in_progress') {
-            group.innerHTML += `
+        group.innerHTML += `
             <path class="matchPath ${noAnim}" d="m 0 12.25 l 0 -12.5 l 15 -15 h 200 l 15 15 l 0 12.5 M 0 12.25 l 0 12.5 l 15 15 h 200 l 15 -15 l 0 -12.5" />
-            <path class="matchPath in_progress" ${status != 'in_progress' ? 'style="display:none;"' : ''} id="livePath-${i}" d="m 0 12.25 l 0 -12.5 l 15 -15 h 200 l 15 15 l 0 12.5 M 0 12.25 l 0 12.5 l 15 15 h 200 l 15 -15 l 0 -12.5" />
-            <path class="matchPath ${noAnim} matchSplit" d="m 0 12.25 l 230 0" />`
-        // } else {
-        //     group.innerHTML += `
-        //     <path class="matchPath ${noAnim}" d="m 0 12.25 l 0 -12.5 l 15 -15 h 200 l 15 15 l 0 12.5 M 0 12.25 l 0 12.5 l 15 15 h 200 l 15 -15 l 0 -12.5" />
-        //     <path class="matchPath ${noAnim} matchSplit" d="m 0 12.25 l 230 0" />`;
-        // }
+            <path class="matchPath in_progress" ${bracketMatch.status != 'in_progress' ? 'style="display:none;"' : ''} id="livePath-${i}" d="m 0 12.25 l 0 -12.5 l 15 -15 h 200 l 15 15 l 0 12.5 M 0 12.25 l 0 12.5 l 15 15 h 200 l 15 -15 l 0 -12.5" />
+            <path class="matchPath ${noAnim} matchSplit" d="m 0 12.25 l 230 0" />`;
 
-        if (p1Name == null && p1Id != null) p1Name = p1Id;
-        // if (p1Name != null) {
-            group.innerHTML += `
+        let p1Name: string = bracketMatch.p1.name;
+        if (bracketMatch.p1.name == null && bracketMatch.p1.id != null) p1Name = bracketMatch.p1.id;
+
+        group.innerHTML += `
             <image x="17" y="-10"
-            ${p1Avatar ? `href="${p1Avatar}"` : ''}            
+            ${bracketMatch.p1.avatar ? `href="https://cdn.discordapp.com/avatars/${bracketMatch.p1.id}${bracketMatch.p1.avatar}"` : ''}            
             class="img p1" height="16" width="16" clip-path="url(#clipPath-${i}-1)" />
             <text x="37" y="5" width="147" height="12" class="pName p1" clip-path="url(#nameClip-${i}-1)">${p1Name || ''}</text>
             `;
-        // }
-        if (p1Name == null && p1Id != null) p1Name = null;
-        if (p2Name == null && p2Id != null) p2Name = p2Id;
-        // if (p2Name != null) {
-            group.innerHTML += `
+        if (bracketMatch.p1.name == null && bracketMatch.p1.id != null) bracketMatch.p1.name = null;
+        let p2Name: string = bracketMatch.p2.name;
+        if (bracketMatch.p2.name == null && bracketMatch.p2.id != null) p2Name = bracketMatch.p2.id;
+
+        group.innerHTML += `
             <image x="17" y="18"
-            ${p2Avatar ? `href="${p2Avatar}"` : ''}            
+            ${bracketMatch.p2.avatar ? `href="https://cdn.discordapp.com/avatars/${bracketMatch.p2.id}${bracketMatch.p2.avatar}"` : ''}            
             class="img p2" height="16" width="16" clip-path="url(#clipPath-${i}-2)" />
             <text x="37" y="33" width="147" height="12" class="pName p2" clip-path="url(#nameClip-${i}-2)">${p2Name || ''}</text>
             `;
-        // }
-        if (p2Name == null && p2Id != null) p2Name = null;
-        if (p1Score != 0 || p2Score != 0) {
-            if (status == 'complete') {
-                var p1Class = p1Score > p2Score ? 'winner' : 'loser';
-                var p2Class = p1Score < p2Score ? 'winner' : 'loser';
-            } else {
-                var p1Class = '';
-                var p2Class = '';
+        if (bracketMatch.p2.name == null && bracketMatch.p2.id != null) bracketMatch.p2.name = null;
+        if (bracketMatch.p1.score != 0 || bracketMatch.p2.score != 0) {
+            let p1Class = "", p2Class = "";
+            if (bracketMatch.status == 'complete') {
+                p1Class = bracketMatch.p1.score > bracketMatch.p2.score ? 'winner' : 'loser';
+                p2Class = bracketMatch.p1.score < bracketMatch.p2.score ? 'winner' : 'loser';
             }
             group.innerHTML += `
-            <text x="180" y="5" width="147" height="12" class="pName pScore p1 ${p1Class}">${p1Score}</text>
-            <text x="180" y="33" width="147" height="12" class="pName pScore p2 ${p2Class}">${p2Score}</text>
+            <text x="200" y="5" width="147" height="12" class="pName pScore p1 ${p1Class}">${bracketMatch.p1.score}</text>
+            <text x="200" y="33" width="147" height="12" class="pName pScore p2 ${p2Class}">${bracketMatch.p2.score}</text>
             `;
         } else {
             group.innerHTML += `
-            <text x="180" y="5" width="147" height="12" class="pName pScore p1"></text>
-            <text x="180" y="33" width="147" height="12" class="pName pScore p2"></text>
+            <text x="200" y="5" width="147" height="12" class="pName pScore p1"></text>
+            <text x="200" y="33" width="147" height="12" class="pName pScore p2"></text>
             `;
         }
 
-        let firstRoundCount = this.bracketData.filter(x => x.round == 0).length;
+        
 
-        let maxRound = Math.max.apply(Math, this.bracketData.map(x => x.round));
-        let minRound = Math.min.apply(Math, this.bracketData.map(x => x.round));
+        let maxRound = Math.max.apply(Math, bracketData.map(x => x.round));
+        let minRound = Math.min.apply(Math, bracketData.map(x => x.round));
 
         let p1Loser: number;
         let p2Loser: number;
@@ -602,25 +567,25 @@ export class BracketComponent extends AppComponent implements OnInit {
         }
 
         if (losers && (round + 1) * -1 == minRound) {
-            p1Loser = this.calcLabel(false, firstRoundCount, maxRound - 2, matchNum, minRound);
+            p1Loser = BracketComponent.calcLabel(false, firstRoundCount, maxRound - 2, bracketMatch.matchNum, minRound);
         }
 
-        if ((p1Name == null || p1Name == '') && losers && p1Loser != undefined) {
+        if ((bracketMatch.p1.id == null || bracketMatch.p1.name == '') && losers && p1Loser != undefined) {
             group.innerHTML += `<text x="37" y="5" width="147" height="12" class="loserPlaceHolder">Loser of ${p1Loser}</text>`;
         }
 
-        if (losers && (p2Name == null || p2Name == "") && p2Loser != undefined) {
+        if (losers && (bracketMatch.p2.id == null || bracketMatch.p2.name == "") && p2Loser != undefined) {
             group.innerHTML += `<text x="37" y="33" width="147" height="12" class="loserPlaceHolder">Loser of ${p2Loser}</text>`;
         }
 
-        let labelId = this.calcLabel(losers, firstRoundCount, round, matchNum, minRound);
+        let labelId = BracketComponent.calcLabel(losers, firstRoundCount, round, bracketMatch.matchNum, minRound);
 
-        if (round == maxRound && !losers && p1Name == null && minRound < 0) {
-            let labelId = this.calcLabel(losers, firstRoundCount, round - 1, matchNum, minRound);
+        if (round == maxRound && !losers && bracketMatch.p1.name == null && minRound < 0) {
+            let labelId = BracketComponent.calcLabel(losers, firstRoundCount, round - 1, bracketMatch.matchNum, minRound);
             group.innerHTML += `<text x="37" y="33" width="147" height="12" class="loserPlaceHolder" style="font-size: 12px;">Loser of ${labelId} (If neccessary)</text>`;
         }
 
-        if (round == maxRound - 1 && !losers && p1Name == null && minRound < 0) {
+        if (round == maxRound - 1 && !losers && bracketMatch.p1.name == null && minRound < 0) {
             group.innerHTML += `<text x="37" y="33" width="147" height="12" class="loserPlaceHolder" style="font-size: 12px;">Winner of Losers Bracket</text>`;
         }
 
@@ -632,7 +597,7 @@ export class BracketComponent extends AppComponent implements OnInit {
         return this.http.get(`/api/tournament/${this.tournament.tournamentId}/bracketTest`);
     }
 
-    private calcLabel(losers: boolean, firstRoundCount: number, round: number, matchNum: number, minRound: number) {
+    static calcLabel(losers: boolean, firstRoundCount: number, round: number, matchNum: number, minRound: number) {
         let labelId = 1;
         let prevRound = firstRoundCount;
         let prevLoser = firstRoundCount / 2;
@@ -691,8 +656,6 @@ export class updateMatchDialog implements OnInit {
 
 
     async ngOnInit() {
-        console.log(this.data)
-        // console.log(await this.http.get(`/api/tournament/${this.data.tournamentId}/bracket/${this.data.id}`).toPromise());
         this.scoreForm = this.fb.group({
             p1Score: this.data.p1.score,
             p2Score: this.data.p2.score,
@@ -700,23 +663,25 @@ export class updateMatchDialog implements OnInit {
             matchId: this.data.id
         });
 
-        if (this.data.p1.name || this.data.p2.name) {
-            var options1 = {
-                channel: this.data.p1.twitch,
-                theme: 'dark',
-
-            };
-            var player1 = new Twitch.Player("P1twitch", options1);
-            player1.setVolume(0.5);
-
-            var options2 = {
-                channel: this.data.p2.twitch,
-                theme: 'dark',
-
-            };
-            var player2 = new Twitch.Player("P2twitch", options2);
-            player2.setVolume(0);
-        }
+        setTimeout(() => {
+            if (this.data.p1.name || this.data.p2.name) {
+                var options1 = {
+                    channel: this.data.p1.twitch,
+                    theme: 'dark',
+    
+                };
+                var player1 = new Twitch.Player("P1twitch", options1);
+                player1.setVolume(0.5);
+    
+                var options2 = {
+                    channel: this.data.p2.twitch,
+                    theme: 'dark',
+    
+                };
+                var player2 = new Twitch.Player("P2twitch", options2);
+                player2.setVolume(0);
+            }
+        }, 1000);
     }
 
     isTheatre = false;
@@ -733,23 +698,27 @@ export class updateMatchDialog implements OnInit {
         this.scoreForm.value.status = status;
         this.updateScore(this.scoreForm.value)
             .subscribe(data => {
-                // if (!data.flag) {
                 this.notif.showInfo('', 'Successfully updated score');
-                    // this.dialogRef.close(this.scoreForm.value);
-                // } else {
-                //     console.error('Error', data.err)
-                //     this.notif.showError('', 'Error updaing score');
-                //     // this.dialogRef.close(false);
-                // }
             }, error => {
                 this.notif.showError('', 'Error updaing score');
                 console.error("Error: ", error);
-                // this.dialogRef.close(false);
             });
+        if (status == 'complete') this.dialogRef.close(false);
     }
 
     updateScore(data: any): Observable<any> {
         return this.http.put(`/api/tournament/${this.data.tournamentId}/bracket/${this.data.id}`, data);
+    }
+
+    async scheduleMatch() {
+        try {
+            await this.http.put(`/api/tournament/${this.data.tournamentId}/bracket/schedule/${this.data.id}`, { matchTime: new Date((<HTMLInputElement>document.getElementById("matchTime")).value) }).toPromise();
+            this.notif.showSuccess('', 'Successfully Scheduled Match');
+            this.dialogRef.close(false);
+        } catch (error) {
+            this.notif.showError('', 'Error Scheduling Match');
+            this.dialogRef.close(false);
+        }
     }
 }
 
@@ -762,7 +731,11 @@ export class generateBracketDialog implements OnInit {
 
     bracketGenForm: FormGroup;
 
-    filteredOptions: Observable<any>;
+    filteredOptions: any;
+
+    users = [];
+    hiddenUsers = [];
+    userNameInput: FormControl = new FormControl();
 
     constructor(
         private fb: FormBuilder,
@@ -771,29 +744,63 @@ export class generateBracketDialog implements OnInit {
         private dialogRef: MatDialogRef<generateBracketDialog>,
         private notif: NotificationService,
         private sanitizer: DomSanitizer
-    ) { }
+    ) { 
+        this.getUsers()
+            .subscribe(data => {
+                this.users = data;
+                // this.filteredOptions = this.userNameInput.valueChanges
+                //     .pipe(
+                //         startWith(''),
+                //         map(val => this._filter(val))
+                //     );
+            });
+    }
+
+    updatePlayers(event) {
+        let option = this.bracketGenForm.value.users.findIndex(x => x.id == event.option._parent.id);
+        if (option > -1) {
+            this.users.push(this.hiddenUsers.find(x => x.discordId == this.bracketGenForm.value.users[option].userId));
+            this.hiddenUsers.splice(this.hiddenUsers.findIndex(x => x.discordId == this.bracketGenForm.value.users[option].userId))
+            this.bracketGenForm.value.users[option].userId = event.option.value;
+        } else {
+            this.bracketGenForm.value.users.push({ userId: event.option.value, id: event.option._parent.id});
+        }
+        
+        let usrIndex = this.users.findIndex(x => x.discordId == event.option.value); 
+        if(usrIndex > -1) {
+            this.hiddenUsers.push(this.users[usrIndex]);
+            this.users.splice(usrIndex, 1);
+            this.filteredOptions = this.users;
+        }
+    }
+
+    lastVal = "";
+
+    updateLastEvent(event) {
+        this.lastVal = event;
+    }
+
+    updateFilter($val) {
+        this.filteredOptions = this._filter($val);
+    }
 
 
     ngOnInit() {
-        // console.log(this.data)
         this.bracketGenForm = this.fb.group({
             custom: false,
+            manual: false,
+            users: this.fb.array([]),
             players: null
         });
     }
 
     async onSubmit() {
         let players = this.bracketGenForm.value.players != null ? this.bracketGenForm.value.players.replace(' ', '').split('\n') : null;
+        let users = this.bracketGenForm.value.users.length > 0 ? this.bracketGenForm.value.users.map(x => x.userId) : null;
         try {
-            const bracketGen: any = await this.http.post(`/api/tournament/${this.data.tournamentId}/generateBracket`, { tournamentId: this.data.tournamentId, data: players }).toPromise();
-            if (!bracketGen.flag) {
-                this.notif.showSuccess('', 'Successfully created bracket');
-                this.dialogRef.close(false);
-            } else {
-                console.error("Error: ", bracketGen.err);
-                this.notif.showError('', 'Error creating bracket');
-                this.dialogRef.close(false);
-            }
+            const bracketGen: any = await this.http.post(`/api/tournament/${this.data.tournamentId}/generateBracket`, { tournamentId: this.data.tournamentId, customPlayers: players, players: users }).toPromise();
+            this.notif.showSuccess('', 'Successfully created bracket');
+            this.dialogRef.close(false);
         } catch (error) {
             console.error("Error: ", error);
             this.notif.showError('', 'Error creating bracket');
@@ -804,5 +811,20 @@ export class generateBracketDialog implements OnInit {
     updateScore(data: any): Observable<any> {
         return this.http.put(`/api/tournament/${this.data.tournamentId}/bracket/${this.data.id}`, data);
     }
+
+    private _filter(name: string) {
+        const filterValue = name.toLowerCase();
+        return this.users.filter(option => option.name.toLowerCase().indexOf(filterValue) === 0);
+    }
+
+    getUsers(): Observable<any> {
+        return this.http.get('/api/users');
+    }
+
+    displayFn(id): string {
+        let user = this.users.find(x => x.discordId == id);
+        return user && user.name ? user.name : '';
+    }
+
 }
 

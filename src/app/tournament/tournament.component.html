@@ -42,7 +42,7 @@
                 <p class="card-text">
                     Date: {{ tournament.startDate | date: 'd/MM/yy, h:mm a'}} -> {{ tournament.endDate | date: 'd/MM/yy, h:mm a'}}<br />
                     <span *ngIf="tournament.info != null; else noPrize">
-                        Prize pool: {{ tournament.prize }} <br />
+                        Prize pool: <span [innerHTML]="tournament.prize | linkify: linkOptions"></span> <br />
                     </span>
                     <ng-template #noPrize>Prize Pool: Not announced yet <br></ng-template>
                     <a *ngIf="tournament.discord != null" href="{{ tournament.discord }}" target="new">Discord</a>

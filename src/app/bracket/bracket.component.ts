@@ -747,7 +747,11 @@ export class generateBracketDialog implements OnInit {
     ) { 
         this.getUsers()
             .subscribe(data => {
+                data.sort((a,b) => {
+                    return a.name > b.name
+                });
                 this.users = data;
+                this.filteredOptions = this.users;
                 // this.filteredOptions = this.userNameInput.valueChanges
                 //     .pipe(
                 //         startWith(''),

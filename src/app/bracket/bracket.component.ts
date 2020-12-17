@@ -580,12 +580,12 @@ export class BracketComponent extends AppComponent implements OnInit {
 
         let labelId = BracketComponent.calcLabel(losers, firstRoundCount, round, bracketMatch.matchNum, minRound);
 
-        if (round == maxRound && !losers && bracketMatch.p1.name == null && minRound < 0) {
+        if (round == maxRound && !losers && bracketMatch.p2.id == null && minRound < 0) {
             let labelId = BracketComponent.calcLabel(losers, firstRoundCount, round - 1, bracketMatch.matchNum, minRound);
             group.innerHTML += `<text x="37" y="33" width="147" height="12" class="loserPlaceHolder" style="font-size: 12px;">Loser of ${labelId} (If neccessary)</text>`;
         }
 
-        if (round == maxRound - 1 && !losers && bracketMatch.p1.name == null && minRound < 0) {
+        if (round == maxRound - 1 && !losers && bracketMatch.p2.id == null && minRound < 0) {
             group.innerHTML += `<text x="37" y="33" width="147" height="12" class="loserPlaceHolder" style="font-size: 12px;">Winner of Losers Bracket</text>`;
         }
 
@@ -656,6 +656,7 @@ export class updateMatchDialog implements OnInit {
 
 
     async ngOnInit() {
+        console.log(this.data);
         this.scoreForm = this.fb.group({
             p1Score: this.data.p1.score,
             p2Score: this.data.p2.score,
@@ -710,9 +711,27 @@ export class updateMatchDialog implements OnInit {
         return this.http.put(`/api/tournament/${this.data.tournamentId}/bracket/${this.data.id}`, data);
     }
 
+    close() {
+        this.dialogRef.close(false);
+    }
+
     async scheduleMatch() {
         try {
             await this.http.put(`/api/tournament/${this.data.tournamentId}/bracket/schedule/${this.data.id}`, { matchTime: new Date((<HTMLInputElement>document.getElementById("matchTime")).value) }).toPromise();
+            this.notif.showSuccess('', 'Successfully Scheduled Match');
+            this.dialogRef.close(false);
+        } catch (error) {
+            this.notif.showError('', 'Error Scheduling Match');
+            this.dialogRef.close(false);
+        }
+    }
+
+    bestOf = this.data.best_of || 3;
+
+    async updateBestOf() {
+        console.log(this.bestOf);
+        try {
+            await this.http.put(`/api/tournament/${this.data.tournamentId}/bracket/setBestOf/${this.data.id}`, { best_of: this.bestOf }).toPromise();
             this.notif.showSuccess('', 'Successfully Scheduled Match');
             this.dialogRef.close(false);
         } catch (error) {

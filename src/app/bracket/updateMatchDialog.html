@@ -74,16 +74,25 @@
     <br>
 </form>
 <ng-container *ngIf="data.isAuth">
-    <br>
-    <hr>
-    <br>
     <mat-form-field style="width:30%">
         <input matInput [ngxMatDatetimePicker]="picker" id="matchTime" placeholder="Choose a date" (focus)="picker.open()" (click)="picker.open()" readonly>
         <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
         <ngx-mat-datetime-picker #picker [defaultTime]="[12,0,0]">
         </ngx-mat-datetime-picker>
-    </mat-form-field>
+    </mat-form-field> &nbsp;
     <button mat-stroked-button color="primary" type="button" (click)="scheduleMatch()">Update Time</button> &nbsp;
+    <br><br>
+    <mat-form-field class="fill" style="width: 10%">
+        <mat-label>Best of</mat-label>
+        <input matInput [value]="bestOf" (input)="bestOf = $event.target.value" autocomplete="off">
+    </mat-form-field> &nbsp;
+    <button mat-stroked-button color="primary" type="button" (click)="updateBestOf()">Update</button> &nbsp;
+    <br>
+    <button mat-stroked-button color="primary" type="button" (click)="close()" routerLink="/overlay/{{data.tournamentId}}/bracket/{{data.id}}">Overlay</button> &nbsp;
+    <br>
+    <br>
+    <hr>
+    <br>
 </ng-container>
 <br>
 <button mat-stroked-button color="primary" type="submit" (click)="theatre()">{{theatreBtn}}</button> &nbsp; <button mat-raised-button color="warn" mat-dialog-close>Close</button>

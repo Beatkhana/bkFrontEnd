@@ -51,6 +51,14 @@ $app-theme: mat-dark-theme($app-primary, $app-accent, $app-warn);
     font-display: fallback;
 }
 
+@font-face {
+    font-family: "cuyabra";
+    src: url("/assets/fonts/cuyabra.otf");
+    font-weight: normal;
+    font-style: normal;
+    font-display: fallback;
+}
+
 // .icon2 {
 //     display: inline-block;
 //     font-style: normal;

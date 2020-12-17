@@ -5,6 +5,9 @@ import { ActivatedRoute } from '@angular/router';
 import { WebSocketSubject, webSocket } from 'rxjs/webSocket';
 import { BracketComponent, updateMatchDialog } from '../bracket/bracket.component';
 import { bracketMatch } from '../_models/bracket.model';
+import { TAEvent, EventType } from '../_models/ta/event';
+import { PacketType, ForwardingPacket } from '../_models/ta/forwardingPacket';
+import { Player } from '../_models/ta/player';
 
 @Component({
     selector: 'app-overlay',
@@ -32,7 +35,8 @@ export class OverlayComponent implements AfterViewInit {
 
     constructor(private route: ActivatedRoute, private http: HttpClient, public dialog: MatDialog) { }
 
-    myWebSocket: WebSocketSubject<any> = webSocket(`${location.protocol == 'http:' ? 'ws' : 'wss'}://` + location.host + '/api/ws');
+    bkWS: WebSocketSubject<any> = webSocket(`${location.protocol == 'http:' ? 'ws' : 'wss'}://` + location.host + '/api/ws');
+    taWS: WebSocketSubject<any>;
 
     async ngAfterViewInit(): Promise<void> {
         this.canvas = document.getElementById("fakeCanvas");
@@ -43,15 +47,16 @@ export class OverlayComponent implements AfterViewInit {
         });
 
         if (!(this.stage == 'bracket' && this.matchId == 'display')) {
+            await this.getMatchData();
             // await this.draw();
             // await this.getMatchData();
         } else {
-            this.initSettings();
+            this.initDisplaySettings();
         }
 
-        this.myWebSocket.subscribe(
+        this.bkWS.subscribe(
             msg => {
-                if(msg.bracketMatch) this.updateDrawnMatch(msg.bracketMatch);
+                if (msg.bracketMatch) this.updateDrawnMatch(msg.bracketMatch);
             },
             err => console.log('err: ', err),
             () => console.log('complete')
@@ -60,7 +65,141 @@ export class OverlayComponent implements AfterViewInit {
         // console.log(this.router.url)
     }
 
-    async initSettings() {
+    async draw(url: string) {
+        await fetch(url)
+            .then(r => r.text())
+            .then(text => {
+                this.canvas.innerHTML = text;
+                // this.svgData = text;
+            })
+            .catch(console.error.bind(console));
+    }
+
+    handlePacket(packet) {
+        if (!this.matchData) return;
+        // console.log(packet);
+        if (packet.Type == PacketType.ForwardingPacket) {
+            let forward: ForwardingPacket = packet.SpecificPacket;
+            if (forward.Type == PacketType.Event) {
+                let event: TAEvent = forward.SpecificPacket;
+                // console.log(event);
+                if (event.Type == EventType.PlayerUpdated) {
+                    let playerInfo: Player = event.ChangedObject;
+                    // console.log(this.matchData.p1)
+                    if (!(playerInfo.UserId == this.matchData.p1.ssId || playerInfo.UserId == this.matchData.p2.ssId)) return;
+
+                    let curPlayer = this.matchData.p1.ssId == playerInfo.UserId ? this.matchData.p1 : this.matchData.p2;
+
+                    this.animateValue(playerInfo, "Score", curPlayer.soreInfo?.Score, playerInfo.Score, 500);
+                    this.animateValue(
+                        playerInfo,
+                        "Accuracy",
+                        curPlayer.soreInfo?.Accuracy,
+                        playerInfo.Accuracy,
+                        500
+                    );
+                    this.animateValue(playerInfo, "Combo", curPlayer.soreInfo?.Combo, playerInfo.Combo, 500);
+                }
+            }
+        }
+    }
+
+    animateValue(player: Player, property, start = 0, end, duration) {
+        let startTimestamp = null;
+        const step = (timestamp) => {
+            if (!startTimestamp) startTimestamp = timestamp;
+            const progress = Math.min(
+                (timestamp - startTimestamp) / duration,
+                1
+            );
+            if (property == "Accuracy") {
+                player[property] = progress * (end - start) + start;
+            } else {
+                player[property] = Math.floor(progress * (end - start) + start);
+            }
+
+            if (player.UserId == this.matchData.p1.ssId) this.matchData.p1.soreInfo = player;
+            if (player.UserId == this.matchData.p2.ssId) this.matchData.p2.soreInfo = player;
+            this.scoreUpdate();
+
+
+            if (progress < 1) {
+                window.requestAnimationFrame(step);
+            }
+        };
+        window.requestAnimationFrame(step);
+    }
+
+    scoreUpdate() {
+        if (this.matchData.p1.soreInfo) {
+            let scoreInfo: Player = this.matchData.p1.soreInfo;
+            setTimeout(() => {
+                let liveScore = document.getElementById("p1LiveScore");
+                let liveAcc = document.getElementById("p1LiveAcc");
+                let liveCombo = document.getElementById("p1LiveCombo");
+                if (liveScore) liveScore.innerHTML = scoreInfo.Score.toString();
+                if (liveAcc) liveAcc.innerHTML = (Math.round((+scoreInfo.Accuracy + Number.EPSILON) * 10000) / 100).toString();
+                if (liveCombo) liveCombo.innerHTML = scoreInfo.Combo.toString();
+            }, scoreInfo.StreamDelayMs);
+        }
+        if (this.matchData.p2.soreInfo) {
+            let scoreInfo: Player = this.matchData.p2.soreInfo;
+            setTimeout(() => {
+                let liveScore = document.getElementById("p2LiveScore");
+                let liveAcc = document.getElementById("p2LiveAcc");
+                let liveCombo = document.getElementById("p2LiveCombo");
+                if (liveScore) liveScore.innerHTML = scoreInfo.Score.toString();
+                if (liveAcc) liveAcc.innerHTML = (Math.round((+scoreInfo.Accuracy + Number.EPSILON) * 10000) / 100).toString();
+                if (liveCombo) liveCombo.innerHTML = scoreInfo.Combo.toString();
+            }, scoreInfo.StreamDelayMs);
+        }
+    }
+
+    async getMatchData() {
+        let data: any = await this.http.get(`/api/tournament/${this.tourneyId}/${this.stage}/${this.matchId}`).toPromise();
+        let settings: any = await this.http.get(`/api/tournament/${this.tourneyId}`).toPromise();
+        settings = settings[0];
+        if (settings.ta_url) {
+            this.taWS = webSocket(`ws://` + settings.ta_url);
+            this.taWS.subscribe(
+                msg => {
+                    this.handlePacket(msg)
+                },
+                err => console.log('err: ', err),
+                () => console.log('complete')
+            );
+        }
+        this.matchData = data;
+        console.log(data);
+        console.log(settings);
+        await this.draw(`/assets/overlay/${data.tournamentId}.svg`);
+
+        if (data.p1) {
+            document.getElementById('p1Name').children[0].innerHTML = data.p1.name;
+            document.getElementById('p1Flag')?.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', `/assets/flags/${data.p1.country.toUpperCase()}.png`);
+            document.getElementById('p2Name').children[0].innerHTML = data.p2.name;
+            document.getElementById('p2Flag')?.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', `/assets/flags/${data.p2.country.toUpperCase()}.png`);
+            let pointIcons = document.querySelectorAll('[id*="Score"]');
+            for (let i = 0; i < pointIcons.length; i++) {
+                const point = pointIcons[i];
+                point.setAttribute("style", "display:none");
+            }
+            for (let i = 0; i < Math.ceil(data.best_of / 2); i++) {
+                if (document.getElementById(`p1Score_${i + 1}_blank`)) document.getElementById(`p1Score_${i + 1}_blank`).style.display = "block";
+                if (document.getElementById(`p2Score_${i + 1}_blank`)) document.getElementById(`p2Score_${i + 1}_blank`).style.display = "block";
+            }
+            for (let i = 0; i < data.p1.score; i++) {
+                if (document.getElementById(`p1Score_${i + 1}_blank`)) document.getElementById(`p1Score_${i + 1}_blank`).style.display = "none";
+                if (document.getElementById(`p1Score_${i + 1}`)) document.getElementById(`p1Score_${i + 1}`).style.display = "block";
+            }
+            for (let i = 0; i < data.p2.score; i++) {
+                if (document.getElementById(`p2Score_${i + 1}_blank`)) document.getElementById(`p2Score_${i + 1}_blank`).style.display = "none";
+                if (document.getElementById(`p2Score_${i + 1}`)) document.getElementById(`p2Score_${i + 1}`).style.display = "block";
+            }
+        }
+    }
+
+    async initDisplaySettings() {
         const matchesData: any = await this.http.get(`/api/tournament/${this.tourneyId}/bracket`).toPromise();
         this.bracketData = matchesData;
 

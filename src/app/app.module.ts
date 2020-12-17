@@ -55,6 +55,7 @@ import {
     NgxMatTimepickerModule
 } from '@angular-material-components/datetime-picker';
 import { OverlayComponent } from './overlay/overlay.component';
+import { TaComponent } from './ta/ta.component';
 
 
 @NgModule({
@@ -91,7 +92,8 @@ import { OverlayComponent } from './overlay/overlay.component';
         QualifiersComponent,
         MiniTourneysComponent,
         RulesComponent,
-        OverlayComponent
+        OverlayComponent,
+        TaComponent
     ],
     imports: [
         BrowserModule,

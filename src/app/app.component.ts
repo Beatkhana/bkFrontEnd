@@ -53,7 +53,7 @@ export class AppComponent implements OnInit {
 
         router.events.forEach((event) => {
             if (event instanceof NavigationStart) {
-                this.showDefault = !(event.url.includes('overlay') || event.url.includes('coordinator'));
+                this.showDefault = !(event.url.includes('overlay') || event.url.includes('coordinator') || event.url.includes('/ta'));
             }
         });
 

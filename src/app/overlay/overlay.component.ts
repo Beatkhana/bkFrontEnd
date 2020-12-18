@@ -56,7 +56,8 @@ export class OverlayComponent implements AfterViewInit {
 
         this.bkWS.subscribe(
             msg => {
-                if (msg.bracketMatch) this.updateDrawnMatch(msg.bracketMatch);
+                if (msg.bracketMatch && (this.stage == 'bracket' && this.matchId == 'display')) this.updateDrawnMatch(msg.bracketMatch);
+                if (msg.bracketMatch && !(this.stage == 'bracket' && this.matchId == 'display')) this.updateDisplayMatch(msg.bracketMatch);
             },
             err => console.log('err: ', err),
             () => console.log('complete')
@@ -214,6 +215,34 @@ export class OverlayComponent implements AfterViewInit {
             element.addEventListener("click", () => this.updateMatch(element.getAttribute('data-matchid')))
         }
         this.intervalIteration = 1;
+    }
+
+    updateDisplayMatch(match) {
+        this.matchData = match;
+        if (this.matchData.p1) {
+            document.getElementById('p1Name').children[0].innerHTML = this.matchData.p1.name;
+            document.getElementById('p1Flag')?.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', `/assets/flags/${this.matchData.p1.country.toUpperCase()}.png`);
+            document.getElementById('p2Name').children[0].innerHTML = this.matchData.p2.name;
+            document.getElementById('p2Flag')?.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', `/assets/flags/${this.matchData.p2.country.toUpperCase()}.png`);
+            let pointIcons = document.querySelectorAll('[id*="Score"]');
+            for (let i = 0; i < pointIcons.length; i++) {
+                const point = pointIcons[i];
+                (<HTMLElement>point).style.display = "none";
+                // point.setAttribute("style", "display:none");
+            }
+            for (let i = 0; i < Math.ceil(this.matchData.best_of / 2); i++) {
+                if (document.getElementById(`p1Score_${i + 1}_blank`)) document.getElementById(`p1Score_${i + 1}_blank`).style.display = "block";
+                if (document.getElementById(`p2Score_${i + 1}_blank`)) document.getElementById(`p2Score_${i + 1}_blank`).style.display = "block";
+            }
+            for (let i = 0; i < this.matchData.p1.score; i++) {
+                if (document.getElementById(`p1Score_${i + 1}_blank`)) document.getElementById(`p1Score_${i + 1}_blank`).style.display = "none";
+                if (document.getElementById(`p1Score_${i + 1}`)) document.getElementById(`p1Score_${i + 1}`).style.display = "block";
+            }
+            for (let i = 0; i < this.matchData.p2.score; i++) {
+                if (document.getElementById(`p2Score_${i + 1}_blank`)) document.getElementById(`p2Score_${i + 1}_blank`).style.display = "none";
+                if (document.getElementById(`p2Score_${i + 1}`)) document.getElementById(`p2Score_${i + 1}`).style.display = "block";
+            }
+        }
     }
 
     updateMatch(id) {

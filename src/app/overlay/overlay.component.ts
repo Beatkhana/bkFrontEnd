@@ -85,7 +85,8 @@ export class OverlayComponent implements AfterViewInit {
                 // console.log(event);
                 if (event.Type == EventType.PlayerUpdated) {
                     let playerInfo: Player = event.ChangedObject;
-                    // console.log(this.matchData.p1)
+                    // console.log(playerInfo, this.matchData);
+                    console.log(playerInfo.UserId == this.matchData.p1.ssId || playerInfo.UserId == this.matchData.p2.ssId)
                     if (!(playerInfo.UserId == this.matchData.p1.ssId || playerInfo.UserId == this.matchData.p2.ssId)) return;
 
                     let curPlayer = this.matchData.p1.ssId == playerInfo.UserId ? this.matchData.p1 : this.matchData.p2;
@@ -105,6 +106,7 @@ export class OverlayComponent implements AfterViewInit {
     }
 
     animateValue(player: Player, property, start = 0, end, duration) {
+        // console.log
         let startTimestamp = null;
         const step = (timestamp) => {
             if (!startTimestamp) startTimestamp = timestamp;
@@ -131,15 +133,16 @@ export class OverlayComponent implements AfterViewInit {
     }
 
     scoreUpdate() {
+        console.log(this.matchData);
         if (this.matchData.p1.soreInfo) {
             let scoreInfo: Player = this.matchData.p1.soreInfo;
             setTimeout(() => {
                 let liveScore = document.getElementById("p1LiveScore");
                 let liveAcc = document.getElementById("p1LiveAcc");
                 let liveCombo = document.getElementById("p1LiveCombo");
-                if (liveScore) liveScore.innerHTML = scoreInfo.Score.toString();
-                if (liveAcc) liveAcc.innerHTML = (Math.round((+scoreInfo.Accuracy + Number.EPSILON) * 10000) / 100).toString();
-                if (liveCombo) liveCombo.innerHTML = scoreInfo.Combo.toString();
+                if (liveScore) liveScore.children[0].innerHTML = scoreInfo.Score.toString(), liveScore.style.display = "block";
+                if (liveAcc) liveAcc.children[0].innerHTML = (Math.round((+scoreInfo.Accuracy + Number.EPSILON) * 10000) / 100).toString(), liveAcc.style.display = "block";
+                if (liveCombo) liveCombo.children[0].innerHTML = scoreInfo.Combo.toString(), liveCombo.style.display = "block";
             }, scoreInfo.StreamDelayMs);
         }
         if (this.matchData.p2.soreInfo) {
@@ -148,9 +151,9 @@ export class OverlayComponent implements AfterViewInit {
                 let liveScore = document.getElementById("p2LiveScore");
                 let liveAcc = document.getElementById("p2LiveAcc");
                 let liveCombo = document.getElementById("p2LiveCombo");
-                if (liveScore) liveScore.innerHTML = scoreInfo.Score.toString();
-                if (liveAcc) liveAcc.innerHTML = (Math.round((+scoreInfo.Accuracy + Number.EPSILON) * 10000) / 100).toString();
-                if (liveCombo) liveCombo.innerHTML = scoreInfo.Combo.toString();
+                if (liveScore) liveScore.children[0].innerHTML = scoreInfo.Score.toString(), liveScore.style.display = "block";
+                if (liveAcc) liveAcc.children[0].innerHTML = (Math.round((+scoreInfo.Accuracy + Number.EPSILON) * 10000) / 100).toString(), liveAcc.style.display = "block";
+                if (liveCombo) liveCombo.children[0].innerHTML = scoreInfo.Combo.toString(), liveCombo.style.display = "block";
             }, scoreInfo.StreamDelayMs);
         }
     }
@@ -182,7 +185,8 @@ export class OverlayComponent implements AfterViewInit {
             let pointIcons = document.querySelectorAll('[id*="Score"]');
             for (let i = 0; i < pointIcons.length; i++) {
                 const point = pointIcons[i];
-                point.setAttribute("style", "display:none");
+                (<HTMLElement>point).style.display = "none";
+                // point.setAttribute("style", "display:none");
             }
             for (let i = 0; i < Math.ceil(data.best_of / 2); i++) {
                 if (document.getElementById(`p1Score_${i + 1}_blank`)) document.getElementById(`p1Score_${i + 1}_blank`).style.display = "block";

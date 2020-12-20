@@ -57,7 +57,7 @@ export class OverlayComponent implements AfterViewInit {
         this.bkWS.subscribe(
             msg => {
                 if (msg.bracketMatch && (this.stage == 'bracket' && this.matchId == 'display')) this.updateDrawnMatch(msg.bracketMatch);
-                if (msg.bracketMatch && !(this.stage == 'bracket' && this.matchId == 'display')) this.updateDisplayMatch(msg.bracketMatch);
+                if (msg.bracketMatch && !(this.stage == 'bracket' && this.matchId == 'display') && this.matchData?.id == msg.bracketMatch.id) this.updateDisplayMatch(msg.bracketMatch);
             },
             err => console.log('err: ', err),
             () => console.log('complete')

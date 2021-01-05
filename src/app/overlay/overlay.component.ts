@@ -164,7 +164,7 @@ export class OverlayComponent implements AfterViewInit {
         let settings: any = await this.http.get(`/api/tournament/${this.tourneyId}`).toPromise();
         settings = settings[0];
         if (settings.ta_url) {
-            this.taWS = webSocket(`ws://` + settings.ta_url);
+            this.taWS = webSocket(`wss://` + settings.ta_url);
             this.taWS.subscribe(
                 msg => {
                     this.handlePacket(msg)
@@ -176,7 +176,7 @@ export class OverlayComponent implements AfterViewInit {
         this.matchData = data;
         console.log(data);
         console.log(settings);
-        await this.draw(`/assets/overlay/${data.tournamentId}.svg`);
+        await this.draw(`/assets/overlay/${data.tournamentId}.svg?t=${Date.now()}`);
 
         if (data.p1) {
             document.getElementById('p1Name').children[0].innerHTML = data.p1.name;

@@ -127,9 +127,15 @@
 
         <mat-tab label="Tournament Assistant">
             <br>
+            <p>
+                This currently only works with compatable TA servers
+            </p>
+            <br>
             <mat-form-field class="fill">
                 <input matInput placeholder="Tournament Assistant Overlay URL" formControlName="ta_url">
             </mat-form-field>
+            <label>Overlay SVG</label><br>
+            <input type="file" (change)="onFileChanged($event)" #fileInput accept="image/svg+xml">
         </mat-tab>
     </mat-tab-group>
 

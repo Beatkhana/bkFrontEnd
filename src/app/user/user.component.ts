@@ -25,6 +25,12 @@ export class UserComponent extends AppComponent implements OnInit {
                 .subscribe( data => {
                     this.curUser = data;
                     this.setTitle(this.curUser.name+"'s Profile" + this.title);
+                    if(this.curUser.avatar.includes('api') || this.curUser.avatar.includes('oculus')) {
+                        this.curUser.avatar = "https://new.scoresaber.com" + this.curUser.avatar;
+                    } else {
+                        this.curUser.avatar = `/${this.curUser.avatar}` + (this.curUser.avatar.substring(0, 2) == 'a_' ? '.gif' : '.webp');
+                        this.curUser.avatar = `https://cdn.discordapp.com/avatars/${this.curUser.discordId}${ this.curUser.avatar }`
+                    }
                 });
         });
     }

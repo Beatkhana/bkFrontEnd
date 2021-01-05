@@ -148,9 +148,9 @@ export class TournamentComponent extends AppComponent implements OnInit {
         const usr: any = await this.http.get(`/api/user`).toPromise();
         this.user = usr != null ? usr[0] : null;
 
-        if(this.tournament.countries != '') {
+        if (this.tournament.countries != '') {
             this.countries = this.tournament.countries.toLowerCase().replace(' ', '').split(',');
-            if(this.user != null &&!this.countries.includes(this.user.country.toLowerCase())) {
+            if (this.user != null && !this.countries.includes(this.user.country.toLowerCase())) {
                 this.canSignup = false;
             }
         }
@@ -162,7 +162,7 @@ export class TournamentComponent extends AppComponent implements OnInit {
                 this.isParticipant = false;
             }
         }
-        if(this.tournament.state == 'archived' || this.tournament.state == 'main_stage') {
+        if (this.tournament.state == 'archived' || this.tournament.state == 'main_stage') {
             this.canSignup = false;
         }
         this.tournament.safeInfo = this.sanitizer.bypassSecurityTrustHtml(this.tournament.info);
@@ -522,11 +522,15 @@ export class tournamentSettingsDialog implements OnInit {
         return this.settingsForm.get('type');
     }
 
-    onSubmit() {
+    async onSubmit() {
         let info = {
             tournamentId: this.data.tournament.tournamentId,
             settingsId: this.data.tournament.settingsId,
             settings: this.settingsForm.value
+        }
+        if (this.base64 != null) {
+            console.log(this.base64);
+            await this.http.post(`/api/tournament/${info.tournamentId}/overlay`, { img: this.base64 }).toPromise();
         }
         this.updateSettings(info)
             .subscribe(data => {
@@ -546,6 +550,20 @@ export class tournamentSettingsDialog implements OnInit {
 
     updateSettings(data: any): Observable<any> {
         return this.http.put(`/api/tournament/${data.tournamentId}/settings`, data);
+    }
+
+    selectedFile: File;
+    base64: string = null;
+
+
+    onFileChanged(event) {
+        this.selectedFile = event.target.files[0];
+        let reader = new FileReader();
+        // reader.readAsDataURL(this.selectedFile);
+        reader.readAsText(this.selectedFile,'UTF-8');
+        reader.onload = () => {
+            this.base64 = <string>reader.result;
+        };
     }
 
     private multiple8(control: FormControl): ValidationErrors | null {

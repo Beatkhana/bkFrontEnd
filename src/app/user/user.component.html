@@ -10,7 +10,7 @@
         <div class="card noHover">
             <div class="card-body">
                 <div class="right-container">
-                    <img class="profileImg" src="https://new.scoresaber.com{{ curUser.avatar }}" />
+                    <img class="profileImg" src="{{ curUser.avatar }}" />
                     <ng-container *ngIf="user && (user['roleIds'].includes('1') || user['roleIds'].includes('2'))">
                         <div class="staff">
                             <button mat-stroked-button color="primary" (click)="editBadges()">Edit Badges</button>

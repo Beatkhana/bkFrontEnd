@@ -1,8 +1,12 @@
 .badges {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
+    flex-wrap: wrap;
     margin: 15px 0;
+    .mat-checkbox {
+        margin: 20px;
+    }
     img {
-        margin-left: 10px;
+        margin-left: 6px;
     }
 }

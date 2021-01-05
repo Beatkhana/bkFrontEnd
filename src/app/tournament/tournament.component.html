@@ -30,7 +30,7 @@
         <div class="card noHover" style="border-radius: 0px 4px 4px 4px;">
             <div class="card-body" #info *ngIf="isInfo">
                 <!-- <img class="tourneyImg" src="https://beatkhanas3.s3.us-east-1.amazonaws.com/{{ tournament.image }}" alt="" /> -->
-                <img class="tourneyImg" src="/assets/images/{{tournament.tournamentId}}.webp" alt="" />
+                <img class="tourneyImg" src="/assets/images/{{tournament.image}}" alt="" />
                 <h1>{{ tournament.name }}</h1>
 
                 <p class="card-text" style="color: #c8825a" *ngIf="tournament.archived == 1">

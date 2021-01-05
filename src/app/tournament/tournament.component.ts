@@ -328,7 +328,7 @@ export class editTournament implements OnInit {
 
     ngOnInit() {
         this.id = this.data.tournament.tournamentId;
-        console.log(this.data);
+        // console.log(this.data);
         this.url += this.id;
         // console.log(this.data);
         this.tournamentForm = this.fb.group({
@@ -412,7 +412,7 @@ export class editTournament implements OnInit {
         // this.tournamentForm.value.date = this.tournamentForm.value.date.toISOString().slice(0, 19).replace('T', ' '); 
         // this.tournamentForm.value.endDate = this.tournamentForm.value.endDate.toISOString().slice(0, 19).replace('T', ' ');
         // console.log
-        console.log(this.tournamentForm.value);
+        // console.log(this.tournamentForm.value);
         this.updateTournament(this.tournamentForm.value)
             .subscribe(data => {
                 if (!data.flag) {

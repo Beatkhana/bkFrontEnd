@@ -31,8 +31,6 @@ export class AssignBadgesComponent implements OnInit {
     async ngOnInit() {
         this.badges = <badge[]>await this.http.get(`/api/badges`).toPromise();
         this.badgeIds = this.data.user.badges.map(x => x.id);
-        console.log(this.badgeIds);
-        console.log(this.data);
     }
 
     updateBadge(id) {

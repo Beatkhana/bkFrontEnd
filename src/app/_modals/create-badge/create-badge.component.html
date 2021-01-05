@@ -1,0 +1,16 @@
+<h3>{{title}}</h3>
+<form [formGroup]="badgeForm" (ngSubmit)="onSubmit()">
+    <!-- Value: {{ userForm.value | json }} -->
+    <mat-form-field class="fill">
+        <input matInput placeholder="Description" formControlName="description">
+    </mat-form-field>
+    <br>
+    <input type="file" (change)="onFileChanged($event)" #fileInput accept="image/png, image/jpeg, image/gif, image/webp, image/svg+xml, image/tiff">
+    <br>
+    <p class="card-text" style="font-size: small;">*Will be rescaled to 80px by 30px</p>
+
+    <div mat-dialog-actions>
+        <button mat-raised-button color="warn" mat-dialog-close>Close</button>
+        <button mat-raised-button color="primary" type="submit" [disabled]="badgeForm.invalid || loading">{{title}}</button>
+    </div>
+</form>

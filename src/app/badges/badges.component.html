@@ -1,0 +1,44 @@
+<div *ngIf="loading else loaded">
+    <img src="/assets/svg/BeatKhana Logo RGB animated.svg" style="display: block;
+        margin-left: auto;
+        margin-right: auto;
+        width: 100px;">
+</div>
+
+<ng-template #loaded>
+    <div class="container">
+        <div class="card noHover">
+            <div class="card-body">
+                <h1>Badges</h1>
+                <table mat-table [dataSource]="badges" class="card-text">
+                    <ng-container matColumnDef="image">
+                        <th mat-header-cell *matHeaderCellDef> </th>
+                        <td mat-cell *matCellDef="let badge">
+                            <img src="/assets/badges/{{badge.image}}.png" alt="" srcset="">
+                        </td>
+                    </ng-container>
+                    <ng-container matColumnDef="description">
+                        <th mat-header-cell *matHeaderCellDef> Description </th>
+                        <td mat-cell *matCellDef="let badge"> {{badge.description}} </td>
+                    </ng-container>
+                    <ng-container matColumnDef="edit">
+                        <th mat-header-cell *matHeaderCellDef> </th>
+                        <td mat-cell *matCellDef="let badge">
+                            <button mat-button color="primary" (click)="editBadge(badge)">Edit</button>
+                        </td>
+                    </ng-container>
+                    <ng-container matColumnDef="delete">
+                        <th mat-header-cell *matHeaderCellDef> </th>
+                        <td mat-cell *matCellDef="let badge">
+                            <button mat-button color="warn" (click)="delteBadge(badge)">Delete</button>
+                        </td>
+                    </ng-container>
+                    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+                </table>
+
+                <button mat-stroked-button color="primary" (click)="createBadge()">Create Badge</button>
+            </div>
+        </div>
+    </div>
+</ng-template>

@@ -3,9 +3,10 @@
 }
 
 .profileImg {
-    max-width: 33%;
-    float: right;
+    // max-width: 33%;
+    // float: right;
     margin: 5px;
+    width: 100%;
 }
 
 .countryImg {
@@ -15,6 +16,25 @@
 }
 
 h1 {
-    // width: 2%;
     display: inline-block;
+}
+
+.right-container {
+    float: right;
+    max-width: 100%;
+}
+
+.staff {
+    float: right;
+}
+
+.badges {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    margin: 10px 0;
+    img {
+        margin: 0 10px;
+        border: none;
+    }
 }

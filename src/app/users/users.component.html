@@ -20,7 +20,10 @@
                     <ng-container matColumnDef="name">
                         <th mat-header-cell *matHeaderCellDef mat-sort-header>Name</th>
                         <td mat-cell *matCellDef="let user">
-                            {{user.name}}
+                            <a [routerLink]="['/user', user.discordId]">
+                                {{user.name}}
+                            </a>
+                            <!-- {{user.name}} -->
                         </td>
                     </ng-container>
                     <ng-container matColumnDef="ssLink">

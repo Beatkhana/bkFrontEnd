@@ -1,0 +1,12 @@
+<h1>Edit User Badges</h1>
+<label>Badges:</label>
+<div class="badges">
+    <mat-checkbox *ngFor="let badge of badges" [checked]="badgeIds.includes(badge.id)" (change)="updateBadge(badge.id)">
+        <img src="/assets/badges/{{badge.image}}.png" alt="{{badge.description}}" title="{{badge.description}}">
+    </mat-checkbox>
+</div>
+
+<div mat-dialog-actions>
+    <button mat-raised-button color="warn" mat-dialog-close>Close</button>
+    <button mat-raised-button color="primary" type="submit" [disabled]="btnDisabled" (click)="onSubmit()">Update Badges</button>
+</div>

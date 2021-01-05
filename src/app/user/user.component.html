@@ -9,25 +9,35 @@
     <div class="container">
         <div class="card noHover">
             <div class="card-body">
-                <img class="profileImg" src="https://new.scoresaber.com{{ curUser.avatar }}" />
+                <div class="right-container">
+                    <img class="profileImg" src="https://new.scoresaber.com{{ curUser.avatar }}" />
+                    <ng-container *ngIf="user && (user['roleIds'].includes('1') || user['roleIds'].includes('2'))">
+                        <div class="staff">
+                            <button mat-stroked-button color="primary" (click)="editBadges()">Edit Badges</button>
+                        </div>
+                    </ng-container>
+                </div>
                 <h1>
                     {{ curUser.name }}
                     <img class="countryImg" src="\assets/flags/{{curUser.country | uppercase}}.png" alt="">
                 </h1>
-                <!-- <p class="card-text" *ngIf="curUser.roleNames.length > 0">
-                    <b>Roles:</b> {{curUser.roleNames.join(', ')}}
-                </p> -->
+                <div *ngIf="curUser.badges.length > 0" class="badges">
+                    <img *ngFor="let badge of curUser.badges" src="assets/badges/{{badge.image}}.png" alt="{{badge.description}}" title="{{badge.description}}">
+                </div>
                 <p class="card-text">
                     <b>Global Rank:</b> #{{curUser.globalRank}} <br>
                     <b>Regional Rank:</b> #{{curUser.localRank}} <br>
-                    <b>Tournament Rank:</b> #{{curUser.tourneyRank}} <br>
+                    <!-- <b>Tournament Rank:</b> #{{curUser.tourneyRank}} <br> -->
                     <a href="https://scoresaber.com/u/{{curUser.ssId}}" target="_blank">Scoresaber</a> <br>
                     <a href="https://twitch.tv/{{curUser.twitchName}}" target="_blank">Twitch</a>
                 </p>
-                <h4>Previous Tournaments</h4>
-                <ul class="card-text" style="margin-left:10px">
-                    <li *ngFor="let tournament of curUser.tournaments">{{tournament}}</li>
-                </ul>
+                <div style="float: left;">
+                    <h4>Previous Tournaments</h4>
+                    <ul class="card-text" style="margin-left:10px">
+                        <li *ngFor="let tournament of curUser.tournaments">{{tournament}}</li>
+                    </ul>
+                </div>
+
             </div>
         </div>
     </div>

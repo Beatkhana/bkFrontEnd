@@ -140,7 +140,8 @@ nav {
     overflow: hidden;
     transition: max-height 400ms;
     &.mobile-show {
-        max-height: 400px;
+        max-height: 100vh;
+        overflow: auto;
     }
 }
 
@@ -160,6 +161,8 @@ nav {
     width: 150px;
     display: none;
     opacity: 0;
+    left: 0;
+    transform: translateY(10px);
     z-index: 2;
     background-color: #161616;
     // display: flex;
@@ -205,15 +208,47 @@ nav {
     }
 }
 
+.has-dropdown,
+.hover-dropdown {
+    i {
+        &::after {
+            color: rgba(255, 255, 255, 0.5);
+            // transform: translate(0, -10px);
+            display: inline-block;
+            margin-left: 0.255em;
+            vertical-align: 0.255em;
+            content: "";
+            border-top: 0.3em solid;
+            border-right: 0.3em solid transparent;
+            border-bottom: 0;
+            border-left: 0.3em solid transparent;
+            transition: 50ms;
+        }
+    }
+}
+
 .has-dropdown:focus-within {
     .dropdown {
+        left: unset;
         display: flex;
         opacity: 1;
-        // pointer-events: auto;
         animation: fadeInFromNone 0.25s ease-out;
     }
     .dropdown-toggle::after {
         transform: translate(0, -5px);
+    }
+}
+
+.hover-dropdown:hover {
+    position: relative;
+    overflow: unset;
+    .dropdown {
+        display: flex;
+        opacity: 1;
+        animation: fadeInFromNone 0.25s ease-out;
+    }
+    i::after {
+        transform: translate(0, 5px);
     }
 }
 
@@ -256,6 +291,12 @@ nav {
 
 .Easy {
     color: #3cb371;
+}
+
+table,
+.mat-paginator {
+    width: 100%;
+    background: transparent !important;
 }
 
 // nav {

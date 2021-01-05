@@ -46,6 +46,9 @@
         align-items: center;
         justify-content: center;
         margin: 0px;
+        &:hover {
+            text-decoration: underline;
+        }
     }
     .participantFlag {
         position: relative;

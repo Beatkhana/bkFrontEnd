@@ -20,6 +20,8 @@ import { MiniTourneysComponent } from './mini-tourneys/mini-tourneys.component';
 import { RulesComponent } from './rules/rules.component';
 import { OverlayComponent } from './overlay/overlay.component';
 import { TaComponent } from './ta/ta.component';
+import { BadgesComponent } from './badges/badges.component';
+import { Awards2020Component } from './awards2020/awards2020.component';
 
 
 const routes: Routes = [
@@ -46,6 +48,9 @@ const routes: Routes = [
     { path: 'logs', component: LogsComponent, canActivate: [AuthGuardGuard] },
     { path: 'overlay/:tourneyId/:stage/:matchId', component: OverlayComponent },
     { path: 'ta', component: TaComponent },
+    { path: 'badges', component: BadgesComponent },
+    { path: 'awards/2020', component: Awards2020Component },
+    // { path: 'badges', component: BadgesComponent, canActivate: [AuthGuardGuard] },
 ];
 
 @NgModule({

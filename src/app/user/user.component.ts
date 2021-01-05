@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { AppComponent } from '../app.component';
 import { Observable } from 'rxjs';
+import { AssignBadgesComponent } from '../_modals/assign-badges/assign-badges.component';
+import { userAPI } from '../_models/user.model';
 
 @Component({
     selector: 'app-user',
@@ -12,7 +14,7 @@ export class UserComponent extends AppComponent implements OnInit {
     title = " | BeatKhana!";
     private url = '/api/user/';
     userId: string;
-    public curUser = null;
+    public curUser: userAPI = null;
     loading = true;
 
     ngOnInit(): void {
@@ -21,11 +23,7 @@ export class UserComponent extends AppComponent implements OnInit {
             this.url += this.userId;
             this.getUser()
                 .subscribe( data => {
-                    this.curUser = data[0];
-
-                    this.curUser.tournaments = this.curUser.tournaments.split(', ');
-                    
-                    // console.log(this.curUser)
+                    this.curUser = data;
                     this.setTitle(this.curUser.name+"'s Profile" + this.title);
                 });
         });
@@ -33,6 +31,24 @@ export class UserComponent extends AppComponent implements OnInit {
 
     getUser(): Observable<any> {
         return this.http.get(this.url);
+    }
+
+    editBadges() {
+        const dialog = this.dialog.open(AssignBadgesComponent, {
+            minWidth: '60vw',
+            maxHeight: '90vh',
+            maxWidth: '95vw',
+            data: {
+                user: this.curUser,
+            }
+        });
+
+        dialog.afterClosed()
+            .subscribe(async data => {
+                if (data) {
+                    this.curUser = <userAPI>await this.http.get(this.url).toPromise();
+                }
+            });
     }
 
 }

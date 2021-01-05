@@ -56,6 +56,10 @@ import {
 } from '@angular-material-components/datetime-picker';
 import { OverlayComponent } from './overlay/overlay.component';
 import { TaComponent } from './ta/ta.component';
+import { BadgesComponent } from './badges/badges.component';
+import { CreateBadgeComponent } from './_modals/create-badge/create-badge.component';
+import { Awards2020Component } from './awards2020/awards2020.component';
+import { AssignBadgesComponent } from './_modals/assign-badges/assign-badges.component';
 
 
 @NgModule({
@@ -93,7 +97,11 @@ import { TaComponent } from './ta/ta.component';
         MiniTourneysComponent,
         RulesComponent,
         OverlayComponent,
-        TaComponent
+        TaComponent,
+        BadgesComponent,
+        CreateBadgeComponent,
+        Awards2020Component,
+        AssignBadgesComponent
     ],
     imports: [
         BrowserModule,

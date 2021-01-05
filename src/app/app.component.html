@@ -11,9 +11,25 @@
                     <li><a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact:true}" class="nav-item">Home</a></li>
                     <li><a routerLink="/mini-tournaments" routerLinkActive="active" [routerLinkActiveOptions]="{exact:true}" class="nav-item">Mini Tournaments</a></li>
                     <li><a routerLink="/archive" routerLinkActive="active" class="nav-item">Archive</a></li>
-                    <li><a routerLink="/rules" routerLinkActive="active" class="nav-item">Rules</a></li>
+                    <li class="nav-item hover-dropdown">
+                        More
+                        <i></i>
+                        <!-- <button class="nav-item dropdown-toggle">
+                        </button> -->
+                        <!-- More -->
+                        <ul class="dropdown">
+                            <li class="dropdown-item">
+                                <a routerLink="/awards/2020" routerLinkActive="active">2020 Awards</a>
+                            </li>
+                            <li class="dropdown-item">
+                                <a routerLink="/rules" routerLinkActive="active">Rules</a>
+                            </li>
+                            <li class="dropdown-item">
+                                <a routerLink="/calendar" routerLinkActive="active">Calendar</a>
+                            </li>
+                        </ul>
+                    </li>
                     <!-- <li><a routerLink="/ranking" routerLinkActive="active" class="nav-item">Rankings</a></li> -->
-                    <li><a routerLink="/calendar" routerLinkActive="active" class="nav-item">Calendar</a></li>
                     <li><a routerLink="/team" routerLinkActive="active" class="nav-item">Team</a></li>
                 </ul>
             </div>
@@ -69,6 +85,7 @@
                         <li><a routerLink="/" routerLinkActive="active " [routerLinkActiveOptions]="{exact:true} " class="nav-item ">Home</a></li>
                         <li><a routerLink="/mini-tournaments" routerLinkActive="active" [routerLinkActiveOptions]="{exact:true}" class="nav-item">Mini Tournaments</a></li>
                         <li><a routerLink="/archive" routerLinkActive="active " class="nav-item ">Archive</a></li>
+                        <li><a routerLink="/awards/2020" routerLinkActive="active" class="nav-item ">2020 Awards</a></li>
                         <li><a routerLink="/rules" routerLinkActive="active" class="nav-item">Rules</a></li>
                         <!-- <li><a routerLink="/ranking" routerLinkActive="active " class="nav-item ">Rankings</a></li> -->
                         <li><a routerLink="/calendar" routerLinkActive="active" class="nav-item">Calendar</a></li>

@@ -9,7 +9,8 @@
     <ng-template #loaded>
         <div class="card tournamentCard" *ngFor="let tournament of tournaments">
             <a [title]="tournament.name" [routerLink]="['/tournament',tournament.tournamentId]">
-                <img src="https://beatkhanas3.s3.us-east-1.amazonaws.com/{{tournament.image}}" class="card-img-top">
+                <!-- <img src="https://beatkhanas3.s3.us-east-1.amazonaws.com/{{tournament.image}}" class="card-img-top"> -->
+                <img src="/assets/images/{{tournament.tournamentId}}.webp" class="card-img-top">
                 <h5 class="card-title">
                     {{tournament.name}}
                 </h5>

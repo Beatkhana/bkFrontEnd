@@ -38,7 +38,7 @@ export class AppComponent implements OnInit {
         public notif: NotificationService,
         public metaTags: MetaTagService,
         public cd: ChangeDetectorRef,
-        protected userS: UserAuthService
+        public userS: UserAuthService
     ) {
         router.events.subscribe(() => {
             this.burgerActive = false;

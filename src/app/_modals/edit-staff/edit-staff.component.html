@@ -1,0 +1,36 @@
+<h2>Edit Staff</h2>
+<p style="font-size: smaller;">
+    *Note: removing all roles will remove user from staff. <br> *Note 2: Haha jokes on you, roles don't do anything by look pretty for now.
+</p>
+<div class="staffGrid">
+    <div>
+        <span></span>
+        <span *ngFor="let role of roles">
+            {{role.role}}
+        </span>
+    </div>
+    <div *ngFor="let user of data.staff">
+        <span>
+            {{user.name}}
+        </span>
+        <mat-checkbox *ngFor="let role of roles" [checked]="checkRole(role.id,user.roles)" (change)="updateRoles(user, role)">
+        </mat-checkbox>
+    </div>
+</div>
+<div class="addUser">
+    <mat-form-field>
+        <mat-label>Add User</mat-label>
+        <input type="text" (focus)="updateLastEvent($event.target.value)" (input)="updateFilter($event.target.value)" matInput [matAutocomplete]="auto">
+        <mat-autocomplete #auto="matAutocomplete" (optionSelected)="updatePlayers($event)" [displayWith]="displayFn.bind(this)">
+            <mat-option *ngFor="let option of filteredOptions" [value]="option.discordId">
+                {{option.name}}
+            </mat-option>
+        </mat-autocomplete>
+    </mat-form-field>
+    <!-- <button mat-stroked-button color="accent">Add User</button> &nbsp; -->
+</div>
+<br>
+<hr>
+<br>
+<button mat-raised-button color="warn" mat-dialog-close>Close</button> &nbsp;
+<button mat-raised-button color="primary" (click)="update()">Save Changes</button> &nbsp;

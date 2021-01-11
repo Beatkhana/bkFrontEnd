@@ -57,7 +57,8 @@ export class BracketComponent extends AppComponent implements OnInit {
         if (matchesData.length > 0) {
             this.btnText = 'Regenerate Bracket';
         }
-        const usr: any = await this.http.get(`/api/user`).toPromise();
+        // const usr: any = await this.http.get(`/api/user`).toPromise();
+        const usr: any = await this.userS.curUser();
         this.user = usr != null ? usr[0] : null;
         // console.log(this.user);
         if (this.user != null && (this.user.roleIds.includes("1") || this.tournament.owner == this.user.discordId)) {
@@ -89,10 +90,6 @@ export class BracketComponent extends AppComponent implements OnInit {
         }
 
         this.loading = false;
-    }
-
-    public logIn(): Observable<any> {
-        return this.http.get('/api/user');
     }
 
     async genBracket() {

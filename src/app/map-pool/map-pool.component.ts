@@ -8,6 +8,7 @@ import { AppComponent } from '../app.component';
 import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
 import { User } from '../models/user.model';
 import { NotificationService } from '../services/toast.service';
+import { UserAuthService } from '../services/user-auth.service';
 
 @Component({
     selector: 'app-map-pool',
@@ -35,7 +36,8 @@ export class MapPoolComponent implements OnInit {
         public http: HttpClient,
         public dialog: MatDialog,
         private notif: NotificationService,
-        private sanitizer:DomSanitizer
+        private sanitizer:DomSanitizer,
+        private userS: UserAuthService
     ) {
         if (this.user == null) {
             this.updateUser();
@@ -56,17 +58,12 @@ export class MapPoolComponent implements OnInit {
             });
     }
 
-    updateUser() {
-        this.logIn()
-            .subscribe(data => {
-                if (data) {
-                    this.user = data[0];
-                    if (this.user != null && (this.user['roleIds'].includes('1') || this.user.discordId == this.tournament.owner)) {
-                        this.isAuthorised = true;
-                        this.columnsToDisplay.push('delete');
-                    }
-                }
-            });
+    async updateUser() {
+        this.user = await this.userS.curUser();
+        if (this.user != null && (this.user['roleIds'].includes('1') || this.user.discordId == this.tournament.owner)) {
+            this.isAuthorised = true;
+            this.columnsToDisplay.push('delete');
+        }
     }
 
     sanitize(url:string){

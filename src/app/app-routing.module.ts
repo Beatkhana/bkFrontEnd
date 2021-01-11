@@ -22,6 +22,7 @@ import { OverlayComponent } from './overlay/overlay.component';
 import { TaComponent } from './ta/ta.component';
 import { BadgesComponent } from './badges/badges.component';
 import { Awards2020Component } from './awards2020/awards2020.component';
+import { TournamentStaffComponent } from './tournament-staff/tournament-staff.component';
 
 
 const routes: Routes = [
@@ -37,6 +38,7 @@ const routes: Routes = [
             { path: 'participants', component: ParticipantsComponent },
             { path: 'allParticipants', component: ParticipantsComponent },
             { path: 'qualifiers', component: QualifiersComponent },
+            { path: 'staff', component: TournamentStaffComponent },
         ]
     },
     { path: 'profile', component: ProfileComponent },

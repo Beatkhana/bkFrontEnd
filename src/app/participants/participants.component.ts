@@ -7,6 +7,7 @@ import { Observable } from 'rxjs';
 import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
 import { User } from '../models/user.model';
 import { NotificationService } from '../services/toast.service';
+import { UserAuthService } from '../services/user-auth.service';
 
 @Component({
     selector: 'app-participants',
@@ -28,7 +29,7 @@ export class ParticipantsComponent implements OnInit {
         }
     }
 
-    constructor(public http: HttpClient, public dialog: MatDialog, private notif: NotificationService, public cd: ChangeDetectorRef, public router: Router,) { }
+    constructor(public http: HttpClient, public dialog: MatDialog, private notif: NotificationService, public cd: ChangeDetectorRef, public router: Router, private userS: UserAuthService) { }
 
     ngOnInit(): void {
         this.updateParticipants()
@@ -40,8 +41,6 @@ export class ParticipantsComponent implements OnInit {
     updateParticipants() {
         this.getParticipants()
             .subscribe(data => {
-                console.log(this.all)
-                console.log(data);
                 if (this.tournament.state == 'main_stage' && !this.all) {
                     if (this.tournament.type == 'battle_royale') {
                         data.sort(this.royaleSort);
@@ -104,16 +103,11 @@ export class ParticipantsComponent implements OnInit {
         }
     }
 
-    updateUser() {
-        this.logIn()
-            .subscribe(data => {
-                if (data) {
-                    this.curUser = data[0];
-                    if (this.curUser != null && (this.curUser['roleIds'].includes('1') || this.curUser.discordId == this.tournament.owner)) {
-                        this.isAuthorised = true;
-                    }
-                }
-            });
+    async updateUser() {
+        this.curUser = await this.userS.curUser();
+        if (this.curUser != null && (this.curUser['roleIds'].includes('1') || this.curUser.discordId == this.tournament.owner)) {
+            this.isAuthorised = true;
+        }
     }
 
     deleteParticipant(participantId) {
@@ -217,11 +211,6 @@ export class ParticipantsComponent implements OnInit {
 
     elimParticipant(data: any): Observable<any> {
         return this.http.post(`/api/tournament/${this.tournament.tournamentId}/elimParticipant`, data)
-    }
-
-    public logIn(): Observable<User[]> {
-        // console.log('/api/discordAuth?code=' + code);
-        return this.http.get<User[]>('/api/user');
     }
 
     setParticpants() {

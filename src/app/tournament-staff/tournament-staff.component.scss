@@ -1,0 +1,20 @@
+.teamImg {
+    border-radius: 15px;
+    display: block;
+    height: 64px;
+    width: 64px;
+    margin: 5px 0;
+}
+
+.teamName {
+    font-weight: 700;
+}
+
+.usrRow {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, 150px);
+}
+
+.usrRow a {
+    padding: 10px;
+}

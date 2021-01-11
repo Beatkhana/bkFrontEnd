@@ -9,6 +9,8 @@ import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dial
 
 import { NotificationService } from './services/toast.service';
 import { MetaTagService } from './services/meta-tag.service';
+import { UserAuthService } from './services/user-auth.service';
+import { TournamentsComponent } from './tournaments/tournaments.component';
 
 @Component({
     selector: 'app-root',
@@ -35,74 +37,31 @@ export class AppComponent implements OnInit {
         public sanitizer: DomSanitizer,
         public notif: NotificationService,
         public metaTags: MetaTagService,
-        public cd: ChangeDetectorRef
+        public cd: ChangeDetectorRef,
+        protected userS: UserAuthService
     ) {
-        // console.log(this.user);
-        // if (this.user == null) {
-        //     this.updateUser();
-        // }
-
         router.events.subscribe(() => {
             this.burgerActive = false;
-            this.updateUser();
         });
 
-        setInterval(()=> {
-            this.updatedUser = false;
-        },30000);
+        // if (this.constructor == AppComponent) {
+        //     this.updateUser(); 
+        // }
+        if (!this.user) this.updateUser();
 
         router.events.forEach((event) => {
             if (event instanceof NavigationStart) {
                 this.showDefault = !(event.url.includes('overlay') || event.url.includes('coordinator') || event.url.includes('/ta'));
             }
         });
-
-        // route.params.subscribe(val => {
-        //     this.updateUser();
-        // });
-        
-        // console.log(this.discordSvg);
-        // console.log(discordLogo);
-        // this.getSVG()
-        // this.discordSvg = this.sanitizer.bypassSecurityTrustHtml(discordLogo);
     }
 
     ngOnInit(): void {
         this.metaTags.defineTags('/', 'BeatKhana!', 'The one stop spot for all Beat Saber tournament information', 'assets/images/icon/BeatKhana Logo RGB.png');
     }
 
-    // async getSVG() {
-    //     const headers = new HttpHeaders();
-    //     headers.set('Accept', 'image/svg+xml');
-    //     const svgString =
-    //         await this.http.get(`/assets/icons/discord.svg`, { headers, responseType: 'text' }).toPromise();
-    //     console.log(svgString)
-    //     this.discordSvg = this.sanitizer.bypassSecurityTrustHtml(svgString);
-    // }
-
-    updateUser() {
-        if(!this.updatedUser){
-            this.updatedUser = true;
-            this.logIn()
-                .subscribe(data => {
-                    if (data) {
-                        this.user = data[0];
-                        if(this.user.avatar.includes('api') || this.user.avatar.includes('oculus')) {
-                            this.user.avatar = "https://new.scoresaber.com" + this.user.avatar;
-                        } else {
-                            this.user.avatar = `/${this.user.avatar}` + (this.user.avatar.substring(0, 2) == 'a_' ? '.gif' : '.webp');
-                            this.user.avatar = `https://cdn.discordapp.com/avatars/${this.user.discordId}${ this.user.avatar }`
-                        }
-                    }else {
-                        this.user = null;
-                    }
-                    this.cd.detectChanges();
-                });
-        }
-    }
-
-    public logIn(): Observable<User[]> {
-        return this.http.get<User[]>('/api/user');
+    private async updateUser() {
+        this.user = await this.userS.curUser();
     }
 
     public setTitle(newTitle: string) {

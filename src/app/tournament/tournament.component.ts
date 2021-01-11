@@ -10,6 +10,7 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { map, startWith, switchMap } from 'rxjs/operators';
 import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
 import { NotificationService } from '../services/toast.service';
+import { signedUp } from '../_models/tournamentApi.model';
 
 @Component({
     selector: 'app-tournament',
@@ -31,6 +32,7 @@ export class TournamentComponent extends AppComponent implements OnInit {
     canSignup = true;
     isQuals = false;
     isSignedUp = false;
+    staffPage = false;
 
     participants: any = [];
     isParticipant = true;
@@ -42,7 +44,7 @@ export class TournamentComponent extends AppComponent implements OnInit {
         }
     }
 
-    ngOnInit(): void {
+    async ngOnInit(): Promise<void> {
         this.route.paramMap.subscribe(params => {
             this.tourneyId = params.get('id');
             if (this.router.url.includes('map-pool')) {
@@ -52,12 +54,14 @@ export class TournamentComponent extends AppComponent implements OnInit {
                 this.isParticipants = false;
                 this.isQuals = false;
                 this.isSignedUp = false;
+                this.staffPage = false;
             } else if (this.router.url.includes('allParticipants')) {
                 this.isSignedUp = true;
                 this.isQuals = false;
                 this.isParticipants = false;
                 this.isBracket = false;
                 this.isMapPool = false;
+                this.staffPage = false;
                 this.isInfo = false;
             } else if (this.router.url.includes('bracket')) {
                 this.isBracket = true;
@@ -66,6 +70,7 @@ export class TournamentComponent extends AppComponent implements OnInit {
                 this.isParticipants = false;
                 this.isQuals = false;
                 this.isSignedUp = false;
+                this.staffPage = false;
             } else if (this.router.url.includes('participants')) {
                 this.isParticipants = true;
                 this.isBracket = false;
@@ -73,6 +78,7 @@ export class TournamentComponent extends AppComponent implements OnInit {
                 this.isInfo = false;
                 this.isQuals = false;
                 this.isSignedUp = false;
+                this.staffPage = false;
             } else if (this.router.url.includes('qualifiers')) {
                 this.isQuals = true;
                 this.isParticipants = false;
@@ -80,6 +86,15 @@ export class TournamentComponent extends AppComponent implements OnInit {
                 this.isMapPool = false;
                 this.isInfo = false;
                 this.isSignedUp = false;
+                this.staffPage = false;
+            } else if (this.router.url.includes('staff')) {
+                this.isMapPool = false;
+                this.isBracket = false;
+                this.isInfo = false;
+                this.isParticipants = false;
+                this.isQuals = false;
+                this.isSignedUp = false;
+                this.staffPage = true;
             } else {
                 this.isMapPool = false;
                 this.isBracket = false;
@@ -87,9 +102,10 @@ export class TournamentComponent extends AppComponent implements OnInit {
                 this.isParticipants = false;
                 this.isQuals = false;
                 this.isSignedUp = false;
+                this.staffPage = false;
             }
         });
-        this.test();
+        this.main();
 
         this.router.events.subscribe((val) => {
             if (this.router.url.includes('map-pool')) {
@@ -99,6 +115,7 @@ export class TournamentComponent extends AppComponent implements OnInit {
                 this.isParticipants = false;
                 this.isQuals = false;
                 this.isSignedUp = false;
+                this.staffPage = false;
             } else if (this.router.url.includes('allParticipants')) {
                 this.isSignedUp = true;
                 this.isQuals = false;
@@ -106,6 +123,7 @@ export class TournamentComponent extends AppComponent implements OnInit {
                 this.isBracket = false;
                 this.isMapPool = false;
                 this.isInfo = false;
+                this.staffPage = false;
             } else if (this.router.url.includes('bracket')) {
                 this.isBracket = true;
                 this.isMapPool = false;
@@ -113,6 +131,7 @@ export class TournamentComponent extends AppComponent implements OnInit {
                 this.isParticipants = false;
                 this.isQuals = false;
                 this.isSignedUp = false;
+                this.staffPage = false;
             } else if (this.router.url.includes('participants')) {
                 this.isParticipants = true;
                 this.isBracket = false;
@@ -120,6 +139,7 @@ export class TournamentComponent extends AppComponent implements OnInit {
                 this.isInfo = false;
                 this.isQuals = false;
                 this.isSignedUp = false;
+                this.staffPage = false;
             } else if (this.router.url.includes('qualifiers')) {
                 this.isQuals = true;
                 this.isParticipants = false;
@@ -127,6 +147,14 @@ export class TournamentComponent extends AppComponent implements OnInit {
                 this.isMapPool = false;
                 this.isInfo = false;
                 this.isSignedUp = false;
+            } else if (this.router.url.includes('staff')) {
+                this.isMapPool = false;
+                this.isBracket = false;
+                this.isInfo = false;
+                this.isParticipants = false;
+                this.isQuals = false;
+                this.isSignedUp = false;
+                this.staffPage = true;
             } else {
                 this.isMapPool = false;
                 this.isBracket = false;
@@ -134,19 +162,19 @@ export class TournamentComponent extends AppComponent implements OnInit {
                 this.isParticipants = false;
                 this.isQuals = false;
                 this.isSignedUp = false;
+                this.staffPage = false;
             }
         });
-
     }
 
     countries: any = null;
 
-    async test() {
+    async main() {
         const data = await this.http.get<ITournament[]>(this.url + '/' + this.tourneyId).toPromise();
         this.tournament = data[0];
 
-        const usr: any = await this.http.get(`/api/user`).toPromise();
-        this.user = usr != null ? usr[0] : null;
+        const usr: any = await this.userS.curUser();
+        this.user = usr != null ? usr : null;
 
         if (this.tournament.countries != '') {
             this.countries = this.tournament.countries.toLowerCase().replace(' ', '').split(',');
@@ -158,8 +186,9 @@ export class TournamentComponent extends AppComponent implements OnInit {
         if (this.tournament.public_signups == 1) {
             const participantData = await this.http.get(`/api/tournament/${this.tournament.tournamentId}/participants`).toPromise();
             this.participants = participantData;
-            if (this.user != null && !this.participants.some(x => x.discordId == this.user.discordId)) {
-                this.isParticipant = false;
+            if (this.user != null) {
+                let signedUp = await this.http.get<signedUp>(`/api/tournament/${this.tournament.tournamentId}/signedUp`).toPromise();
+                this.isParticipant = signedUp.signedUp;
             }
         }
         if (this.tournament.state == 'archived' || this.tournament.state == 'main_stage') {
@@ -171,17 +200,6 @@ export class TournamentComponent extends AppComponent implements OnInit {
         this.loading = false;
     }
 
-    setParticpants() {
-        this.getParticipants()
-            .subscribe(data => {
-                this.participants = data;
-                if (this.user != null && !this.participants.some(x => x.discordId == this.user.discordId)) {
-                    this.isParticipant = false;
-                    this.cd.detectChanges();
-                }
-            })
-    }
-
     getParticipants(): Observable<any> {
         return this.http.get(`/api/tournament/${this.tournament.tournamentId}/participants`);
     }
@@ -190,12 +208,7 @@ export class TournamentComponent extends AppComponent implements OnInit {
         return this.http.get<ITournament[]>(this.url + '/' + this.tourneyId);
     }
 
-    // checkTwitch(): Observable<any> {
-    //     let twitchName = this.tournament.twitchLink.split('twitch.tv/')[1];
-    //     return this.http.get(`https://api.twitch.tv/helix/streams?user_login=${twitchName}`);
-    // }
-
-    openEdit() {
+    openEdit(): void {
         const dialog = this.dialog.open(editTournament, {
             minWidth: '60vw',
             maxHeight: '90vh',
@@ -212,7 +225,7 @@ export class TournamentComponent extends AppComponent implements OnInit {
             });
     }
 
-    tourneySettings() {
+    tourneySettings(): void {
         const dialog = this.dialog.open(tournamentSettingsDialog, {
             // height: '400px',
             minWidth: '40vw',
@@ -227,12 +240,12 @@ export class TournamentComponent extends AppComponent implements OnInit {
                     // console.log("Dialog output:", data);
                     this.tournament = { ...this.tournament, ...data };
                     this.tournament.safeInfo = this.sanitizer.bypassSecurityTrustHtml(this.tournament.info);
-                    this.test();
+                    this.main();
                 }
             });
     }
 
-    addPlayer() {
+    addPlayer(): void {
         const dialog = this.dialog.open(addPlayerDialog, {
             // height: '400px',
             minWidth: '40vw',
@@ -250,7 +263,7 @@ export class TournamentComponent extends AppComponent implements OnInit {
             });
     }
 
-    delete() {
+    delete(): void {
         const dialog = this.dialog.open(ConfirmDialogComponent, {
             // height: '400px',
             width: '400px',
@@ -279,7 +292,7 @@ export class TournamentComponent extends AppComponent implements OnInit {
             });
     }
 
-    signUp() {
+    signUp(): void {
         const dialog = this.dialog.open(signUpDialog, {
             // height: '400px',
             minWidth: '40vw',

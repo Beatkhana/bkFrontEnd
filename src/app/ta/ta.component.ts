@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Title } from '@angular/platform-browser';
 
 @Component({
     selector: 'app-ta',
@@ -7,7 +8,9 @@ import { Component, OnInit } from '@angular/core';
 })
 export class TaComponent implements OnInit {
 
-    constructor() { }
+    constructor(public titleService: Title) {
+        titleService.setTitle('TA Client');
+     }
 
     ngOnInit(): void {
         let node = document.createElement('script');
@@ -15,5 +18,4 @@ export class TaComponent implements OnInit {
         node.type = 'text/javascript';
         document.getElementsByTagName('head')[0].appendChild(node);
     }
-
 }

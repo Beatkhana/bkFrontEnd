@@ -60,6 +60,8 @@ import { BadgesComponent } from './badges/badges.component';
 import { CreateBadgeComponent } from './_modals/create-badge/create-badge.component';
 import { Awards2020Component } from './awards2020/awards2020.component';
 import { AssignBadgesComponent } from './_modals/assign-badges/assign-badges.component';
+import { TournamentStaffComponent } from './tournament-staff/tournament-staff.component';
+import { EditStaffComponent } from './_modals/edit-staff/edit-staff.component';
 
 
 @NgModule({
@@ -101,7 +103,9 @@ import { AssignBadgesComponent } from './_modals/assign-badges/assign-badges.com
         BadgesComponent,
         CreateBadgeComponent,
         Awards2020Component,
-        AssignBadgesComponent
+        AssignBadgesComponent,
+        TournamentStaffComponent,
+        EditStaffComponent
     ],
     imports: [
         BrowserModule,

@@ -26,10 +26,12 @@
             <div *ngIf="tournament.has_bracket == 1" [routerLink]="['bracket']" routerLinkActive="isActive">
                 <h3>Bracket</h3>
             </div>
+            <div [routerLink]="['staff']" routerLinkActive="isActive">
+                <h3>Staff</h3>
+            </div>
         </div>
         <div class="card noHover" style="border-radius: 0px 4px 4px 4px;">
             <div class="card-body" #info *ngIf="isInfo">
-                <!-- <img class="tourneyImg" src="https://beatkhanas3.s3.us-east-1.amazonaws.com/{{ tournament.image }}" alt="" /> -->
                 <img class="tourneyImg" src="/assets/images/{{tournament.image}}" alt="" />
                 <h1>{{ tournament.name }}</h1>
 
@@ -57,6 +59,9 @@
                 <p *ngIf="tournament.public_signups == 1 && user != null && !isParticipant && canSignup" class="card-text">
                     <button mat-stroked-button color="accent" (click)="signUp()">Sign Up!</button>
                 </p>
+                <p *ngIf="tournament.public_signups == 1 && user != null && isParticipant && canSignup" class="card-text">
+                    You have successfully signed up for this tournament!
+                </p>
                 <p *ngIf="tournament.public_signups == 1 && user == null" class="card-text">
                     Please login to signup for this tournament.
                 </p>
@@ -78,6 +83,7 @@
             <app-map-pool [tournament]="tournament" *ngIf="isMapPool && tournament.has_map_pool == 1"></app-map-pool>
             <app-bracket [tournament]="tournament" *ngIf="isBracket && tournament.has_bracket == 1"></app-bracket>
             <app-qualifiers [tournament]="tournament" *ngIf="isQuals"></app-qualifiers>
+            <app-tournament-staff [tournament]="tournament" *ngIf="staffPage"></app-tournament-staff>
         </div>
     </div>
 </ng-template>

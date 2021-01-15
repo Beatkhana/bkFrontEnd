@@ -29,9 +29,18 @@ table {
 
 :host ::ng-deep .mat-tab-label {
     margin: 5px;
-    padding: 0px 7px;
+    padding: 0px;
+    .labelText {
+        // margin: 5px;
+        padding: 5px 7px;
+    }
     border-radius: 10px;
-    border: 1px rgba(255, 255, 255, 0.7) solid;
+    border: 1px rgba(255,
+    255,
+    255,
+    0.7) solid;
+    height: auto;
+    min-width: 0px;
 }
 
 :host ::ng-deep .mat-ink-bar {
@@ -40,4 +49,12 @@ table {
 
 :host ::ng-deep .mat-tab-label[aria-selected="true"] {
     border-color: #00aac8;
+}
+
+.labelImage {
+    width: 36px;
+    height: 36px;
+    border: none;
+    // margin-left: 5px;
+    border-radius: 10px;
 }

@@ -22,3 +22,22 @@ table {
     display: inline-block;
     color: #00aac8;
 }
+
+:host ::ng-deep .mat-tab-labels {
+    flex-wrap: wrap;
+}
+
+:host ::ng-deep .mat-tab-label {
+    margin: 5px;
+    padding: 0px 7px;
+    border-radius: 10px;
+    border: 1px rgba(255, 255, 255, 0.7) solid;
+}
+
+:host ::ng-deep .mat-ink-bar {
+    display: none;
+}
+
+:host ::ng-deep .mat-tab-label[aria-selected="true"] {
+    border-color: #00aac8;
+}

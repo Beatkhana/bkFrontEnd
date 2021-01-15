@@ -16,7 +16,7 @@
             <mat-tab *ngFor="let pool of poolValues" id="{{pool.id}}">
                 <ng-template mat-tab-label>
                     <span>{{pool.poolName}}</span>
-                    <img src="{{pool.image}}" style="width: 24px;height: 24px;border: none;margin-left: 5px;">
+                    <img src="{{pool.image}}" style="width: 24px;height: 24px;border: none;margin-left: 5px; border-radius: 10px;">
                 </ng-template>
                 <table *ngIf="pool.songs.length > 0 else noSongs" mat-table [dataSource]="pool.songs" class="card-text">
                     <ng-container matColumnDef="image">

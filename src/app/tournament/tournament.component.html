@@ -65,17 +65,25 @@
                 <p *ngIf="tournament.public_signups == 1 && user == null" class="card-text">
                     Please login to signup for this tournament.
                 </p>
-                <p *ngIf="user && tournament.owner == user.discordId && !user['roleIds'].includes('1')" class="card-text">
-                    <button mat-stroked-button color="primary" (click)="openEdit()">Edit Tournament</button> &nbsp;
-                    <button mat-stroked-button color="primary" (click)="tourneySettings()">Tournament Settings</button>
-                    <button mat-stroked-button color="primary" (click)="addPlayer()">Add Player</button> &nbsp;
+                <ng-container *ngIf="isAuth">
+                    <p class="card-text">
+                        <button mat-stroked-button color="primary" (click)="openEdit()">Edit Tournament</button> &nbsp;
+                        <button mat-stroked-button color="primary" (click)="tourneySettings()">Tournament Settings</button> &nbsp;
+                        <button mat-stroked-button color="primary" (click)="addPlayer()">Add Player</button> &nbsp;
+                        <button *ngIf="user && user['roleIds'].includes('1')" mat-stroked-button color="warn" (click)="delete()">Delete Tournament</button>
+                    </p>
+                </ng-container>
+
+                <!-- <p *ngIf="user && tournament.owner == user.discordId && !user['roleIds'].includes('1')" class="card-text">
+                    
+                    
                 </p>
-                <p *ngIf="user && user['roleIds'].includes('1')" class="card-text">
+                <p >
                     <button mat-stroked-button color="primary" (click)="openEdit()">Edit Tournament</button> &nbsp;
                     <button mat-stroked-button color="primary" (click)="tourneySettings()">Tournament Settings</button> &nbsp;
                     <button mat-stroked-button color="primary" (click)="addPlayer()">Add Player</button> &nbsp;
-                    <button mat-stroked-button color="warn" (click)="delete()">Delete Tournament</button>
-                </p>
+                    
+                </p> -->
             </div>
             <!-- <router-outlet></router-outlet> -->
             <app-participants [tournament]="tournament" [participants]="participants" *ngIf="isParticipants && tournament.public_signups == 1"></app-participants>

@@ -12,11 +12,12 @@ import { staff } from '../_models/tournamentApi.model';
 export class TournamentStaffComponent extends AppComponent implements OnInit {
 
     @Input() tournament;
-
+    loading = true;
     staff: staff[] = [];
 
     async ngOnInit(): Promise<void> {
         this.staff = await this.http.get<staff[]>(`/api/tournament/${this.tournament.tournamentId}/staff`).toPromise();
+        this.loading = false;
     }
 
     getRoleNames(roles: {id: number, role: string}[]) {

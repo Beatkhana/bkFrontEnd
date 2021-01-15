@@ -1,5 +1,5 @@
 export class User {
-    discordId: number;
+    discordId: string;
     ssId: number;
     name: string;
     twitchName: string;

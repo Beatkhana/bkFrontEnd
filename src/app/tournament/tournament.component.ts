@@ -10,7 +10,7 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { map, startWith, switchMap } from 'rxjs/operators';
 import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
 import { NotificationService } from '../services/toast.service';
-import { signedUp } from '../_models/tournamentApi.model';
+import { signedUp, staff } from '../_models/tournamentApi.model';
 
 @Component({
     selector: 'app-tournament',
@@ -33,6 +33,8 @@ export class TournamentComponent extends AppComponent implements OnInit {
     isQuals = false;
     isSignedUp = false;
     staffPage = false;
+
+    isAuth = false;
 
     participants: any = [];
     isParticipant = true;
@@ -168,10 +170,17 @@ export class TournamentComponent extends AppComponent implements OnInit {
     }
 
     countries: any = null;
+    staff: staff[];
 
     async main() {
+        this.staff = await this.http.get<staff[]>(`/api/tournament/${this.tourneyId}/staff`).toPromise();
         const data = await this.http.get<ITournament[]>(this.url + '/' + this.tourneyId).toPromise();
         this.tournament = data[0];
+
+        // user auth
+        if (this.user) {
+            this.isAuth = this.tournament.owner == this.user.discordId || this.user['roleIds'].includes('1') || !!this.staff.find(x => x.discordId == this.user.discordId && x.roles.map(x => x.id).includes(1));
+        }
 
         const usr: any = await this.userS.curUser();
         this.user = usr != null ? usr : null;
@@ -276,18 +285,16 @@ export class TournamentComponent extends AppComponent implements OnInit {
         });
 
         dialog.afterClosed()
-            .subscribe(data => {
+            .subscribe(async data => {
                 if (data) {
-                    this.deleteTourney(this.tourneyId)
-                        .subscribe(data => {
-                            if (!data.flag) {
-                                this.notif.showSuccess('', 'Successfully deleted tournament');
-                                this.router.navigate(['/']);
-                            } else {
-                                console.error("Error: ", data);
-                                this.notif.showError('', 'Error deleting tournament');
-                            }
-                        })
+                    try {
+                        await this.http.delete('/api/tournament/' + this.tourneyId).toPromise();
+                        this.notif.showSuccess('', 'Successfully deleted tournament');
+                        this.router.navigate(['/']);
+                    } catch (error) {
+                        console.error("Error: ", data);
+                        this.notif.showError('', 'Error deleting tournament');
+                    }
                 }
             });
     }
@@ -310,7 +317,7 @@ export class TournamentComponent extends AppComponent implements OnInit {
     }
 
     private deleteTourney(id): Observable<any> {
-        return this.http.post('/api/tournament/delete/' + id, {});
+        return this.http.delete('/api/tournament/' + id, {});
     }
 }
 

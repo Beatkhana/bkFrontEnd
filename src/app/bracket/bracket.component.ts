@@ -60,7 +60,7 @@ export class BracketComponent extends AppComponent implements OnInit {
         // const usr: any = await this.http.get(`/api/user`).toPromise();
         const usr: any = await this.userS.curUser();
         this.user = usr != null ? usr : null;
-        console.log(this.user);
+        // console.log(this.user);
         if (this.user != null && (this.user.roleIds.includes("1") || this.tournament.owner == this.user.discordId)) {
             this.isAuth = true;
         }

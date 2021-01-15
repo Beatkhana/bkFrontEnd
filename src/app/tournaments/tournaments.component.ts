@@ -190,16 +190,8 @@ export class newTournamentDialog implements OnInit {
         
         this.addTournament(this.tournamentForm.value)
             .subscribe(data => {
-                if (data) {
-                    if (!data.flag) {
-                        this.notif.showSuccess('', 'Successfully created tournament');
-                        this.dialogRef.close(true);
-                    } else {
-                        console.error("Error: ", data);
-                        this.notif.showError('', 'Error creating tournament');
-                        this.dialogRef.close(false);
-                    }
-                }
+                this.notif.showSuccess('', 'Successfully created tournament');
+                this.dialogRef.close(true);
             }, error => {
                 this.notif.showError('', 'Error creating tournament');
                 console.error("Error: ", error);

@@ -41,14 +41,17 @@ table {
     0.7) solid;
     height: auto;
     min-width: 0px;
+    transition: 300ms all;
+    &:hover {
+        border-color: #00aac891;
+    }
+    &[aria-selected="true"] {
+        border-color: #00aac8;
+    }
 }
 
 :host ::ng-deep .mat-ink-bar {
     display: none;
-}
-
-:host ::ng-deep .mat-tab-label[aria-selected="true"] {
-    border-color: #00aac8;
 }
 
 .labelImage {

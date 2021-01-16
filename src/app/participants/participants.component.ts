@@ -64,7 +64,7 @@ export class ParticipantsComponent implements OnInit {
                     }
                 }
                 this.cd.detectChanges();
-                // console.log(this.participants);
+                console.log(this.participants);
             })
     }
 

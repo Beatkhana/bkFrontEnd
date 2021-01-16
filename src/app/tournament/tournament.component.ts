@@ -633,22 +633,16 @@ export class signUpDialog implements OnInit {
         return this.signUpForm.get('comment');
     }
 
-    onSubmit() {
-        this.signUp(this.signUpForm.value)
-            .subscribe(data => {
-                if (!data.flag) {
-                    this.notif.showInfo('', 'Successfully signed up');
-                    this.dialogRef.close(true);
-                } else {
-                    console.error('Error', data.err)
-                    this.notif.showError('', 'Error signing up');
-                    this.dialogRef.close(false);
-                }
-            }, error => {
-                this.notif.showError('', 'Error signing up');
-                console.error("Error: ", error);
-                this.dialogRef.close(false);
-            });
+    async onSubmit() {
+        try {
+            await this.http.post(`/api/tournament/${this.id}/signUp`, this.signUpForm.value).toPromise();
+            this.notif.showInfo('', 'Successfully signed up');
+            this.dialogRef.close(true);
+        } catch (error) {
+            console.error('Error', error)
+            this.notif.showError('', 'Error signing up');
+            this.dialogRef.close(false);
+        }
     }
 
     signUp(data: any): Observable<any> {

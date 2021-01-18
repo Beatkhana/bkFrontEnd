@@ -123,24 +123,19 @@ export class ParticipantsComponent implements OnInit {
         });
 
         dialog.afterClosed()
-            .subscribe(data => {
+            .subscribe(async data => {
                 if (data) {
                     let info = {
                         participantId: participantId
                     }
-                    this.removeParticipant(info)
-                        .subscribe(data => {
-                            if (!data.flag) {
-                                this.notif.showSuccess('', 'Successfully removed participant');
-                                this.participants.splice(this.participants.findIndex(x => x.participantId == participantId), 1);
-                            } else {
-                                console.error("Error: ", data);
-                                this.notif.showError('', 'Error removing participant');
-                            }
-                        }, error => {
-                            this.notif.showError('', 'Error removing participant');
-                            console.error("Error: ", error);
-                        });
+                    try {
+                        await this.http.post(`/api/tournament/${this.tournament.tournamentId}/deleteParticipant`, info).toPromise();
+                        this.notif.showSuccess('', 'Successfully removed participant');
+                        this.participants.splice(this.participants.findIndex(x => x.participantId == participantId), 1);
+                    } catch (error) {
+                        console.error("Error: ", error);
+                        this.notif.showError('', 'Error removing participant');
+                    }
                 }
             });
     }
@@ -158,25 +153,33 @@ export class ParticipantsComponent implements OnInit {
         });
 
         dialog.afterClosed()
-            .subscribe(data => {
+            .subscribe(async data => {
                 if (data) {
                     let info = {
                         participantId: participantId
                     }
-                    this.elimParticipant(info)
-                        .subscribe(data => {
-                            if (!data.flag) {
-                                this.notif.showSuccess('', 'Successfully eliminated participant');
-                                // this.participants.splice(this.participants.findIndex(x => x.participantId == participantId), 1);
-                                this.updateParticipants();
-                            } else {
-                                console.error("Error: ", data);
-                                this.notif.showError('', 'Error eliminating participant');
-                            }
-                        }, error => {
-                            this.notif.showError('', 'Error eliminating participant');
-                            console.error("Error: ", error);
-                        });
+                    try {
+                        await this.http.post(`/api/tournament/${this.tournament.tournamentId}/elimParticipant`, info).toPromise();
+                        this.notif.showSuccess('', 'Successfully eliminated participant');
+                        this.updateParticipants();
+                    } catch (error) {
+                        console.error("Error: ", error);
+                        this.notif.showError('', 'Error eliminating participant');
+                    }
+                    // this.elimParticipant(info)
+                    //     .subscribe(data => {
+                    //         if (!data.flag) {
+                    //             this.notif.showSuccess('', 'Successfully eliminated participant');
+                    //             // this.participants.splice(this.participants.findIndex(x => x.participantId == participantId), 1);
+                    //             this.updateParticipants();
+                    //         } else {
+                    //             console.error("Error: ", data);
+                    //             this.notif.showError('', 'Error eliminating participant');
+                    //         }
+                    //     }, error => {
+                    //         this.notif.showError('', 'Error eliminating participant');
+                    //         console.error("Error: ", error);
+                    //     });
                 }
             });
     }
@@ -206,11 +209,11 @@ export class ParticipantsComponent implements OnInit {
     }
 
     removeParticipant(data: any): Observable<any> {
-        return this.http.post(`/api/tournament/${this.tournament.tournamentId}/deleteParticipant`, data)
+        return this.http.post(`/api/tournament/${this.tournament.tournamentId}/deleteParticipant`, data);
     }
 
     elimParticipant(data: any): Observable<any> {
-        return this.http.post(`/api/tournament/${this.tournament.tournamentId}/elimParticipant`, data)
+        return this.http.post(`/api/tournament/${this.tournament.tournamentId}/elimParticipant`, data);
     }
 
     setParticpants() {
@@ -268,22 +271,31 @@ export class editCommentDialog implements OnInit {
         return this.signUpForm.get('comment');
     }
 
-    onSubmit() {
-        this.editSignup(this.signUpForm.value)
-            .subscribe(data => {
-                if (!data.flag) {
-                    this.notif.showInfo('', 'Successfully updated sign up');
-                    this.dialogRef.close({ ...this.signUpForm.value, participantId: this.data.participantId });
-                } else {
-                    console.error('Error', data.err)
-                    this.notif.showError('', 'Error updaing sign up');
-                    this.dialogRef.close(false);
-                }
-            }, error => {
-                this.notif.showError('', 'Error updaing sign up');
-                console.error("Error: ", error);
-                this.dialogRef.close(false);
-            });
+    async onSubmit() {
+        // this.editSignup(this.signUpForm.value)
+        //     .subscribe(data => {
+        //         if (!data.flag) {
+        //             this.notif.showInfo('', 'Successfully updated sign up');
+        //             this.dialogRef.close({ ...this.signUpForm.value, participantId: this.data.participantId });
+        //         } else {
+        //             console.error('Error', data.err)
+        //             this.notif.showError('', 'Error updaing sign up');
+        //             this.dialogRef.close(false);
+        //         }
+        //     }, error => {
+        //         this.notif.showError('', 'Error updaing sign up');
+        //         console.error("Error: ", error);
+        //         this.dialogRef.close(false);
+        //     });
+        try {
+            await this.http.put(`/api/updateParticipant/${this.id}/${this.data.participantId}`, this.signUpForm.value).toPromise();
+            this.notif.showInfo('', 'Successfully updated sign up');
+            this.dialogRef.close({ ...this.signUpForm.value, participantId: this.data.participantId });
+        } catch (error) {
+            this.notif.showError('', 'Error updaing sign up');
+            console.error("Error: ", error);
+            this.dialogRef.close(false);
+        }
     }
 
     editSignup(data: any): Observable<any> {

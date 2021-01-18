@@ -15,7 +15,7 @@ import { UserAuthService } from '../services/user-auth.service';
     templateUrl: './map-pool.component.html',
     styleUrls: ['./map-pool.component.scss']
 })
-export class MapPoolComponent implements OnInit {
+export class MapPoolComponent extends AppComponent implements OnInit {
 
     private url = '/api/tournament';
     @Input() tournament;
@@ -32,22 +32,27 @@ export class MapPoolComponent implements OnInit {
     curPoolLive = false;
     poolsLen = 0;
 
-    public constructor(
-        public http: HttpClient,
-        public dialog: MatDialog,
-        private notif: NotificationService,
-        private sanitizer:DomSanitizer,
-        private userS: UserAuthService
-    ) {
-        if (this.user == null) {
-            this.updateUser();
-        }
-    }
+    // public constructor(
+    //     public http: HttpClient,
+    //     public dialog: MatDialog,
+    //     private notif: NotificationService,
+    //     private sanitizer:DomSanitizer,
+    //     private userS: UserAuthService
+    // ) {
+    //     if (this.user == null) {
+    //         this.updateUser();
+    //     }
+    // }
 
     mapPools = [];
     poolValues = [];
 
-    ngOnInit(): void {
+    async ngOnInit(): Promise<void> {
+        await this.userS.curUser();
+        if (this.user != null && (this.user['roleIds'].includes('1') || this.user.discordId == this.tournament.owner)) {
+            this.isAuthorised = true;
+            this.columnsToDisplay.push('delete');
+        }
         this.getPools()
             .subscribe(data => {
                 this.loading = false;
@@ -58,13 +63,13 @@ export class MapPoolComponent implements OnInit {
             });
     }
 
-    async updateUser() {
-        this.user = await this.userS.curUser();
-        if (this.user != null && (this.user['roleIds'].includes('1') || this.user.discordId == this.tournament.owner)) {
-            this.isAuthorised = true;
-            this.columnsToDisplay.push('delete');
-        }
-    }
+    // async updateUser() {
+    //     this.user = await this.userS.curUser();
+    //     if (this.user != null && (this.user['roleIds'].includes('1') || this.user.discordId == this.tournament.owner)) {
+    //         this.isAuthorised = true;
+    //         this.columnsToDisplay.push('delete');
+    //     }
+    // }
 
     sanitize(url:string){
         return this.sanitizer.bypassSecurityTrustUrl(url);
@@ -91,31 +96,20 @@ export class MapPoolComponent implements OnInit {
             }
         });
 
-        dialog.afterClosed().subscribe(
-            data => {
+        dialog.afterClosed()
+            .subscribe(async data => {
                 if (data) {
                     let info = {
                         tournamentId: this.tournament.tournamentId,
                         id: songId
                     }
-                    this.deleteSong(info)
-                        .subscribe(data => {
-                            if (!data.flag) {
-                                this.notif.showSuccess('', 'Successfully deleted song from map pool');
-                                this.loading = true;
-                                this.getPools()
-                                    .subscribe(data => {
-                                        this.loading = false;
-                                        this.mapPools = data;
-                                        this.curPoolId = Object.keys(this.mapPools)[0];
-                                        this.poolsLen = Object.keys(this.mapPools).length;
-                                        // console.log(data)
-                                    });
-                            } else {
-                                console.error("Error: ", data);
-                                this.notif.showError('', 'Error deleting song from map pool');
-                            }
-                        });
+                    try {
+                        await this.http.post(`api/tournament/${this.tournament.tournamentId}/deleteSong`, info).toPromise();
+                        this.updatePools();
+                    } catch (error) {
+                        console.error("Error: ", data);
+                        this.notif.showError('', 'Error deleting song from map pool');
+                    }
                 }
             }
         );
@@ -182,6 +176,13 @@ export class MapPoolComponent implements OnInit {
         return this.http.get<any[]>(`api/tournament/${this.tournament.tournamentId}/map-pools`);
     }
 
+    async updatePools() {
+        let data = await this.http.get<any[]>(`api/tournament/${this.tournament.tournamentId}/map-pools`).toPromise();
+        this.mapPools = data;
+        this.poolsLen = Object.keys(this.mapPools).length;
+        this.poolValues = Object.values(this.mapPools);
+    }
+
     addSong() {
         const dialog = this.dialog.open(addSongDialog, {
             minWidth: '40vw',
@@ -196,14 +197,15 @@ export class MapPoolComponent implements OnInit {
         dialog.afterClosed()
             .subscribe(data => {
                 if (data) {
-                    this.loading = true;
-                    this.getPools()
-                        .subscribe(data => {
-                            this.loading = false;
-                            this.mapPools = data;
-                            this.curPoolId = Object.keys(this.mapPools)[0];
-                            this.poolsLen = Object.keys(this.mapPools).length;
-                        });
+                    // this.loading = true;
+                    this.updatePools();
+                    // this.getPools()
+                    //     .subscribe(data => {
+                    //         this.loading = false;
+                    //         this.mapPools = data;
+                    //         this.curPoolId = Object.keys(this.mapPools)[0];
+                    //         this.poolsLen = Object.keys(this.mapPools).length;
+                    //     });
                 }
             });
     }
@@ -220,19 +222,11 @@ export class MapPoolComponent implements OnInit {
                 edit: true
             }
         });
-
+        
         dialog.afterClosed()
-            .subscribe(data => {
+            .subscribe(async data => {
                 if (data) {
-                    this.loading = true;
-                    this.getPools()
-                        .subscribe(data => {
-                            this.loading = false;
-                            this.mapPools = data;
-                            this.curPoolId = Object.keys(this.mapPools)[0];
-                            this.poolsLen = Object.keys(this.mapPools).length;
-                            // console.log(data)
-                        });
+                    this.updatePools();
                 }
             });
     }
@@ -306,38 +300,43 @@ export class createPoolDialog implements OnInit {
         };
     }
 
-    onSubmit() {
+    async onSubmit() {
         this.isSubmitted = true;
         if (this.data.edit) {
             this.newPoolForm.value.live = +this.newPoolForm.value.live;
-            this.updatePool(this.newPoolForm.value)
-                .subscribe(data => {
-                    if (!data.flag) {
-                        this.notif.showSuccess('', 'Successfully updated map pool');
-                    } else {
-                        console.error("Error: ", data);
-                        this.notif.showError('', 'Error updating map pool');
-                    }
-                    this.dialogRef.close(true);
-                }, error => {
-                    this.notif.showError('', 'Error updating map pool');
-                    console.error("Error: ", error);
-                    this.dialogRef.close(true);
-                });
+            try {
+                await this.http.put(`/api/tournament/${this.data.tournament.tournamentId}/map-pools`, this.newPoolForm.value).toPromise();
+                this.notif.showSuccess('', 'Successfully updated map pool');
+                this.dialogRef.close(true);
+            } catch (error) {
+                this.notif.showError('', 'Error updating map pool');
+                console.error("Error: ", error);
+                this.dialogRef.close(true);
+            }
+            // this.updatePool(this.newPoolForm.value)
+            //     .subscribe(data => {
+            //         if (!data.flag) {
+            //             this.notif.showSuccess('', 'Successfully updated map pool');
+            //         } else {
+            //             console.error("Error: ", data);
+            //             this.notif.showError('', 'Error updating map pool');
+            //         }
+            //         this.dialogRef.close(true);
+            //     }, error => {
+            //         this.notif.showError('', 'Error updating map pool');
+            //         console.error("Error: ", error);
+            //         this.dialogRef.close(true);
+            //     });
         } else {
-            this.addPool(this.newPoolForm.value)
-                .subscribe(data => {
-                    if (!data.flag) {
-                        this.notif.showSuccess('', 'Successfully created map pool');
-                    } else {
-                        this.notif.showError('', 'Error creating map pool');
-                    }
-                    this.dialogRef.close(true);
-                }, error => {
-                    this.notif.showError('', 'Error creating map pool');
-                    console.error("Error: ", error);
-                    this.dialogRef.close(true);
-                });
+            try {
+                await this.http.post(`/api/tournament/${this.data.tournament.tournamentId}/addPool`, this.newPoolForm.value).toPromise();
+                this.notif.showSuccess('', 'Successfully updated map pool');
+                this.dialogRef.close(true);
+            } catch (error) {
+                this.notif.showError('', 'Error updating map pool');
+                console.error("Error: ", error);
+                this.dialogRef.close(true);
+            }
         }
     }
 
@@ -399,23 +398,18 @@ export class addSongDialog implements OnInit {
         this.beatsaver = this.newSongForm.value.ssLink.includes('beatsaver');
     }
 
-    onSubmit() {
+    async onSubmit() {
         this.isSubmitted = true;
         // console.log(this.newSongForm.value);
-        this.addSong(this.newSongForm.value)
-            .subscribe(data => {
-                if (!data.flag) {
-                    this.notif.showSuccess('', 'Successfully added song to pool/s');
-                } else {
-                    this.notif.showError('', 'Error adding song to pool/s');
-                    console.log(data.err)
-                }
-                this.dialogRef.close(this.newSongForm.value);
-            }, error => {
-                this.notif.showError('', 'Error adding song to pool/s');
-                console.error("Error: ", error);
-                this.dialogRef.close(this.newSongForm.value);
-            });
+        try {
+            await this.http.post(`/api/tournament/${this.data.tournament.tournamentId}/addSong${this.beatsaver ? 'ByKey' : ''}`, this.newSongForm.value).toPromise();
+            this.notif.showSuccess('', 'Successfully added song to pool/s');
+            this.dialogRef.close(this.newSongForm.value);
+        } catch (error) {
+            this.notif.showError('', 'Error adding song to pool/s');
+            console.error("Error: ", error);
+            this.dialogRef.close(false);
+        }
     }
 
     addSong(data: any): Observable<any> {

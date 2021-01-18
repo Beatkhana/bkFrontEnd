@@ -96,42 +96,17 @@ export class editProfileDialog implements OnInit {
         // this.minRole = Math.min(...this.data.curUser.roleIds.map(x=>+x));
     }
 
-    onSubmit() {
-        this.updateUser()
-            .subscribe(data => {
-                let returnData = this.userForm.value;
-                // if(this.userForm.value.roleIds.length == 0){
-                //     this.userForm.value.roleIds = this.data.selUser.roleIds;
-                // } else {
-                //     let roleNames = this.userForm.value.roleIds.map(x => this.userRoles[this.userRoles.findIndex(y=>y.id == x)].name).join(', ');
-                //     this.userForm.value.roleIds = this.userForm.value.roleIds.join(', ')
-                //     returnData = {...this.userForm.value, ...{roleNames: roleNames}};
-                // }
-                if (!data.flag) {
-                    this.notif.showSuccess('', 'Successfully updated profile');
-                } else {
-                    console.error("Error: ", data.err);
-                    this.notif.showError('', 'Error updating profile');
-                }
-                this.dialogRef.close(returnData);
-            }, error => {
-                this.notif.showError('', 'Error updating profile');
-                console.error("Error: ", error);
-                this.dialogRef.close(this.userForm.value);
-            });
+    async onSubmit() {
+        try {
+            await this.http.put('/api/user/' + this.userForm.value.discordId, this.userForm.value).toPromise();
+            this.notif.showSuccess('', 'Successfully updated profile');
+            this.dialogRef.close(this.userForm.value);
+        } catch (error) {
+            console.error("Error: ", error);
+            this.notif.showError('', 'Error updating profile');
+            this.dialogRef.close(false);
+        }
     }
-
-    // updateRoleId(roleId) {
-    //     roleId = parseInt(roleId)
-    //     var i = this.roleIds.indexOf(roleId);
-    //     if (i === -1) {
-    //         this.roleIds.push(roleId);
-    //     } else {
-    //         this.roleIds.splice(i, 1);
-    //     }
-    //     this.userForm.value.roleIds = this.roleIds;
-    //     // console.log(this.roleIds)
-    // }
 
     updateUser(): Observable<any> {
         return this.http.put('/api/user/' + this.userForm.value.discordId, this.userForm.value);

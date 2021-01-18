@@ -247,28 +247,16 @@ export class archiveTournamentDialog implements OnInit {
         })
     }
 
-    onSubmit() {
-        this.archiveTournament(this.archiveForm.value)
-            .subscribe(data => {
-                if (data) {
-                    if (!data.flag) {
-                        this.notif.showSuccess('', 'Successfully archived tournament');
-                        this.router.navigateByUrl('/archive', { skipLocationChange: true }).then(() => {
-                            this.router.navigate(['']);
-                        });
-                    } else {
-                        console.error("Error: ", data);
-                        this.notif.showError('', 'Error archiving tournament');
-                    }
-                }
-            }, error => {
-                this.notif.showError('', 'Error archiving tournament');
-                console.error("Error: ", error);
+    async onSubmit() {
+        try {
+            await this.http.put<any>('/api/archiveTournament', this.archiveForm.value).toPromise();
+            this.notif.showSuccess('', 'Successfully archived tournament');
+            this.router.navigateByUrl('/archive', { skipLocationChange: true }).then(() => {
+                this.router.navigate(['']);
             });
+        } catch (error) {
+            console.error("Error: ", error);
+            this.notif.showError('', 'Error archiving tournament');
+        }
     }
-
-    public archiveTournament(data: any): Observable<any> {
-        return this.http.put<any>('/api/archiveTournament', data);
-    }
-
 }

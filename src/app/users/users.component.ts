@@ -164,33 +164,28 @@ export class editUserDialog implements OnInit {
             roleIds: this.fb.array([])
         });
         this.userForm.value.roleIds = [];
-        this.roleIds = this.data.selUser.roleIds != null ? this.data.selUser.roleIds.split(', ').map(x=>+x) : [];
-        this.minRole = Math.min(...this.data.curUser.roleIds.map(x=>+x));
+        this.roleIds = this.data.selUser.roleIds != null ? this.data.selUser.roleIds.split(', ').map(x => +x) : [];
+        this.minRole = Math.min(...this.data.curUser.roleIds.map(x => +x));
     }
 
-    onSubmit() {
-        this.updateUser()
-            .subscribe(data => {
-                let returnData = this.userForm.value;
-                if(this.userForm.value.roleIds.length == 0){
-                    this.userForm.value.roleIds = this.data.selUser.roleIds;
-                } else {
-                    let roleNames = this.userForm.value.roleIds.map(x => this.userRoles[this.userRoles.findIndex(y=>y.id == x)].name).join(', ');
-                    this.userForm.value.roleIds = this.userForm.value.roleIds.join(', ')
-                    returnData = {...this.userForm.value, ...{roleNames: roleNames}};
-                }
-                if (!data.flag) {
-                    this.notif.showSuccess('', 'Successfully updated user');
-                } else {
-                    console.error("Error: ", data.err);
-                    this.notif.showError('', 'Error updating user');
-                }
-                this.dialogRef.close(returnData);
-            }, error => {
-                this.notif.showError('', 'Error updating user');
-                console.error("Error: ", error);
-                this.dialogRef.close(this.userForm.value);
-            });
+    async onSubmit() {
+        try {
+            await this.http.put('/api/user/' + this.userForm.value.discordId, this.userForm.value).toPromise();
+            let returnData = this.userForm.value;
+            if (this.userForm.value.roleIds.length == 0) {
+                this.userForm.value.roleIds = this.data.selUser.roleIds;
+            } else {
+                let roleNames = this.userForm.value.roleIds.map(x => this.userRoles[this.userRoles.findIndex(y => y.id == x)].name).join(', ');
+                this.userForm.value.roleIds = this.userForm.value.roleIds.join(', ')
+                returnData = { ...this.userForm.value, ...{ roleNames: roleNames } };
+            }
+            this.notif.showSuccess('', 'Successfully updated user');
+            this.dialogRef.close(returnData);
+        } catch (error) {
+            this.notif.showError('', 'Error updating user');
+            console.error("Error: ", error);
+            this.dialogRef.close(this.userForm.value);
+        }
     }
 
     updateRoleId(roleId) {

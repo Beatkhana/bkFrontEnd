@@ -11,6 +11,12 @@ import { map, startWith, switchMap } from 'rxjs/operators';
 import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
 import { NotificationService } from '../services/toast.service';
 import { signedUp, staff } from '../_models/tournamentApi.model';
+import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
+import { EventSettings } from '../_models/ta/qualifierEvent';
+import { GameOptions } from '../_models/ta/gameplayModifiers';
+import { PlayerOptions } from '../_models/ta/playerSpecificSettnigs';
+import { Characteristic } from '../_models/ta/characteristic';
+import { BeatmapDifficulty } from '../_models/ta/match';
 
 @Component({
     selector: 'app-tournament',
@@ -480,6 +486,9 @@ export class tournamentSettingsDialog implements OnInit {
     url = '/api/tournament/';
     users = [];
 
+    ws: WebSocketSubject<any> = webSocket(`${location.protocol == 'http:' ? 'ws' : 'wss'}://` + location.host + '/api/ws');
+    taConnected = false;
+
     filteredOptions: Observable<any>;
 
     constructor(
@@ -493,9 +502,15 @@ export class tournamentSettingsDialog implements OnInit {
 
     }
 
-    ngOnInit() {
+    qualsPool = null;
+
+    baseTaSettings = [];
+
+    async ngOnInit() {
         this.id = this.data.tournament.id;
         this.url += this.id;
+
+
         // console.log(this.data);
         this.settingsForm = this.fb.group({
             public_signups: !!this.data.tournament.public_signups,
@@ -522,8 +537,109 @@ export class tournamentSettingsDialog implements OnInit {
             countries: this.data.tournament.countries,
             sort_method: this.data.tournament.sort_method,
             standard_cutoff: this.data.tournament.standard_cutoff,
-            ta_url: this.data.tournament.ta_url
+            ta_url: this.data.tournament.ta_url,
+            ta_password: this.data.tournament.ta_password,
+            ta_event_flags: this.data.tournament.ta_event_flags
         });
+
+        this.ws.subscribe(
+            msg => {
+                if (msg.TA && !this.taConnected) {
+                    this.taConnected = msg.TA.Self?.Name == "BeatKhana!";
+                }
+            },
+            err => console.log(err)
+        );
+        this.ws.next({ setTournament: this.data.tournament.tournamentId });
+
+        let pools = await this.http.get(`/api/tournament/${this.data.tournament.tournamentId}/map-pools`).toPromise();
+        this.qualsPool = Object.values(pools).find(x => x.is_qualifiers == 1);
+        // console.log(this.qualsPool);
+        for (const modifier in EventSettings) {
+            if (isNaN(Number(modifier))) {
+                if (modifier == "None") continue;
+                this.baseTaSettings.push({
+                    name: modifier.replace(/([A-Z])/g, " $1").trim(),
+                    value: EventSettings[modifier],
+                    isSelected: (<number><unknown>EventSettings[modifier] == (this.data.tournament.ta_event_flags & <number><unknown>EventSettings[modifier])),
+                });
+            }
+        }
+
+        for (const song of this.qualsPool.songs) {
+            song.mapOptions = [];
+            for (const modifier in GameOptions) {
+                if (isNaN(Number(modifier))) {
+                    if (modifier == "None") continue;
+                    song.mapOptions.push({
+                        name: modifier.replace(/([A-Z])/g, " $1").trim(),
+                        value: GameOptions[modifier],
+                        isSelected: (<number><unknown>GameOptions[modifier] == (song.flags & <number><unknown>GameOptions[modifier])),
+                    });
+                }
+            }
+            song.pOptions = [];
+            for (const modifier in PlayerOptions) {
+                if (isNaN(Number(modifier))) {
+                    if (modifier == "None") continue;
+                    song.pOptions.push({
+                        name: modifier.replace(/([A-Z])/g, " $1").trim(),
+                        value: PlayerOptions[modifier],
+                        isSelected: (<number><unknown>PlayerOptions[modifier] == (song.playerOptions & <number><unknown>PlayerOptions[modifier])),
+                    });
+                }
+            }
+            
+            let req = await fetch(
+                `https://beatsaver.com/api/maps/by-hash/${song.hash}`,
+                {
+                    method: "GET",
+                    headers: {
+                        "User-Agent":
+                            "Beatkhana/1.0.0 (+https://github.com/Dannypoke03)",
+                    },
+                }
+            );
+            let songData = await req.json();
+            let characteristics: Characteristic[] = [];
+            for (const characteristic of songData.metadata.characteristics) {
+                let diffs: BeatmapDifficulty[] = [];
+                for (const diffLabel in characteristic.difficulties) {
+                    if (
+                        Object.prototype.hasOwnProperty.call(
+                            characteristic.difficulties,
+                            diffLabel
+                        )
+                    ) {
+                        if (characteristic.difficulties[diffLabel] != null) {
+                            let diff: BeatmapDifficulty = (<any>BeatmapDifficulty)[
+                                this.titleCase(diffLabel)
+                            ];
+                            diffs.push(diff);
+                        }
+                    }
+                }
+                characteristics.push({
+                    SerializedName: characteristic.name,
+                    Difficulties: diffs,
+                });
+            }
+            song.characteristics = characteristics;
+            if (song.difficulty) song.difficulty = song.difficulty.toString();
+        }
+    }
+
+    titleCase(str): string {
+		var splitStr = str.split(" ");
+		for (var i = 0; i < splitStr.length; i++) {
+			splitStr[i] =
+				splitStr[i].charAt(0).toUpperCase() + splitStr[i].substring(1);
+		}
+		return splitStr.join(" ");
+	}
+
+    ngOnDestroy() {
+        this.ws.complete();
     }
 
     get bracket() {
@@ -542,7 +658,39 @@ export class tournamentSettingsDialog implements OnInit {
         return this.settingsForm.get('type');
     }
 
+    getSongDiffs(song) {
+        if (song.selectedCharacteristic) {
+            return song.characteristics.find(x => x.SerializedName == song.selectedCharacteristic).Difficulties;
+        } else {
+            return [];
+        }
+    }
+
+    diffString(diff) {
+        return BeatmapDifficulty[diff];
+    }
+
     async onSubmit() {
+        this.settingsForm.value.ta_event_flags = 0;
+        for (const modifier of this.baseTaSettings) {
+            if (modifier.isSelected) {
+                this.settingsForm.value.ta_event_flags |= modifier.value;
+            }
+        }
+        for (const song of this.qualsPool.songs) {
+            song.flags = 0;
+            song.playerOptions = 0;
+            for (const modifier of song.mapOptions) {
+                if (modifier.isSelected) song.flags |= modifier.value;
+            }
+            for (const modifier of song.pOptions) {
+                if (modifier.isSelected) song.playerOptions |= modifier.value;
+            }
+            if (song.selectedCharacteristic == null || song.difficulty == null) {
+                this.notif.showError('', 'Qualifiers must have selected difficulties');
+                return;
+            }
+        }
         let info = {
             tournamentId: this.data.tournament.tournamentId,
             settingsId: this.data.tournament.settingsId,
@@ -553,9 +701,14 @@ export class tournamentSettingsDialog implements OnInit {
             await this.http.post(`/api/tournament/${info.tournamentId}/overlay`, { img: this.base64 }).toPromise();
         }
         this.updateSettings(info)
-            .subscribe(data => {
+            .subscribe(async data => {
                 if (!data.flag) {
                     this.notif.showSuccess('', 'Successfully updated tournament settings');
+                    try {
+                        await this.http.put(`/api/tournament/${info.tournamentId}/updateFlags`, this.qualsPool.songs).toPromise();
+                    } catch (error) {
+                        console.error(error);
+                    }
                 } else {
                     console.error('Error', data.err)
                     this.notif.showError('', 'Error updating tournament settings');
@@ -580,7 +733,7 @@ export class tournamentSettingsDialog implements OnInit {
         this.selectedFile = event.target.files[0];
         let reader = new FileReader();
         // reader.readAsDataURL(this.selectedFile);
-        reader.readAsText(this.selectedFile,'UTF-8');
+        reader.readAsText(this.selectedFile, 'UTF-8');
         reader.onload = () => {
             this.base64 = <string>reader.result;
         };
@@ -592,6 +745,7 @@ export class tournamentSettingsDialog implements OnInit {
         return { requireMatch: true };
     }
 }
+
 
 @Component({
     selector: 'signUpDialog',

@@ -44,6 +44,7 @@ export class BracketComponent extends AppComponent implements OnInit {
             },
             err => console.log(err)
         );
+        this.ws.next({setTournament: this.tournament.tournamentId});
     }
 
     ngOnDestroy() {
@@ -417,14 +418,14 @@ export class BracketComponent extends AppComponent implements OnInit {
         document.getElementById('svgContainer').innerHTML = svgMain.outerHTML;
 
         document.querySelectorAll('.pName').forEach(elem => {
-            elem.addEventListener('mouseover', function() {
+            elem.addEventListener('mouseover', function () {
                 document.querySelectorAll(`.pName`).forEach((name) => {
-                    if(name.innerHTML == elem.innerHTML) name.classList.add('highlight');
+                    if (name.innerHTML == elem.innerHTML) name.classList.add('highlight');
                 });
             });
-            elem.addEventListener('mouseout', function() {
+            elem.addEventListener('mouseout', function () {
                 document.querySelectorAll(`.pName`).forEach((name) => {
-                    if(name.innerHTML == elem.innerHTML) name.classList.remove('highlight');
+                    if (name.innerHTML == elem.innerHTML) name.classList.remove('highlight');
                 });
             });
         });
@@ -521,7 +522,7 @@ export class BracketComponent extends AppComponent implements OnInit {
             `;
         }
 
-        
+
 
         let maxRound = Math.max.apply(Math, bracketData.map(x => x.round));
         let minRound = Math.min.apply(Math, bracketData.map(x => x.round));
@@ -666,15 +667,15 @@ export class updateMatchDialog implements OnInit {
                 var options1 = {
                     channel: this.data.p1.twitch,
                     theme: 'dark',
-    
+
                 };
                 var player1 = new Twitch.Player("P1twitch", options1);
                 player1.setVolume(0.5);
-    
+
                 var options2 = {
                     channel: this.data.p2.twitch,
                     theme: 'dark',
-    
+
                 };
                 var player2 = new Twitch.Player("P2twitch", options2);
                 player2.setVolume(0);
@@ -760,10 +761,10 @@ export class generateBracketDialog implements OnInit {
         private dialogRef: MatDialogRef<generateBracketDialog>,
         private notif: NotificationService,
         private sanitizer: DomSanitizer
-    ) { 
+    ) {
         this.getUsers()
             .subscribe(data => {
-                data.sort((a,b) => {
+                data.sort((a, b) => {
                     return a.name > b.name
                 });
                 this.users = data;
@@ -783,11 +784,11 @@ export class generateBracketDialog implements OnInit {
             this.hiddenUsers.splice(this.hiddenUsers.findIndex(x => x.discordId == this.bracketGenForm.value.users[option].userId))
             this.bracketGenForm.value.users[option].userId = event.option.value;
         } else {
-            this.bracketGenForm.value.users.push({ userId: event.option.value, id: event.option._parent.id});
+            this.bracketGenForm.value.users.push({ userId: event.option.value, id: event.option._parent.id });
         }
-        
-        let usrIndex = this.users.findIndex(x => x.discordId == event.option.value); 
-        if(usrIndex > -1) {
+
+        let usrIndex = this.users.findIndex(x => x.discordId == event.option.value);
+        if (usrIndex > -1) {
             this.hiddenUsers.push(this.users[usrIndex]);
             this.users.splice(usrIndex, 1);
             this.filteredOptions = this.users;

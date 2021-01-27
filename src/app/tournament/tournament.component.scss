@@ -74,3 +74,82 @@
         font-size: 0.7rem;
     }
 }
+
+.songImg {
+    width: 46px;
+    height: 46px;
+    border-radius: 10px;
+    margin: 10px;
+}
+
+.mapperName {
+    font-size: smaller;
+    color: #c8825a;
+}
+
+.maps {
+    display: flex;
+    flex-direction: column;
+    .hidden {
+        display: none;
+    }
+    >div {
+        margin-bottom: 10px;
+        // position: relative;
+        display: flex;
+        align-items: center;
+        a {
+            color: #00aac8;
+            text-decoration: none;
+            background-color: transparent;
+            &:hover {
+                color: #00788d;
+            }
+        }
+    }
+}
+
+.checkboxes {
+    display: flex;
+    flex-direction: column;
+    margin: 15px 0;
+    .radio-button {
+        margin: 5px;
+    }
+}
+
+summary {
+    display: block;
+    cursor: pointer;
+    padding: 10px;
+    transition: .3s;
+    border-bottom: 2px solid;
+    user-select: none;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    a {
+        color: #00aac8;
+        text-decoration: none;
+        background-color: transparent;
+        &:hover {
+            color: #00788d;
+        }
+    }
+}
+
+details>div {
+    display: flex;
+    flex-wrap: wrap;
+    overflow: auto;
+    height: 100%;
+    user-select: none;
+    padding: 0 20px;
+    // font-family: "Karla", sans-serif;
+    line-height: 1.5;
+    transition: 300ms;
+}
+
+details[open]>summary {
+    color: #c8825a;
+}

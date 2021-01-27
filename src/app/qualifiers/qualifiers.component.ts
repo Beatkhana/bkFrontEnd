@@ -38,8 +38,8 @@ export class QualifiersComponent implements OnInit {
                         user.avatar = `https://cdn.discordapp.com/avatars/${user.discordId}${ user.avatar }`
                     }
 					for (const score of user.scores) {
-						if (qualsPool.songs.find(x => x.hash == score.songHash).numNotes != 0) {
-							score.percentage = score.score / (qualsPool.songs.find(x => x.hash == score.songHash).numNotes * 920 - 7245)
+						if (qualsPool.songs.find(x => x.hash == score.songHash)?.numNotes != 0) {
+							score.percentage = score.score / (qualsPool.songs.find(x => x.hash == score.songHash)?.numNotes * 920 - 7245)
 						} else {
 							score.percentage = 0;
 						}

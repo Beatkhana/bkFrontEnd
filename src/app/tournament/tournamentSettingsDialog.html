@@ -111,6 +111,17 @@
                 <mat-checkbox formControlName="show_quals">
                     Show Qualifiers
                 </mat-checkbox>
+                <br>
+                <mat-checkbox [checked]="showQualsLimit" (change)="showQualsLimit = !showQualsLimit">
+                    Limit Attempts
+                </mat-checkbox>
+                <br>
+                <ng-container *ngIf="showQualsLimit">
+                    *Note: 0 attempts means there is no limit.
+                    <mat-form-field>
+                        <input matInput placeholder="Number of attempts allowed" formControlName="qual_attempts">
+                    </mat-form-field>
+                </ng-container>
                 <div style="margin-top:15px">
                     <h3>TA Settings</h3>
                     <br>

@@ -506,6 +506,8 @@ export class tournamentSettingsDialog implements OnInit {
 
     baseTaSettings = [];
 
+    showQualsLimit = false;
+
     async ngOnInit() {
         this.id = this.data.tournament.id;
         this.url += this.id;
@@ -539,9 +541,10 @@ export class tournamentSettingsDialog implements OnInit {
             standard_cutoff: this.data.tournament.standard_cutoff,
             ta_url: this.data.tournament.ta_url,
             ta_password: this.data.tournament.ta_password,
+            qual_attempts: this.data.tournament.qual_attempts,
             ta_event_flags: this.data.tournament.ta_event_flags
         });
-
+        this.showQualsLimit = this.data.tournament.qual_attempts !== 0;
         this.ws.subscribe(
             msg => {
                 if (msg.TA && !this.taConnected) {
@@ -566,66 +569,68 @@ export class tournamentSettingsDialog implements OnInit {
             }
         }
 
-        for (const song of this.qualsPool.songs) {
-            song.mapOptions = [];
-            for (const modifier in GameOptions) {
-                if (isNaN(Number(modifier))) {
-                    if (modifier == "None") continue;
-                    song.mapOptions.push({
-                        name: modifier.replace(/([A-Z])/g, " $1").trim(),
-                        value: GameOptions[modifier],
-                        isSelected: (<number><unknown>GameOptions[modifier] == (song.flags & <number><unknown>GameOptions[modifier])),
-                    });
-                }
-            }
-            song.pOptions = [];
-            for (const modifier in PlayerOptions) {
-                if (isNaN(Number(modifier))) {
-                    if (modifier == "None") continue;
-                    song.pOptions.push({
-                        name: modifier.replace(/([A-Z])/g, " $1").trim(),
-                        value: PlayerOptions[modifier],
-                        isSelected: (<number><unknown>PlayerOptions[modifier] == (song.playerOptions & <number><unknown>PlayerOptions[modifier])),
-                    });
-                }
-            }
-            
-            let req = await fetch(
-                `https://beatsaver.com/api/maps/by-hash/${song.hash}`,
-                {
-                    method: "GET",
-                    headers: {
-                        "User-Agent":
-                            "Beatkhana/1.0.0 (+https://github.com/Dannypoke03)",
-                    },
-                }
-            );
-            let songData = await req.json();
-            let characteristics: Characteristic[] = [];
-            for (const characteristic of songData.metadata.characteristics) {
-                let diffs: BeatmapDifficulty[] = [];
-                for (const diffLabel in characteristic.difficulties) {
-                    if (
-                        Object.prototype.hasOwnProperty.call(
-                            characteristic.difficulties,
-                            diffLabel
-                        )
-                    ) {
-                        if (characteristic.difficulties[diffLabel] != null) {
-                            let diff: BeatmapDifficulty = (<any>BeatmapDifficulty)[
-                                this.titleCase(diffLabel)
-                            ];
-                            diffs.push(diff);
-                        }
+        if (this.qualsPool) {
+            for (const song of this.qualsPool.songs) {
+                song.mapOptions = [];
+                for (const modifier in GameOptions) {
+                    if (isNaN(Number(modifier))) {
+                        if (modifier == "None") continue;
+                        song.mapOptions.push({
+                            name: modifier.replace(/([A-Z])/g, " $1").trim(),
+                            value: GameOptions[modifier],
+                            isSelected: (<number><unknown>GameOptions[modifier] == (song.flags & <number><unknown>GameOptions[modifier])),
+                        });
                     }
                 }
-                characteristics.push({
-                    SerializedName: characteristic.name,
-                    Difficulties: diffs,
-                });
+                song.pOptions = [];
+                for (const modifier in PlayerOptions) {
+                    if (isNaN(Number(modifier))) {
+                        if (modifier == "None") continue;
+                        song.pOptions.push({
+                            name: modifier.replace(/([A-Z])/g, " $1").trim(),
+                            value: PlayerOptions[modifier],
+                            isSelected: (<number><unknown>PlayerOptions[modifier] == (song.playerOptions & <number><unknown>PlayerOptions[modifier])),
+                        });
+                    }
+                }
+                
+                let req = await fetch(
+                    `https://beatsaver.com/api/maps/by-hash/${song.hash}`,
+                    {
+                        method: "GET",
+                        headers: {
+                            "User-Agent":
+                                "Beatkhana/1.0.0 (+https://github.com/Dannypoke03)",
+                        },
+                    }
+                );
+                let songData = await req.json();
+                let characteristics: Characteristic[] = [];
+                for (const characteristic of songData.metadata.characteristics) {
+                    let diffs: BeatmapDifficulty[] = [];
+                    for (const diffLabel in characteristic.difficulties) {
+                        if (
+                            Object.prototype.hasOwnProperty.call(
+                                characteristic.difficulties,
+                                diffLabel
+                            )
+                        ) {
+                            if (characteristic.difficulties[diffLabel] != null) {
+                                let diff: BeatmapDifficulty = (<any>BeatmapDifficulty)[
+                                    this.titleCase(diffLabel)
+                                ];
+                                diffs.push(diff);
+                            }
+                        }
+                    }
+                    characteristics.push({
+                        SerializedName: characteristic.name,
+                        Difficulties: diffs,
+                    });
+                }
+                song.characteristics = characteristics;
+                if (song.difficulty) song.difficulty = song.difficulty.toString();
             }
-            song.characteristics = characteristics;
-            if (song.difficulty) song.difficulty = song.difficulty.toString();
         }
     }
 
@@ -671,24 +676,26 @@ export class tournamentSettingsDialog implements OnInit {
     }
 
     async onSubmit() {
-        this.settingsForm.value.ta_event_flags = 0;
-        for (const modifier of this.baseTaSettings) {
-            if (modifier.isSelected) {
-                this.settingsForm.value.ta_event_flags |= modifier.value;
+        if (this.qualsPool && this.quals.value == true && this.taConnected) {
+            this.settingsForm.value.ta_event_flags = 0;
+            for (const modifier of this.baseTaSettings) {
+                if (modifier.isSelected) {
+                    this.settingsForm.value.ta_event_flags |= modifier.value;
+                }
             }
-        }
-        for (const song of this.qualsPool.songs) {
-            song.flags = 0;
-            song.playerOptions = 0;
-            for (const modifier of song.mapOptions) {
-                if (modifier.isSelected) song.flags |= modifier.value;
-            }
-            for (const modifier of song.pOptions) {
-                if (modifier.isSelected) song.playerOptions |= modifier.value;
-            }
-            if (song.selectedCharacteristic == null || song.difficulty == null) {
-                this.notif.showError('', 'Qualifiers must have selected difficulties');
-                return;
+            for (const song of this.qualsPool.songs) {
+                song.flags = 0;
+                song.playerOptions = 0;
+                for (const modifier of song.mapOptions) {
+                    if (modifier.isSelected) song.flags |= modifier.value;
+                }
+                for (const modifier of song.pOptions) {
+                    if (modifier.isSelected) song.playerOptions |= modifier.value;
+                }
+                if (song.selectedCharacteristic == null || song.difficulty == null) {
+                    this.notif.showError('', 'Qualifiers must have selected difficulties');
+                    return;
+                }
             }
         }
         let info = {
@@ -705,7 +712,7 @@ export class tournamentSettingsDialog implements OnInit {
                 if (!data.flag) {
                     this.notif.showSuccess('', 'Successfully updated tournament settings');
                     try {
-                        await this.http.put(`/api/tournament/${info.tournamentId}/updateFlags`, this.qualsPool.songs).toPromise();
+                        if (this.qualsPool) await this.http.put(`/api/tournament/${info.tournamentId}/updateFlags`, this.qualsPool.songs).toPromise();
                     } catch (error) {
                         console.error(error);
                     }

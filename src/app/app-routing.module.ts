@@ -23,6 +23,7 @@ import { TaComponent } from './ta/ta.component';
 import { BadgesComponent } from './badges/badges.component';
 import { Awards2020Component } from './awards2020/awards2020.component';
 import { TournamentStaffComponent } from './tournament-staff/tournament-staff.component';
+import { OverlayControllerComponent } from './overlay-controller/overlay-controller.component';
 
 
 const routes: Routes = [
@@ -49,6 +50,7 @@ const routes: Routes = [
     { path: 'users', component: UsersComponent, canActivate: [AuthGuardGuard] },
     { path: 'logs', component: LogsComponent, canActivate: [AuthGuardGuard] },
     { path: 'overlay/:tourneyId/:stage/:matchId', component: OverlayComponent },
+    { path: 'overlay/:tourneyId', component: OverlayControllerComponent },
     { path: 'ta', component: TaComponent },
     { path: 'badges', component: BadgesComponent },
     { path: 'awards/2020', component: Awards2020Component },

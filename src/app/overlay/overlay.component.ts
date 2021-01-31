@@ -8,7 +8,7 @@ import { bracketMatch } from '../_models/bracket.model';
 import { TAEvent, EventType } from '../_models/ta/event';
 import { PacketType, ForwardingPacket } from '../_models/ta/forwardingPacket';
 import { Player } from '../_models/ta/player';
-
+declare let Twitch: any;
 @Component({
     selector: 'app-overlay',
     templateUrl: './overlay.component.html',
@@ -39,6 +39,11 @@ export class OverlayComponent implements AfterViewInit {
     taWS: WebSocketSubject<any>;
 
     async ngAfterViewInit(): Promise<void> {
+        let node = document.createElement('script');
+        node.src = 'https://embed.twitch.tv/embed/v1.js';
+        node.type = 'text/javascript';
+        document.getElementsByTagName('head')[0].appendChild(node);
+
         this.canvas = document.getElementById("fakeCanvas");
         this.route.params.subscribe(params => {
             this.matchId = params['matchId'];
@@ -58,6 +63,16 @@ export class OverlayComponent implements AfterViewInit {
             msg => {
                 if (msg.bracketMatch && (this.stage == 'bracket' && this.matchId == 'display')) this.updateDrawnMatch(msg.bracketMatch);
                 if (msg.bracketMatch && !(this.stage == 'bracket' && this.matchId == 'display') && this.matchData?.id == msg.bracketMatch.id) this.updateDisplayMatch(msg.bracketMatch);
+                if (msg.overlay) {
+                    switch (msg.overlay.command) {
+                        case 'play':
+                            this.play()
+                            break;
+                        case 'pause':
+                            this.pause()
+                            break;
+                    }
+                }
             },
             err => console.log('err: ', err),
             () => console.log('complete')
@@ -159,6 +174,8 @@ export class OverlayComponent implements AfterViewInit {
         }
     }
 
+    player1 = null;
+
     async getMatchData() {
         let data: any = await this.http.get(`/api/tournament/${this.tourneyId}/${this.stage}/${this.matchId}`).toPromise();
         let settings: any = await this.http.get(`/api/tournament/${this.tourneyId}`).toPromise();
@@ -201,7 +218,42 @@ export class OverlayComponent implements AfterViewInit {
                 if (document.getElementById(`p2Score_${i + 1}_blank`)) document.getElementById(`p2Score_${i + 1}_blank`).style.display = "none";
                 if (document.getElementById(`p2Score_${i + 1}`)) document.getElementById(`p2Score_${i + 1}`).style.display = "block";
             }
+
+            // Stream stuff
+            let stream1 = document.getElementById(`p1Stream`);
+            let href1 = stream1.getAttribute('href').replace("#", '');
+            let img1 = document.getElementById(href1);
+            let con1 = document.createElementNS("http://www.w3.org/2000/svg",'foreignObject');
+            con1.setAttribute('x', stream1.getAttribute('x'));
+            con1.setAttribute('y', stream1.getAttribute('y'));
+            con1.setAttribute('width', img1.getAttribute('width'));
+            con1.setAttribute('height', img1.getAttribute('height'));
+            let div1 = document.createElement('div');
+            div1.classList.add('twitch');
+            div1.style.width = `${1.7778*(+img1.getAttribute('width'))}px`;
+            div1.id = 'p1Twitch';
+            con1.appendChild(div1);
+            this.insertAfter(con1, stream1);
+
+            var options1 = {
+                channel: 'snow_rme',
+                theme: 'dark',
+            };
+            this.player1 = new Twitch.Player("p1Twitch", options1);
+            this.player1.setVolume(0.5);
         }
+    }
+
+    pause() {
+        this.player1.pause();
+    }
+    
+    play() {
+        this.player1.play();
+    }
+
+    insertAfter(newNode, referenceNode) {
+        referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
     }
 
     async initDisplaySettings() {

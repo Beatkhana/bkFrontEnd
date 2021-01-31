@@ -30,6 +30,7 @@ import { MatRadioModule } from '@angular/material/radio';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatSortModule } from '@angular/material/sort';
 import { MatExpansionModule } from '@angular/material/expansion';
+import {MatSliderModule} from '@angular/material/slider';
 
 import { CKEditorModule } from 'ckeditor4-angular';
 import { ConfirmDialogComponent } from './confirm-dialog/confirm-dialog.component';
@@ -62,6 +63,7 @@ import { Awards2020Component } from './awards2020/awards2020.component';
 import { AssignBadgesComponent } from './_modals/assign-badges/assign-badges.component';
 import { TournamentStaffComponent } from './tournament-staff/tournament-staff.component';
 import { EditStaffComponent } from './_modals/edit-staff/edit-staff.component';
+import { OverlayControllerComponent } from './overlay-controller/overlay-controller.component';
 
 
 @NgModule({
@@ -105,7 +107,8 @@ import { EditStaffComponent } from './_modals/edit-staff/edit-staff.component';
         Awards2020Component,
         AssignBadgesComponent,
         TournamentStaffComponent,
-        EditStaffComponent
+        EditStaffComponent,
+        OverlayControllerComponent
     ],
     imports: [
         BrowserModule,
@@ -127,6 +130,7 @@ import { EditStaffComponent } from './_modals/edit-staff/edit-staff.component';
         MatSortModule,
         MatRadioModule,
         MatExpansionModule,
+        MatSliderModule,
         CKEditorModule,
         ToastrModule.forRoot({
             maxOpened: 3,

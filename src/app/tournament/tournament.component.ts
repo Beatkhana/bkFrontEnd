@@ -707,15 +707,16 @@ export class tournamentSettingsDialog implements OnInit {
             console.log(this.base64);
             await this.http.post(`/api/tournament/${info.tournamentId}/overlay`, { img: this.base64 }).toPromise();
         }
+        try {
+            if (this.qualsPool) await this.http.put(`/api/tournament/${info.tournamentId}/updateFlags`, this.qualsPool.songs).toPromise();
+        } catch (error) {
+            console.error(error);
+        }
         this.updateSettings(info)
             .subscribe(async data => {
                 if (!data.flag) {
                     this.notif.showSuccess('', 'Successfully updated tournament settings');
-                    try {
-                        if (this.qualsPool) await this.http.put(`/api/tournament/${info.tournamentId}/updateFlags`, this.qualsPool.songs).toPromise();
-                    } catch (error) {
-                        console.error(error);
-                    }
+                    
                 } else {
                     console.error('Error', data.err)
                     this.notif.showError('', 'Error updating tournament settings');

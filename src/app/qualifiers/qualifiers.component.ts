@@ -43,7 +43,7 @@ export class QualifiersComponent implements OnInit {
 						} else {
 							score.percentage = 0;
 						}
-						score.score = Math.round(score.score / 2);
+						// score.score = Math.round(score.score / 2);
 						if (score.songHash in leaderboards) {
 							leaderboards[score.songHash].push({
 								discordId: user.discordId,
@@ -56,6 +56,7 @@ export class QualifiersComponent implements OnInit {
 							}];
 						}
 					}
+					
 				}
 				// leadboards.sort((a,b) => a.score)
 				for (const leaderboard of Object.keys(leaderboards)) {
@@ -66,6 +67,13 @@ export class QualifiersComponent implements OnInit {
 						score.position = leaderboards[score.songHash].findIndex(x => x.discordId == user.discordId);
 					}
 					user.scores.sort((a,b) => (a.songHash > b.songHash) ? 1 : ((a.songHash < b.songHash) ? -1 : 0));
+				}
+
+				if (this.qualsScores.length == 1) {
+					let sumA = this.sumProperty(this.qualsScores[0].scores, 'score');
+					let sumAPer = this.sumProperty(this.qualsScores[0].scores, 'percentage');
+					this.qualsScores[0].avgPercentage = isNaN(sumAPer / qualsPool.songs.length * 100) ? 0 : (sumAPer / qualsPool.songs.length * 100).toFixed(2);
+					this.qualsScores[0].scoreSum = sumA;
 				}
 
 				this.qualsScores.sort((a, b) => {

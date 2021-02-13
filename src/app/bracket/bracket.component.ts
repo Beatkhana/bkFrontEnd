@@ -44,7 +44,7 @@ export class BracketComponent extends AppComponent implements OnInit {
             },
             err => console.log(err)
         );
-        this.ws.next({setTournament: this.tournament.tournamentId});
+        this.ws.next({ setTournament: this.tournament.tournamentId });
     }
 
     ngOnDestroy() {
@@ -53,6 +53,7 @@ export class BracketComponent extends AppComponent implements OnInit {
     }
 
     async initSettings() {
+        // const matchesData: any = await this.http.get(`/api/tournament/${this.tournament.tournamentId}/bracketTest`).toPromise();
         const matchesData: any = await this.http.get(`/api/tournament/${this.tournament.tournamentId}/bracket`).toPromise();
         this.bracketData = matchesData;
         if (matchesData.length > 0) {
@@ -67,6 +68,7 @@ export class BracketComponent extends AppComponent implements OnInit {
         }
 
         if (matchesData.length > 0) BracketComponent.generateMatches(this.bracketData, this.intervalIteration);
+        BracketComponent.generateLabels(this.bracketData);
         this.intervalIteration = 1;
         // console.log(matchesData.filter(x => x.round == 0).length);
         // console.log(matchesData)
@@ -79,10 +81,12 @@ export class BracketComponent extends AppComponent implements OnInit {
     }
 
     async updateBracket() {
+        // const matchesData: any = await this.http.get(`/api/tournament/${this.tournament.tournamentId}/bracketTest`).toPromise();
         const matchesData: any = await this.http.get(`/api/tournament/${this.tournament.tournamentId}/bracket`).toPromise();
         this.bracketData = matchesData;
 
         if (matchesData.length > 0) BracketComponent.generateMatches(this.bracketData, this.intervalIteration);
+        BracketComponent.generateLabels(this.bracketData);
 
         let matchElements = document.getElementsByClassName('match');
         for (let i = 0; i < matchElements.length; i++) {
@@ -121,19 +125,21 @@ export class BracketComponent extends AppComponent implements OnInit {
 
     updateDrawnMatch(data: bracketMatch) {
         let matchElem = document.getElementById(data.id);
-        // let tmpElement = {
-
-        // }
         let index = this.bracketData.findIndex(x => x.id == data.id);
         this.bracketData[index] = { ...this.bracketData[index], ...data };
         matchElem.querySelector('.pName.p1').innerHTML = data.p1.name || data.p1.id;
         matchElem.querySelector('.pName.p2').innerHTML = data.p2.name || data.p2.id;
+        BracketComponent.generateLabels(this.bracketData);
         if (data.status == 'in_progress') {
             (<SVGPathElement>matchElem.querySelector('.in_progress')).style.display = 'inline';
         } else {
             (<SVGPathElement>matchElem.querySelector('.in_progress')).style.display = 'none';
         }
         if (data.p1.score != data.p2.score && data.status == 'complete') {
+            matchElem.querySelector('.pScore.p1').classList.remove('winner');
+            matchElem.querySelector('.pScore.p1').classList.remove('loser');
+            matchElem.querySelector('.pScore.p2').classList.remove('winner');
+            matchElem.querySelector('.pScore.p2').classList.remove('loser');
             if (data.p1.score > data.p2.score) {
                 matchElem.querySelector('.pScore.p1').classList.add('winner');
                 matchElem.querySelector('.pScore.p2').classList.add('loser');
@@ -146,16 +152,16 @@ export class BracketComponent extends AppComponent implements OnInit {
         if (data.p1.score != 0 || (data.status == 'in_progress' || data.status == 'complete')) matchElem.querySelector('.pScore.p1').innerHTML = data.p1.score.toString();
         if (data.p2.score != 0 || (data.status == 'in_progress' || data.status == 'complete')) matchElem.querySelector('.pScore.p2').innerHTML = data.p2.score.toString();
 
-        matchElem.querySelector('.img.p1').setAttribute('href', data.p1.avatar);
-        matchElem.querySelector('.img.p2').setAttribute('href', data.p2.avatar);
-
-        if (data.p1.id && data.p2.id) {
-            matchElem.classList.add('matchReady');
-            matchElem.addEventListener("click", () => this.updateMatch(matchElem.getAttribute('data-matchid')));
+        matchElem.querySelector('.img.p1').setAttribute('href', data.p1.avatar ? `href="https://cdn.discordapp.com/avatars/${data.p1.id}${data.p1.avatar}"` : '');
+        matchElem.querySelector('.img.p2').setAttribute('href', data.p2.avatar ? `href="https://cdn.discordapp.com/avatars/${data.p2.id}${data.p2.avatar}"` : '');
+        matchElem.classList.remove('hidden');
+        let lineElem = document.querySelectorAll(`[data-round="${data.round}"][data-match="${data.matchNum}"]`);
+        for (const line of lineElem) line.classList.remove('hidden');
+        if (data.bye) {
+            matchElem.classList.add('hidden');
+            for (const line of lineElem) line.classList.add('hidden');
         }
     }
-
-    // gMatches = [];
 
     matches = [];
     winnersMatches = [];
@@ -211,6 +217,7 @@ export class BracketComponent extends AppComponent implements OnInit {
 
         for (let i = 0; i < bracketMatches.length; i++) {
             const element = bracketMatches[i];
+            // console.log(element);
             // matches
             if (!matches[element['round']]) {
                 matches[element['round']] = [];
@@ -251,7 +258,7 @@ export class BracketComponent extends AppComponent implements OnInit {
         document.getElementById('svgContainer').setAttribute("style", `height:${height}px`);
 
         // console.log(winnersMatches);
-        // console.log(losersMatches);
+        console.log(losersMatches);
 
         for (let i = 0; i < Object.keys(matches).length; i++) {
             const round = matches[i];
@@ -276,18 +283,21 @@ export class BracketComponent extends AppComponent implements OnInit {
             svgMain.appendChild(gRound);
         }
 
+        let loserMatchCounter = 0;
         for (let i = 0; i < losersMatches.length; i++) {
             const round = losersMatches[i];
+            if (round.filter(x => !x.bye).length == 0) continue;
             const gRound = document.createElementNS("http://www.w3.org/2000/svg", "g");
-            gRound.setAttribute("transform", "translate(" + (i * 220 - 100) + ", " + (winnersMatches[0].length * 60 + 150) + ")");
-            gRound.classList.add('round-' + i);
-
+            gRound.setAttribute("transform", "translate(" + (loserMatchCounter * 220 - 100) + ", " + (winnersMatches[0].length * 60 + 150) + ")");
+            gRound.classList.add('round-' + loserMatchCounter);
+            gRound.classList.add('losers');
             for (let j = 0; j < round.length; j++) {
                 const match: bracketMatch = round[j];
                 let svgMatch = BracketComponent.createSvgMatch(j, match, bracketMatches, round, singleMatchRound, intervalIteration, true);
                 gRound.appendChild(svgMatch);
             }
             svgMain.appendChild(gRound);
+            loserMatchCounter++;
         }
 
         const gLines = document.createElementNS("http://www.w3.org/2000/svg", "g");
@@ -319,6 +329,9 @@ export class BracketComponent extends AppComponent implements OnInit {
                 matchLine.setAttribute('d', `M${curX} ${curY} l${xDist / 4} 0 l${xDist / 2} ${yDist} l${xDist / 4} 0`);
                 matchLine.setAttribute('stroke-width', "1px");
                 matchLine.classList.add("matchLine");
+                // matchLine.setAttribute("data", `round: '${i + 1}', match: '${Math.floor(j / 2)}'`);
+                matchLine.dataset.round = (i + 1).toString();
+                matchLine.dataset.match = Math.floor(j / 2).toString();
                 if (match['bye'] || (winnersMatches[i + 1][Math.floor(j / 2)] != undefined && winnersMatches[i + 1][Math.floor(j / 2)]['bye'])) {
                     matchLine.classList.add("hidden");
                 }
@@ -352,20 +365,21 @@ export class BracketComponent extends AppComponent implements OnInit {
 
         }
 
-        for (let i = 0; i < losersMatches.length - 1; i++) {
-            const round = losersMatches[i];
-
+        let i = 0;
+        for (let loserMatchCounter = 0; loserMatchCounter < losersMatches.length - 1; loserMatchCounter++) {
+            const round = losersMatches[loserMatchCounter];
+            if (round.filter(x => !x.bye).length <= 0) continue;
             for (let j = 0; j < round.length; j++) {
                 const match: bracketMatch = round[j];
-                var multi = i != 0 ? (60 * (2 ** Math.floor(i / 2))) : 60;
+                var multi = i != 0 ? (60 * (2 ** Math.floor(loserMatchCounter / 2))) : 60;
                 // var startPos = 0.5 * (2 ** i) * 60;
-                var startPos = round.length != 1 ? 0.5 * (2 ** Math.floor(i / 2)) * 60 + (winnersMatches[0].length * 60 + 150) : 0.5 * (2 ** (Math.floor(singleMatchRound / 2) + 1)) * 60 + (winnersMatches[0].length * 60 + 150);
+                var startPos = round.length != 1 ? 0.5 * (2 ** Math.floor(loserMatchCounter / 2)) * 60 + (winnersMatches[0].length * 60 + 150) : 0.5 * (2 ** (Math.floor(singleMatchRound / 2) + 1)) * 60 + (winnersMatches[0].length * 60 + 150);
 
                 let curY = (multi * j) + startPos + 10;
                 let curX = (i * 220 - 100) + 184;
 
                 var multi2 = (i + 1) != 0 ? (60 * (2 ** (Math.floor(i / 2) + 1))) : 60;
-                var startPos2 = round.length != 1 ? 0.5 * (2 ** (Math.floor(i / 2) + 1)) * 60 + +(winnersMatches[0].length * 60 + 150) : 0.5 * (2 ** (Math.floor(singleMatchRound / 2) + 1)) * 60 + (winnersMatches[0].length * 60 + 150);
+                var startPos2 = round.length != 1 ? 0.5 * (2 ** (Math.floor(i / 2) + 1)) * 60 + (winnersMatches[0].length * 60 + 150) : 0.5 * (2 ** (Math.floor(singleMatchRound / 2) + 1)) * 60 + (winnersMatches[0].length * 60 + 150);
 
                 let nextY = (multi2 * Math.floor(j / 2)) + startPos2 + 10;
                 let nextX = ((i + 1) * 220 - 100);
@@ -373,14 +387,16 @@ export class BracketComponent extends AppComponent implements OnInit {
                 let xDist = nextX - curX;
                 let yDist = nextY - curY;
                 let matchLine = document.createElementNS("http://www.w3.org/2000/svg", "path");
-                if (i % 2 == 1) {
+                if (loserMatchCounter % 2 == 1) {
                     matchLine.setAttribute('d', `M${curX} ${curY} l${xDist / 4} 0 l${xDist / 2} ${yDist} l${xDist / 4} 0`);
                 } else {
                     matchLine.setAttribute('d', `M${curX} ${curY} l${xDist} 0`);
                 }
                 matchLine.setAttribute('stroke-width', "1px");
                 matchLine.classList.add("matchLine");
-                if (match['bye'] || (losersMatches[i + 1][Math.floor(j / 2)] != undefined && losersMatches[i + 1][Math.floor(j / 2)]['bye'])) {
+                matchLine.dataset.round = (i + 1).toString();
+                matchLine.dataset.match = Math.floor(j / 2).toString();
+                if (match['bye'] || (losersMatches[loserMatchCounter + 1][Math.floor(j / 2)] != undefined && losersMatches[loserMatchCounter + 1][Math.floor(j / 2)]['bye'])) {
                     matchLine.classList.add("hidden");
                 }
                 if (intervalIteration > 0) {
@@ -410,7 +426,7 @@ export class BracketComponent extends AppComponent implements OnInit {
             labelText.innerHTML = "Losers Round " + (i + 1);
             roundLabel.appendChild(labelText);
             gHeaders.appendChild(roundLabel);
-
+            i++;
         }
         svgMain.appendChild(gHeaders);
         svgMain.appendChild(gLines);
@@ -434,7 +450,6 @@ export class BracketComponent extends AppComponent implements OnInit {
     static createSvgMatch(i, bracketMatch: bracketMatch, bracketData: bracketMatch[], roundElem, singleMatchRound: number, intervalIteration = 0, losers = false) {
         const group = document.createElementNS("http://www.w3.org/2000/svg", "g");
 
-        let firstRoundCount = bracketData.filter(x => x.round == 0).length;
         let round = bracketMatch.round;
         if (losers) round = bracketMatch.round * -1 - 1;
 
@@ -456,22 +471,22 @@ export class BracketComponent extends AppComponent implements OnInit {
         }
 
         const clip1 = document.createElementNS("http://www.w3.org/2000/svg", "clipPath");
-        clip1.setAttribute("id", 'clipPath-' + i + '-1');
+        clip1.setAttribute("id", 'clipPath-' + bracketMatch.id + '-1');
         clip1.innerHTML = ' <circle r="8" cx="25" cy="-2" />';
         group.appendChild(clip1);
 
         const clip2 = document.createElementNS("http://www.w3.org/2000/svg", "clipPath");
-        clip2.setAttribute("id", 'clipPath-' + i + '-2');
+        clip2.setAttribute("id", 'clipPath-' + bracketMatch.id + '-2');
         clip2.innerHTML = ' <circle r="8" cx="25" cy="26" />';
         group.appendChild(clip2);
 
         const nameClip1 = document.createElementNS("http://www.w3.org/2000/svg", "clipPath");
-        nameClip1.setAttribute("id", 'nameClip-' + i + '-1');
+        nameClip1.setAttribute("id", 'nameClip-' + bracketMatch.id + '-1');
         nameClip1.innerHTML = '<rect x="37" y="-10" width="160" height="20"/>';
         group.appendChild(nameClip1);
 
         const nameClip2 = document.createElementNS("http://www.w3.org/2000/svg", "clipPath");
-        nameClip2.setAttribute("id", 'nameClip-' + i + '-2');
+        nameClip2.setAttribute("id", 'nameClip-' + bracketMatch.id + '-2');
         nameClip2.innerHTML = '<rect x="37" y="20" width="160" height="20"/>';
         group.appendChild(nameClip2);
 
@@ -491,8 +506,8 @@ export class BracketComponent extends AppComponent implements OnInit {
         group.innerHTML += `
             <image x="17" y="-10"
             ${bracketMatch.p1.avatar ? `href="https://cdn.discordapp.com/avatars/${bracketMatch.p1.id}${bracketMatch.p1.avatar}"` : ''}            
-            class="img p1" height="16" width="16" clip-path="url(#clipPath-${i}-1)" />
-            <text x="37" y="5" width="147" height="12" class="pName p1" clip-path="url(#nameClip-${i}-1)">${p1Name || ''}</text>
+            class="img p1" height="16" width="16" clip-path="url(#clipPath-${bracketMatch.id}-1)" />
+            <text x="37" y="5" width="147" height="12" class="pName p1" clip-path="url(#nameClip-${bracketMatch.id}-1)">${p1Name || ''}</text>
             `;
         if (bracketMatch.p1.name == null && bracketMatch.p1.id != null) bracketMatch.p1.name = null;
         let p2Name: string = bracketMatch.p2.name;
@@ -501,8 +516,8 @@ export class BracketComponent extends AppComponent implements OnInit {
         group.innerHTML += `
             <image x="17" y="18"
             ${bracketMatch.p2.avatar ? `href="https://cdn.discordapp.com/avatars/${bracketMatch.p2.id}${bracketMatch.p2.avatar}"` : ''}            
-            class="img p2" height="16" width="16" clip-path="url(#clipPath-${i}-2)" />
-            <text x="37" y="33" width="147" height="12" class="pName p2" clip-path="url(#nameClip-${i}-2)">${p2Name || ''}</text>
+            class="img p2" height="16" width="16" clip-path="url(#clipPath-${bracketMatch.id}-2)" />
+            <text x="37" y="33" width="147" height="12" class="pName p2" clip-path="url(#nameClip-${bracketMatch.id}-2)">${p2Name || ''}</text>
             `;
         if (bracketMatch.p2.name == null && bracketMatch.p2.id != null) bracketMatch.p2.name = null;
         if (bracketMatch.p1.score != 0 || bracketMatch.p2.score != 0) {
@@ -522,109 +537,68 @@ export class BracketComponent extends AppComponent implements OnInit {
             `;
         }
 
-
+        let firstRoundCount = bracketData.filter(x => x.round == 0).length;
 
         let maxRound = Math.max.apply(Math, bracketData.map(x => x.round));
         let minRound = Math.min.apply(Math, bracketData.map(x => x.round));
 
-        let p1Loser: number;
-        let p2Loser: number;
-
-        if (round == 0) {
-            p1Loser = (i + 1) * 2 - 1;
-            p2Loser = (i + 1) * 2;
-        } else if (round % 2 == 1) {
-            if (((round + 1) % 3) % 2 == 0) {
-                p1Loser = 0;
-                let prevRound = firstRoundCount;
-                let prevLoser = prevRound / 2;
-                for (let j = 0; j < (Math.floor(round / 2) + 1); j++) {
-                    p1Loser += prevRound;
-                    p1Loser += prevLoser;
-                    if (j % 2) prevLoser = Math.ceil(prevLoser / 2);
-                    prevRound = Math.ceil(prevRound / 2);
-                }
-                p1Loser += prevRound;
-                p1Loser -= i;
-            } else {
-                p1Loser = 1;
-                let prevRound = firstRoundCount;
-                let prevLoser = prevRound / 2;
-                for (let j = 0; j < (Math.floor(round / 2) + 1); j++) {
-                    p1Loser += prevRound;
-                    p1Loser += prevLoser;
-                    if (j % 2) prevLoser = Math.ceil(prevLoser / 2);
-                    prevRound = Math.ceil(prevRound / 2);
-                }
-                if (i % 2 == 0) {
-                    p1Loser += i + 1;
-                } else {
-                    p1Loser += i - 1;
-                }
-            }
+        if (losers) {
+            group.innerHTML += `<text x="37" y="5" width="147" height="12" class="loserPlaceHolder top"> </text>`;
+            group.innerHTML += `<text x="37" y="33" width="147" height="12" class="loserPlaceHolder bottom"> </text>`;
+        }
+        if (round == maxRound && !losers && minRound < 0) {
+            group.innerHTML += `<text x="37" y="33" width="147" height="12" class="loserPlaceHolder" style="font-size: 12px;"></text>`;
         }
 
-        if (losers && (round + 1) * -1 == minRound) {
-            p1Loser = BracketComponent.calcLabel(false, firstRoundCount, maxRound - 2, bracketMatch.matchNum, minRound);
+        if (round == maxRound - 1 && !losers && minRound < 0) {
+            // group.innerHTML += `<text x="37" y="33" width="147" height="12" class="loserPlaceHolder" style="font-size: 12px;">Winner of Losers Bracket</text>`;
+            group.innerHTML += `<text x="37" y="33" width="147" height="12" class="loserPlaceHolder" style="font-size: 12px;"></text>`;
         }
 
-        if ((bracketMatch.p1.id == null || bracketMatch.p1.name == '') && losers && p1Loser != undefined) {
-            group.innerHTML += `<text x="37" y="5" width="147" height="12" class="loserPlaceHolder">Loser of ${p1Loser}</text>`;
-        }
-
-        if (losers && (bracketMatch.p2.id == null || bracketMatch.p2.name == "") && p2Loser != undefined) {
-            group.innerHTML += `<text x="37" y="33" width="147" height="12" class="loserPlaceHolder">Loser of ${p2Loser}</text>`;
-        }
-
-        let labelId = BracketComponent.calcLabel(losers, firstRoundCount, round, bracketMatch.matchNum, minRound);
-
-        if (round == maxRound && !losers && bracketMatch.p2.id == null && minRound < 0) {
-            let labelId = BracketComponent.calcLabel(losers, firstRoundCount, round - 1, bracketMatch.matchNum, minRound);
-            group.innerHTML += `<text x="37" y="33" width="147" height="12" class="loserPlaceHolder" style="font-size: 12px;">Loser of ${labelId} (If neccessary)</text>`;
-        }
-
-        if (round == maxRound - 1 && !losers && bracketMatch.p2.id == null && minRound < 0) {
-            group.innerHTML += `<text x="37" y="33" width="147" height="12" class="loserPlaceHolder" style="font-size: 12px;">Winner of Losers Bracket</text>`;
-        }
-
-        group.innerHTML += `<text x="3" y="16" width="147" height="12" class="matchLabel">${labelId}</text>`;
+        group.innerHTML += `<text x="3" y="16" width="147" height="12" class="matchLabel"></text>`;
         return group;
     }
 
-    getBracket(): Observable<any> {
-        return this.http.get(`/api/tournament/${this.tournament.tournamentId}/bracketTest`);
-    }
-
-    static calcLabel(losers: boolean, firstRoundCount: number, round: number, matchNum: number, minRound: number) {
-        let labelId = 1;
-        let prevRound = firstRoundCount;
-        let prevLoser = firstRoundCount / 2;
-
-        if (losers) {
-            for (let i = 0; i < round; i++) {
-                labelId += prevRound;
-                labelId += prevLoser;
-                if (i % 2) prevLoser = Math.ceil(prevLoser / 2);
-                prevRound = Math.ceil(prevRound / 2);
+    static generateLabels(bracketData: bracketMatch[]) {
+        let maxRound = Math.max.apply(Math, bracketData.map(x => x.round));
+        let matchCounter = 1;
+        let matchElements = [];
+        for (let i = 0; i <= maxRound; i++) {
+            let elements = document.getElementsByClassName(`round-${i}`);
+            for (let j = 0; j < elements.length; j++) {
+                matchElements = [...matchElements, ...elements[j].children];
             }
-            labelId += prevRound;
-            labelId += matchNum;
-        } else if (!losers && minRound < 0) {
-            for (let i = 0; i < round; i++) {
-                labelId += prevRound;
-                labelId += prevLoser;
-                if (i % 2) prevLoser = Math.ceil(prevLoser / 2);
-                prevRound = Math.ceil(prevRound / 2);
-            }
-            labelId += matchNum;
-        } else {
-            for (let i = 0; i < round; i++) {
-                labelId += prevRound;
-                prevRound = Math.ceil(prevRound / 2);
-            }
-            labelId += matchNum;
         }
-        return labelId;
+        for (let j = 0; j < matchElements.length; j++) {
+            const element = matchElements[j];
+            if (!element.classList.contains('hidden')) {
+                element.querySelector('.matchLabel').innerHTML = matchCounter;
+                matchCounter++;
+            }
+        }
+        for (const match of matchElements) {
+            let curMatch = bracketData.find(x => x.id == match.id);
+            if (curMatch.p1_prereq_identifier) {
+                let prereqMatch = document.getElementById(curMatch.p1_prereq_identifier.toString());
+                let p1Loser = prereqMatch.querySelector(`.matchLabel`).innerHTML;
+                match.querySelector('.loserPlaceHolder.top').innerHTML = "";
+                if (match.querySelector(`.pName.p1`)?.innerHTML == "" && !prereqMatch.classList.contains('hidden')) match.querySelector('.loserPlaceHolder.top').innerHTML = `Loser of ${p1Loser}`;
+            }
+            if (curMatch.p2_prereq_identifier) {
+                let prereqMatch = document.getElementById(curMatch.p2_prereq_identifier.toString());
+                let p2Loser = prereqMatch.querySelector(`.matchLabel`).innerHTML;
+                match.querySelector('.loserPlaceHolder.bottom').innerHTML = "";
+                if (match.querySelector(`.pName.p2`)?.innerHTML == "" && !prereqMatch.classList.contains('hidden')) match.querySelector('.loserPlaceHolder.bottom').innerHTML = `Loser of ${p2Loser}`;
+            }
+            if (curMatch.round == maxRound - 1) {
+                match.querySelector('.loserPlaceHolder').innerHTML = "";
+                if (curMatch.p2.id == null) match.querySelector('.loserPlaceHolder').innerHTML = `Winner of Losers Bracket`;
+            }
+            if (curMatch.round == maxRound) {
+                if (curMatch.p2.id == null) match.querySelector('.loserPlaceHolder').innerHTML = `Loser of ${matchCounter - 4} (If neccessary)`;
+            }
+        }
+
     }
 }
 

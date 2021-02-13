@@ -1,30 +1,71 @@
-.card-body {
-    padding: 1.25rem;
-}
+// .card-body {
+//   padding: 1.25rem;
+// }
 
-.profileImg {
-    max-width: 33%;
-    float: right;
-    margin: 5px;
-}
+// .profileImg {
+//   max-width: 33%;
+//   float: right;
+//   margin: 5px;
+// }
 
-.countryImg {
-    display: inline-block;
-    border: none;
-    vertical-align: bottom;
-}
+// .countryImg {
+//   display: inline-block;
+//   border: none;
+//   vertical-align: bottom;
+// }
 
-h1 {
-    // width: 2%;
-    display: inline-block;
-}
+// h1 {
+//   // width: 2%;
+//   display: inline-block;
+// }
 
 .pronounRadio,
 .roles {
-    display: flex;
-    flex-direction: column;
-    margin: 15px 0;
-    .radio-button {
-        margin: 5px;
-    }
+  display: flex;
+  flex-direction: column;
+  margin: 15px 0;
+  .radio-button {
+    margin: 5px;
+  }
+}
+
+.card-body {
+  padding: 1.25rem;
+}
+
+.profileImg {
+  // max-width: 33%;
+  // float: right;
+  margin: 5px;
+  width: 100%;
+}
+
+.countryImg {
+  display: inline-block;
+  border: none;
+  vertical-align: bottom;
+}
+
+h1 {
+  display: inline-block;
+}
+
+.right-container {
+  float: right;
+  max-width: 100%;
+}
+
+.staff {
+  float: right;
+}
+
+.badges {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  margin: 10px 0;
+  img {
+    margin: 0 10px;
+    border: none;
+  }
 }

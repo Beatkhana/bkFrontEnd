@@ -5,7 +5,11 @@ export interface bracketMatch {
     round: number,
     p1: matchPlayer,
     p2: matchPlayer,
-    bye: number
+    bye: number;
+    time: string;
+    best_of: number;
+    p1_prereq_identifier?: number;
+    p2_prereq_identifier?: number;
 }
 
 export interface matchPlayer {

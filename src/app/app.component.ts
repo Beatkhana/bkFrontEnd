@@ -60,7 +60,7 @@ export class AppComponent implements OnInit {
         this.metaTags.defineTags('/', 'BeatKhana!', 'The one stop spot for all Beat Saber tournament information', 'assets/images/icon/BeatKhana Logo RGB.png');
     }
 
-    private async updateUser() {
+    public async updateUser() {
         this.user = await this.userS.curUser();
     }
 

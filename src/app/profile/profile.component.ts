@@ -5,6 +5,7 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Observable } from 'rxjs';
 import { AppComponent } from '../app.component';
 import { NotificationService } from '../services/toast.service';
+import { userAPI } from '../_models/user.model';
 
 @Component({
     selector: 'app-profile',
@@ -14,17 +15,22 @@ import { NotificationService } from '../services/toast.service';
 export class ProfileComponent extends AppComponent implements OnInit {
 
     title = "Profile | BeatKhana!";
-    private url = '/api/rankings';
     loading = true;
+    curUser: userAPI = null;
 
-    ngOnInit(): void {
+    async ngOnInit(): Promise<void> {
         this.setTitle(this.title);
-        // if(this.user.avatar.includes('api') || this.user.avatar.includes('oculus')) {
-        //     this.user.avatar = "https://new.scoresaber.com" + this.user.avatar;
-        // } else {
-        //     this.user.avatar = `/${this.user.avatar}` + (this.user.avatar.substring(0, 2) == 'a_' ? '.gif' : '.webp');
-        //     this.user.avatar = `https://cdn.discordapp.com/avatars/${this.user.discordId}${ this.user.avatar }`
-        // }
+
+        await this.updateUser();
+        this.curUser = await this.http.get<userAPI>(`/api/user/${this.user.discordId}`).toPromise();
+        // this.setTitle(this.curUser.name+"'s Profile" + this.title);
+        if (this.curUser.avatar.includes('api') || this.curUser.avatar.includes('oculus')) {
+            this.curUser.avatar = "https://new.scoresaber.com" + this.curUser.avatar;
+        } else {
+            this.curUser.avatar = `/${this.curUser.avatar}` + (this.curUser.avatar.substring(0, 2) == 'a_' ? '.gif' : '.webp');
+            this.curUser.avatar = `https://cdn.discordapp.com/avatars/${this.curUser.discordId}${this.curUser.avatar}`
+        }
+        console.log(this.user);
     }
 
     editUser(id) {
@@ -44,7 +50,7 @@ export class ProfileComponent extends AppComponent implements OnInit {
                     // let i = this.users.findIndex(x => x.discordId == data.discordId);
                     // this.users[i] = { ...this.users[i], ...data };
                     // this.dataSource.data = this.users;
-                    this.user = {...this.user, ...data};
+                    this.user = { ...this.user, ...data };
                 }
             });
     }

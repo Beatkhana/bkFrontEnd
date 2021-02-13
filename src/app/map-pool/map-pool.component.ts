@@ -71,7 +71,7 @@ export class MapPoolComponent extends AppComponent implements OnInit {
     //     }
     // }
 
-    sanitize(url:string){
+    sanitize(url: string) {
         return this.sanitizer.bypassSecurityTrustUrl(url);
     }
 
@@ -112,7 +112,7 @@ export class MapPoolComponent extends AppComponent implements OnInit {
                     }
                 }
             }
-        );
+            );
     }
 
     public deleteSong(data): Observable<any> {
@@ -169,7 +169,6 @@ export class MapPoolComponent extends AppComponent implements OnInit {
         document.body.appendChild(downloadAnchorNode);
         downloadAnchorNode.click();
         downloadAnchorNode.remove();
-
     }
 
     public getPools(): Observable<any[]> {
@@ -222,7 +221,7 @@ export class MapPoolComponent extends AppComponent implements OnInit {
                 edit: true
             }
         });
-        
+
         dialog.afterClosed()
             .subscribe(async data => {
                 if (data) {
@@ -364,7 +363,7 @@ export class addSongDialog implements OnInit {
         private dialogRef: MatDialogRef<createPoolDialog>,
         private notif: NotificationService
     ) { }
-    
+
     isSubmitted = false;
     beatsaver = false;
 

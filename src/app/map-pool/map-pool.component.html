@@ -22,14 +22,15 @@
                     <ng-container matColumnDef="image">
                         <th mat-header-cell *matHeaderCellDef style="width: 2%;"> &nbsp;&nbsp;&nbsp; Song </th>
                         <td mat-cell *matCellDef="let song" style="width: 2%;">
-                            <img loading="lazy" src="https://scoresaber.com/imports/images/songs/{{song.hash}}.png" alt="{{song.name}} Cover art" class="songImg">
+                            <img loading="lazy" src="https://scoresaber.com/imports/images/songs/{{song.hash}}.png"
+                                alt="{{song.name}} Cover art" class="songImg">
                         </td>
                     </ng-container>
                     <ng-container matColumnDef="songName">
                         <th mat-header-cell *matHeaderCellDef> </th>
                         <td mat-cell *matCellDef="let song">
                             <a href="{{song.ssLink}}" target="_blank">
-                                {{song.name}} - {{song.songAuthor}} 
+                                {{song.name}} - {{song.songAuthor}}
                             </a>
                             <span class="mapperName">[{{song.levelAuthor}}]</span>
                         </td>
@@ -43,7 +44,8 @@
                     <ng-container matColumnDef="bsaver">
                         <th mat-header-cell *matHeaderCellDef> </th>
                         <td mat-cell *matCellDef="let song">
-                            <a href="https://beatsaver.com/beatmap/{{song.key}}" target="_blank" class="beatsaver_icon"></a>
+                            <a href="https://beatsaver.com/beatmap/{{song.key}}" target="_blank"
+                                class="beatsaver_icon"></a>
                         </td>
                     </ng-container>
                     <ng-container matColumnDef="oneClick">
@@ -78,9 +80,14 @@
             </mat-tab>
         </mat-tab-group>
         <p class="card-text">
-            <button mat-stroked-button color="primary" (click)="downloadPool()" *ngIf="poolsLen > 0 && mapPools[curPoolId].songs.length > 0">Download Pool</button> &nbsp;
-            <button *ngIf="isAuthorised && poolsLen > 0" mat-stroked-button color="primary" (click)="addSong()">Add Song</button> &nbsp;
-            <button *ngIf="isAuthorised" mat-stroked-button color="primary" (click)="openCreate()">Create Map Pool</button> &nbsp;
+            <!-- <a mat-stroked-button color="primary" (click)="downloadPool()"
+                *ngIf="poolsLen > 0 && mapPools[curPoolId].songs.length > 0">Download Pool</a> &nbsp; -->
+            <a mat-stroked-button color="primary" href="/api/download-pool/{{curPoolId}}" target="_blank"
+                *ngIf="poolsLen > 0 && mapPools[curPoolId].songs.length > 0">Download Pool</a> &nbsp;
+            <button *ngIf="isAuthorised && poolsLen > 0" mat-stroked-button color="primary" (click)="addSong()">Add
+                Song</button> &nbsp;
+            <button *ngIf="isAuthorised" mat-stroked-button color="primary" (click)="openCreate()">Create Map
+                Pool</button> &nbsp;
             <button *ngIf="isAuthorised" mat-stroked-button color="primary" (click)="editPool()">Edit Map Pool</button>
         </p>
     </ng-template>

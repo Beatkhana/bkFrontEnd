@@ -593,7 +593,7 @@ export class tournamentSettingsDialog implements OnInit {
                         });
                     }
                 }
-                
+
                 let req = await fetch(
                     `https://beatsaver.com/api/maps/by-hash/${song.hash}`,
                     {
@@ -635,13 +635,13 @@ export class tournamentSettingsDialog implements OnInit {
     }
 
     titleCase(str): string {
-		var splitStr = str.split(" ");
-		for (var i = 0; i < splitStr.length; i++) {
-			splitStr[i] =
-				splitStr[i].charAt(0).toUpperCase() + splitStr[i].substring(1);
-		}
-		return splitStr.join(" ");
-	}
+        var splitStr = str.split(" ");
+        for (var i = 0; i < splitStr.length; i++) {
+            splitStr[i] =
+                splitStr[i].charAt(0).toUpperCase() + splitStr[i].substring(1);
+        }
+        return splitStr.join(" ");
+    }
 
     ngOnDestroy() {
         this.ws.complete();
@@ -716,7 +716,7 @@ export class tournamentSettingsDialog implements OnInit {
             .subscribe(async data => {
                 if (!data.flag) {
                     this.notif.showSuccess('', 'Successfully updated tournament settings');
-                    
+
                 } else {
                     console.error('Error', data.err)
                     this.notif.showError('', 'Error updating tournament settings');
@@ -865,22 +865,31 @@ export class addPlayerDialog implements OnInit {
         return this.addPlayerForm.get('comment');
     }
 
-    onSubmit() {
-        this.signUp(this.addPlayerForm.value)
-            .subscribe(data => {
-                if (!data.flag) {
-                    this.notif.showInfo('', 'Successfully added participant');
-                    this.dialogRef.close(true);
-                } else {
-                    console.error('Error', data.err)
-                    this.notif.showError('', 'Error adding participant');
-                    this.dialogRef.close(false);
-                }
-            }, error => {
-                this.notif.showError('', 'Error adding participant');
-                console.error("Error: ", error);
-                this.dialogRef.close(false);
-            });
+    async onSubmit() {
+        try {
+            await this.http.post(`/api/tournament/${this.id}/signUp`, this.addPlayerForm.value).toPromise();
+            this.notif.showInfo('', 'Successfully added participant');
+            this.dialogRef.close(true);
+        } catch (error) {
+            console.error('Error', error)
+            this.notif.showError('', 'Error adding participant');
+            this.dialogRef.close(false);
+        }
+        // this.signUp(this.addPlayerForm.value)
+        //     .subscribe(data => {
+        //         if (!data.flag) {
+        //             this.notif.showInfo('', 'Successfully added participant');
+        //             this.dialogRef.close(true);
+        //         } else {
+        //             console.error('Error', data.err)
+        //             this.notif.showError('', 'Error adding participant');
+        //             this.dialogRef.close(false);
+        //         }
+        //     }, error => {
+        //         this.notif.showError('', 'Error adding participant');
+        //         console.error("Error: ", error);
+        //         this.dialogRef.close(false);
+        //     });
     }
 
     signUp(data: any): Observable<any> {

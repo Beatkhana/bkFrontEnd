@@ -136,24 +136,24 @@ export class BracketComponent extends AppComponent implements OnInit {
             (<SVGPathElement>matchElem.querySelector('.in_progress')).style.display = 'none';
         }
         if (data.p1.score != data.p2.score && data.status == 'complete') {
-            matchElem.querySelector('.pScore.p1').classList.remove('winner');
-            matchElem.querySelector('.pScore.p1').classList.remove('loser');
-            matchElem.querySelector('.pScore.p2').classList.remove('winner');
-            matchElem.querySelector('.pScore.p2').classList.remove('loser');
+            matchElem.querySelector('.pScore.p1')?.classList.remove('winner');
+            matchElem.querySelector('.pScore.p1')?.classList.remove('loser');
+            matchElem.querySelector('.pScore.p2')?.classList.remove('winner');
+            matchElem.querySelector('.pScore.p2')?.classList.remove('loser');
             if (data.p1.score > data.p2.score) {
-                matchElem.querySelector('.pScore.p1').classList.add('winner');
-                matchElem.querySelector('.pScore.p2').classList.add('loser');
+                matchElem.querySelector('.pScore.p1')?.classList.add('winner');
+                matchElem.querySelector('.pScore.p2')?.classList.add('loser');
             } else {
-                matchElem.querySelector('.pScore.p1').classList.add('loser');
-                matchElem.querySelector('.pScore.p2').classList.add('winner');
+                matchElem.querySelector('.pScore.p1')?.classList.add('loser');
+                matchElem.querySelector('.pScore.p2')?.classList.add('winner');
             }
         }
 
         if (data.p1.score != 0 || (data.status == 'in_progress' || data.status == 'complete')) matchElem.querySelector('.pScore.p1').innerHTML = data.p1.score.toString();
         if (data.p2.score != 0 || (data.status == 'in_progress' || data.status == 'complete')) matchElem.querySelector('.pScore.p2').innerHTML = data.p2.score.toString();
 
-        matchElem.querySelector('.img.p1').setAttribute('href', data.p1.avatar ? `href="https://cdn.discordapp.com/avatars/${data.p1.id}${data.p1.avatar}"` : '');
-        matchElem.querySelector('.img.p2').setAttribute('href', data.p2.avatar ? `href="https://cdn.discordapp.com/avatars/${data.p2.id}${data.p2.avatar}"` : '');
+        matchElem.querySelector('.img.p1')?.setAttribute('href', data.p1.avatar ? `href="https://cdn.discordapp.com/avatars/${data.p1.id}${data.p1.avatar}"` : '');
+        matchElem.querySelector('.img.p2')?.setAttribute('href', data.p2.avatar ? `href="https://cdn.discordapp.com/avatars/${data.p2.id}${data.p2.avatar}"` : '');
         matchElem.classList.remove('hidden');
         let lineElem = document.querySelectorAll(`[data-round="${data.round}"][data-match="${data.matchNum}"]`);
         for (const line of lineElem) line.classList.remove('hidden');
@@ -258,7 +258,7 @@ export class BracketComponent extends AppComponent implements OnInit {
         document.getElementById('svgContainer').setAttribute("style", `height:${height}px`);
 
         // console.log(winnersMatches);
-        console.log(losersMatches);
+        // console.log(losersMatches);
 
         for (let i = 0; i < Object.keys(matches).length; i++) {
             const round = matches[i];
@@ -580,21 +580,21 @@ export class BracketComponent extends AppComponent implements OnInit {
             let curMatch = bracketData.find(x => x.id == match.id);
             if (curMatch.p1_prereq_identifier) {
                 let prereqMatch = document.getElementById(curMatch.p1_prereq_identifier.toString());
-                let p1Loser = prereqMatch.querySelector(`.matchLabel`).innerHTML;
+                let p1Loser = prereqMatch.querySelector(`.matchLabel`)?.innerHTML;
                 match.querySelector('.loserPlaceHolder.top').innerHTML = "";
                 if (match.querySelector(`.pName.p1`)?.innerHTML == "" && !prereqMatch.classList.contains('hidden')) match.querySelector('.loserPlaceHolder.top').innerHTML = `Loser of ${p1Loser}`;
             }
             if (curMatch.p2_prereq_identifier) {
                 let prereqMatch = document.getElementById(curMatch.p2_prereq_identifier.toString());
-                let p2Loser = prereqMatch.querySelector(`.matchLabel`).innerHTML;
+                let p2Loser = prereqMatch.querySelector(`.matchLabel`)?.innerHTML;
                 match.querySelector('.loserPlaceHolder.bottom').innerHTML = "";
                 if (match.querySelector(`.pName.p2`)?.innerHTML == "" && !prereqMatch.classList.contains('hidden')) match.querySelector('.loserPlaceHolder.bottom').innerHTML = `Loser of ${p2Loser}`;
             }
-            if (curMatch.round == maxRound - 1) {
+            if (curMatch.round == maxRound - 1 && match.querySelector('.loserPlaceHolder')) {
                 match.querySelector('.loserPlaceHolder').innerHTML = "";
                 if (curMatch.p2.id == null) match.querySelector('.loserPlaceHolder').innerHTML = `Winner of Losers Bracket`;
             }
-            if (curMatch.round == maxRound) {
+            if (curMatch.round == maxRound && match.querySelector('.loserPlaceHolder')) {
                 if (curMatch.p2.id == null) match.querySelector('.loserPlaceHolder').innerHTML = `Loser of ${matchCounter - 4} (If neccessary)`;
             }
         }

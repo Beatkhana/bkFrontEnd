@@ -527,8 +527,7 @@ export class tournamentSettingsDialog implements OnInit {
             bracket_sort_method: this.data.tournament.bracket_sort_method,
             bracket_limit: [this.data.tournament.bracket_limit, [
                 Validators.required,
-                Validators.pattern('^[0-9]*$'),
-                this.multiple8
+                Validators.pattern('^[0-9]*$')
             ]],
             quals_cutoff: [this.data.tournament.quals_cutoff, [
                 Validators.required,

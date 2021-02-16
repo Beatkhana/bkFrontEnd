@@ -2,89 +2,263 @@
     <h1>{{tournament.name}}</h1>
     <h3>Participants</h3>
 
-    <!-- Base participant display -->
-    <div class="participantGrid" *ngIf="tournament.state == 'qualifiers' || tournament.state == 'awaiting_start' || all">
-        <mat-accordion *ngFor="let user of participants">
-            <mat-expansion-panel hideToggle class="playerPanel">
-                <mat-expansion-panel-header>
-                    <mat-panel-title style="justify-content: center;">
-                        <a class="playerName" [routerLink]="['/user', user.userId]">
-                            {{user.name}}
-                        </a>
-                    </mat-panel-title>
-                </mat-expansion-panel-header>
-                <img loading="lazy" class="participantImg" src="{{user.avatar}}">
-                <p class="card-text" style="float: left;">
-                    <b>Global Rank:</b> #{{user.globalRank}} <br>
-                    <b>Regional Rank:</b> #{{user.localRank}} <img class="participantFlag" src="\assets/flags/{{user.country}}.png" alt="{{user.country}} Flag" style="height: 20px;border: none;"><br>
-                    <!-- <b>Tournament Rank:</b> #{{user.tourneyRank}} <br> -->
-                    <a href="https://scoresaber.com/u/{{user.ssId}}" target="_blank">Scoresaber</a> <br>
-                    <a href="https://twitch.tv/{{user.twitchName}}" target="_blank">Twitch</a> <br>
-                    <span *ngIf="isAuthorised || user.comment != null" [innerHTML]="'Comment: ' + (user.comment | linkify: linkOptions) + '\n'" style="white-space: pre-line;"></span>
-                    <button mat-stroked-button color="warn" *ngIf="isAuthorised" (click)="deleteParticipant(user.participantId)">Remove Participant</button> &nbsp;
-                    <button mat-stroked-button color="accent" *ngIf="(curUser != null && user.discordId == curUser.discordId) || isAuthorised" (click)="editComment(user.participantId)">Edit comment</button> &nbsp;
-                </p>
-            </mat-expansion-panel>
-        </mat-accordion>
+    <div *ngIf="loading else loaded">
+        <img src="/assets/svg/BeatKhana Logo RGB animated.svg" style="display: block;
+            margin-left: auto;
+            margin-right: auto;
+            width: 70px;
+            border: none;">
     </div>
 
-    <!-- Seeded display -->
-    <div class="participantGrid" *ngIf="(tournament.state == 'main_stage' || tournament.state == 'archived') && tournament.type != 'battle_royale' && !all">
-        <ng-container *ngFor="let user of participants">
-            <mat-accordion *ngIf="user.seed != 0">
+    <ng-template #loaded>
+        <!-- Base participant display -->
+        <div class="participantGrid"
+            *ngIf="tournament.state == 'qualifiers' || tournament.state == 'awaiting_start' || all">
+            <mat-accordion *ngFor="let user of participants">
                 <mat-expansion-panel hideToggle class="playerPanel">
                     <mat-expansion-panel-header>
-                        <mat-panel-title class="playerName">
-                            <span style="justify-content: left;">#{{user.seed}}</span> &nbsp;
+                        <mat-panel-title style="justify-content: center;">
                             <a class="playerName" [routerLink]="['/user', user.userId]">
                                 {{user.name}}
-                            </a> &nbsp;
+                            </a>
                         </mat-panel-title>
                     </mat-expansion-panel-header>
                     <img loading="lazy" class="participantImg" src="{{user.avatar}}">
                     <p class="card-text" style="float: left;">
                         <b>Global Rank:</b> #{{user.globalRank}} <br>
-                        <b>Regional Rank:</b> #{{user.localRank}} <img class="participantFlag" src="\assets/flags/{{user.country}}.png" alt="{{user.country}} Flag" style="height: 20px;border: none;"><br>
-                        <b>Seed:</b> #{{user.seed}} <br>
+                        <b>Regional Rank:</b> #{{user.localRank}} <img class="participantFlag"
+                            src="\assets/flags/{{user.country}}.png" alt="{{user.country}} Flag"
+                            style="height: 20px;border: none;"><br>
+                        <!-- <b>Tournament Rank:</b> #{{user.tourneyRank}} <br> -->
                         <a href="https://scoresaber.com/u/{{user.ssId}}" target="_blank">Scoresaber</a> <br>
                         <a href="https://twitch.tv/{{user.twitchName}}" target="_blank">Twitch</a> <br>
-                        <span *ngIf="isAuthorised || user.comment != null" [innerHTML]="'Comment: ' + (user.comment | linkify: linkOptions) + '\n'" style="white-space: pre-line;"></span>
-                        <button mat-stroked-button color="warn" *ngIf="isAuthorised" (click)="deleteParticipant(user.participantId)">Remove Participant</button> &nbsp;
-                        <button mat-stroked-button color="accent" *ngIf="(curUser != null && user.discordId == curUser.discordId) || isAuthorised" (click)="editComment(user.participantId)">Edit comment</button> &nbsp;
+                        <span *ngIf="isAuthorised || user.comment != null"
+                            [innerHTML]="'Comment: ' + (user.comment | linkify: linkOptions) + '\n'"
+                            style="white-space: pre-line;"></span>
+                        <button mat-stroked-button color="warn" *ngIf="isAuthorised"
+                            (click)="deleteParticipant(user.participantId)">Remove Participant</button> &nbsp;
+                        <button mat-stroked-button color="accent"
+                            *ngIf="(curUser != null && user.discordId == curUser.discordId) || isAuthorised"
+                            (click)="editComment(user.participantId)">Edit comment</button> &nbsp;
                     </p>
                 </mat-expansion-panel>
             </mat-accordion>
-        </ng-container>
-    </div>
+        </div>
 
-    <!-- Battle royale -->
-    <div class="participantGrid" *ngIf="(tournament.state == 'main_stage' || tournament.state == 'archived') && tournament.type == 'battle_royale' && !all" [ngClass]="{'battleRoyale' : tournament.type == 'battle_royale'}">
-
-        <mat-accordion>
-            <ng-container *ngFor="let user of participants; let i = index">
-                <mat-expansion-panel hideToggle *ngIf="user.seed != 0" class="playerPanel" [ngClass]="{'eliminated' : user.position != 0}">
-                    <mat-expansion-panel-header>
-                        <mat-panel-title class="playerName">
-                            #{{user.seed}} <img loading="lazy" class="participantImgSmall" src="{{user.avatar}}">
-                            <a class="playerName" [routerLink]="['/user', user.userId]">
-                                {{user.name}}
-                            </a>
-                        </mat-panel-title>
-                        <mat-panel-description class="playerSumary">
-                        </mat-panel-description>
-                    </mat-expansion-panel-header>
-                    <p class="card-text">
-                        <b>Seed:</b> #{{user.seed}} <br>
-                        <b>Global Rank:</b> #{{user.globalRank}} <br>
-                        <b>Regional Rank:</b> #{{user.localRank}} <img class="participantFlag" src="\assets/flags/{{user.country}}.png" alt="{{user.country}} Flag" style="height: 20px;border: none;"><br>
-                        <a href="https://scoresaber.com/u/{{user.ssId}}" target="_blank">Scoresaber</a> <br>
-                        <a href="https://twitch.tv/{{user.twitchName}}" target="_blank">Twitch</a> <br>
-                        <span *ngIf="isAuthorised || user.comment != null" [innerHTML]="'Comment: ' + (user.comment | linkify: linkOptions) + '\n'" style="white-space: pre-line;"></span>
-                        <button mat-stroked-button color="warn" *ngIf="isAuthorised && user.position == 0" (click)="eliminateParticipant(user.participantId)">Eliminate Participant</button> &nbsp;
-                        <button mat-stroked-button color="accent" *ngIf="(curUser != null && user.discordId == curUser.discordId) || isAuthorised" (click)="editComment(user.participantId)">Edit comment</button> &nbsp;
-                    </p>
-                </mat-expansion-panel>
+        <!-- Seeded display -->
+        <p class="card-text" *ngIf="(tournament.state == 'main_stage' || tournament.state == 'archived') && tournament.type != 'battle_royale' && !all 
+            && isAuthorised
+            && canEdit()">
+            <mat-checkbox [checked]="editMode" (change)="editMode = !editMode" style="display: block;">
+                Edit <i class="fas fa-edit"></i>
+            </mat-checkbox>
+            <ng-container *ngIf="editMode">
+                *Reordering participants will change their seed.
+                <br>
+                <!-- <button mat-button color="primary" (click)="addPlayer()">Add Player</button> -->
+                <!-- <button mat-button color="primary" (click)="recalc()">Recalc from quals</button>
+                <br> -->
+                <button mat-raised-button color="accent" (click)="save()">Save</button>
+                <button mat-raised-button color="warn" (click)="updateParticipants()">Revert</button>
             </ng-container>
-        </mat-accordion>
-    </div>
+        </p>
+        <div class="participantGrid" [ngClass]="{'battleRoyale' : editMode}"
+            *ngIf="(tournament.state == 'main_stage' || tournament.state == 'archived') && tournament.type != 'battle_royale' && !all"
+            cdkDropListGroup>
+            <ng-container *ngIf="!editMode">
+                <ng-container *ngFor="let user of participants">
+                    <mat-accordion *ngIf="user.seed != 0">
+                        <mat-expansion-panel hideToggle class="playerPanel">
+                            <mat-expansion-panel-header>
+                                <mat-panel-title class="playerName">
+                                    <span style="justify-content: left;">#{{user.seed}}</span> &nbsp;
+                                    <a class="playerName" [routerLink]="['/user', user.userId]">
+                                        {{user.name}}
+                                    </a> &nbsp;
+                                </mat-panel-title>
+                            </mat-expansion-panel-header>
+                            <img loading="lazy" class="participantImg" src="{{user.avatar}}">
+                            <p class="card-text" style="float: left;">
+                                <b>Global Rank:</b> #{{user.globalRank}} <br>
+                                <b>Regional Rank:</b> #{{user.localRank}} <img class="participantFlag"
+                                    src="\assets/flags/{{user.country}}.png" alt="{{user.country}} Flag"
+                                    style="height: 20px;border: none;"><br>
+                                <b>Seed:</b> #{{user.seed}} <br>
+                                <a href="https://scoresaber.com/u/{{user.ssId}}" target="_blank">Scoresaber</a> <br>
+                                <a href="https://twitch.tv/{{user.twitchName}}" target="_blank">Twitch</a> <br>
+                                <span *ngIf="isAuthorised || user.comment != null"
+                                    [innerHTML]="'Comment: ' + (user.comment | linkify: linkOptions) + '\n'"
+                                    style="white-space: pre-line;"></span>
+                                <button mat-stroked-button color="warn" *ngIf="isAuthorised"
+                                    (click)="deleteParticipant(user.participantId)">Remove Participant</button> &nbsp;
+                                <button mat-stroked-button color="accent"
+                                    *ngIf="(curUser != null && user.discordId == curUser.discordId) || isAuthorised"
+                                    (click)="editComment(user.participantId)">Edit comment</button> &nbsp;
+                            </p>
+                        </mat-expansion-panel>
+                    </mat-accordion>
+                </ng-container>
+            </ng-container>
+
+            <ng-container *ngIf="editMode">
+                <mat-accordion [cdkDropListData]="participants" cdkDropList (cdkDropListDropped)="seedDragDrop($event)">
+                    <span *ngIf="editMode">Qualified</span>
+                    <ng-container *ngFor="let user of participants; let i = index">
+                        <mat-expansion-panel hideToggle *ngIf="user.seed != 0" class="playerPanel"
+                            [ngClass]="{'eliminated' : user.position != 0}" cdkDrag [cdkDragData]="user"
+                            [cdkDragDisabled]="user.position != 0">
+                            <mat-expansion-panel-header>
+                                <mat-panel-title class="playerName">
+                                    #{{user.seed}} <img loading="lazy" class="participantImgSmall"
+                                        src="{{user.avatar}}">
+                                    <a class="playerName" [routerLink]="['/user', user.userId]">
+                                        {{user.name}}
+                                    </a>
+                                </mat-panel-title>
+                                <mat-panel-description class="playerSumary">
+                                    <i *ngIf="editMode" class="far fa-trash-alt"
+                                        (click)="deleteParticipant(user.participantId)"></i> &nbsp;
+                                    <i *ngIf="editMode && user.position == 0" cdkDragHandle
+                                        class="fas fa-grip-vertical grabber"></i>
+                                </mat-panel-description>
+                            </mat-expansion-panel-header>
+                            <p class="card-text">
+                                <b>Seed:</b> #{{user.seed}} <br>
+                                <b>Global Rank:</b> #{{user.globalRank}} <br>
+                                <b>Regional Rank:</b> #{{user.localRank}} <img class="participantFlag"
+                                    src="\assets/flags/{{user.country}}.png" alt="{{user.country}} Flag"
+                                    style="height: 20px;border: none;"><br>
+                                <a href="https://scoresaber.com/u/{{user.ssId}}" target="_blank">Scoresaber</a> <br>
+                                <a href="https://twitch.tv/{{user.twitchName}}" target="_blank">Twitch</a> <br>
+                                <span *ngIf="isAuthorised || user.comment != null"
+                                    [innerHTML]="'Comment: ' + (user.comment | linkify: linkOptions) + '\n'"
+                                    style="white-space: pre-line;"></span>
+                                <button mat-stroked-button color="warn" *ngIf="isAuthorised && user.position == 0"
+                                    (click)="eliminateParticipant(user.participantId)">Eliminate Participant</button>
+                                &nbsp;
+                                <button mat-stroked-button color="accent"
+                                    *ngIf="(curUser != null && user.discordId == curUser.discordId) || isAuthorised"
+                                    (click)="editComment(user.participantId)">Edit comment</button> &nbsp;
+                            </p>
+                        </mat-expansion-panel>
+                    </ng-container>
+                </mat-accordion>
+                <div *ngIf="editMode">
+                    Non Qualified
+                    <mat-accordion [cdkDropListData]="nonQualified" cdkDropList
+                        (cdkDropListDropped)="seedDragDrop($event)">
+                        <ng-container *ngFor="let user of nonQualified; let i = index">
+                            <mat-expansion-panel disabled hideToggle class="playerPanel"
+                                [ngClass]="{'eliminated' : user.position != 0}" cdkDrag [cdkDragData]="user"
+                                [cdkDragDisabled]="user.position != 0">
+                                <mat-expansion-panel-header>
+                                    <mat-panel-title class="playerName">
+                                        <img loading="lazy" class="participantImgSmall" src="{{user.avatar}}">
+                                        <a class="playerName" [routerLink]="['/user', user.userId]">
+                                            {{user.name}}
+                                        </a>
+                                    </mat-panel-title>
+                                    <mat-panel-description class="playerSumary">
+                                        <i *ngIf="editMode" class="far fa-trash-alt"
+                                            (click)="deleteParticipant(user.participantId)"></i> &nbsp;
+                                        <i *ngIf="editMode && user.position == 0" cdkDragHandle
+                                            class="fas fa-grip-vertical grabber"></i>
+                                    </mat-panel-description>
+                                </mat-expansion-panel-header>
+                            </mat-expansion-panel>
+                        </ng-container>
+                    </mat-accordion>
+                </div>
+            </ng-container>
+        </div>
+
+        <!-- Battle royale -->
+        <p class="card-text" *ngIf="(tournament.state == 'main_stage' || tournament.state == 'archived') && tournament.type == 'battle_royale' 
+            && !all 
+            && isAuthorised
+            && canEdit()">
+            <mat-checkbox [checked]="editMode" (change)="editMode = !editMode" style="display: block;">
+                Edit <i class="fas fa-edit"></i>
+            </mat-checkbox>
+            <ng-container *ngIf="editMode">
+                *Reordering participants will change their seed.
+                <br>
+                <!-- <button mat-button color="primary" (click)="addPlayer()">Add Player</button> -->
+                <!-- <button mat-button color="primary" (click)="recalc()">Recalc from quals</button>
+                <br> -->
+                <button mat-raised-button color="accent" (click)="save()">Save</button>
+                <button mat-raised-button color="warn" (click)="updateParticipants()">Revert</button>
+            </ng-container>
+        </p>
+        <div class="participantGrid"
+            *ngIf="(tournament.state == 'main_stage' || tournament.state == 'archived') && tournament.type == 'battle_royale' && !all"
+            [ngClass]="{'battleRoyale' : tournament.type == 'battle_royale'}" cdkDropListGroup>
+            <mat-accordion [cdkDropListData]="participants" cdkDropList (cdkDropListDropped)="seedDragDrop($event)">
+                <span *ngIf="editMode">Qualified</span>
+                <ng-container *ngFor="let user of participants; let i = index">
+                    <mat-expansion-panel hideToggle *ngIf="user.seed != 0" class="playerPanel"
+                        [ngClass]="{'eliminated' : user.position != 0}" cdkDrag [cdkDragData]="user"
+                        [cdkDragDisabled]="user.position != 0">
+                        <mat-expansion-panel-header>
+                            <mat-panel-title class="playerName">
+                                #{{user.seed}} <img loading="lazy" class="participantImgSmall" src="{{user.avatar}}">
+                                <a class="playerName" [routerLink]="['/user', user.userId]">
+                                    {{user.name}}
+                                </a>
+                            </mat-panel-title>
+                            <mat-panel-description class="playerSumary">
+                                <i *ngIf="editMode" class="far fa-trash-alt"
+                                    (click)="deleteParticipant(user.participantId)"></i> &nbsp;
+                                <i *ngIf="editMode && user.position == 0" cdkDragHandle
+                                    class="fas fa-grip-vertical grabber"></i>
+                            </mat-panel-description>
+                        </mat-expansion-panel-header>
+                        <p class="card-text">
+                            <b>Seed:</b> #{{user.seed}} <br>
+                            <b>Global Rank:</b> #{{user.globalRank}} <br>
+                            <b>Regional Rank:</b> #{{user.localRank}} <img class="participantFlag"
+                                src="\assets/flags/{{user.country}}.png" alt="{{user.country}} Flag"
+                                style="height: 20px;border: none;"><br>
+                            <a href="https://scoresaber.com/u/{{user.ssId}}" target="_blank">Scoresaber</a> <br>
+                            <a href="https://twitch.tv/{{user.twitchName}}" target="_blank">Twitch</a> <br>
+                            <span *ngIf="isAuthorised || user.comment != null"
+                                [innerHTML]="'Comment: ' + (user.comment | linkify: linkOptions) + '\n'"
+                                style="white-space: pre-line;"></span>
+                            <button mat-stroked-button color="warn" *ngIf="isAuthorised && user.position == 0"
+                                (click)="eliminateParticipant(user.participantId)">Eliminate Participant</button> &nbsp;
+                            <button mat-stroked-button color="accent"
+                                *ngIf="(curUser != null && user.discordId == curUser.discordId) || isAuthorised"
+                                (click)="editComment(user.participantId)">Edit comment</button> &nbsp;
+                        </p>
+                    </mat-expansion-panel>
+                </ng-container>
+            </mat-accordion>
+            <div *ngIf="editMode">
+                Non Qualified
+                <mat-accordion [cdkDropListData]="nonQualified" cdkDropList (cdkDropListDropped)="seedDragDrop($event)">
+                    <ng-container *ngFor="let user of nonQualified; let i = index">
+                        <mat-expansion-panel disabled hideToggle class="playerPanel"
+                            [ngClass]="{'eliminated' : user.position != 0}" cdkDrag [cdkDragData]="user"
+                            [cdkDragDisabled]="user.position != 0">
+                            <mat-expansion-panel-header>
+                                <mat-panel-title class="playerName">
+                                    <img loading="lazy" class="participantImgSmall" src="{{user.avatar}}">
+                                    <a class="playerName" [routerLink]="['/user', user.userId]">
+                                        {{user.name}}
+                                    </a>
+                                </mat-panel-title>
+                                <mat-panel-description class="playerSumary">
+                                    <i *ngIf="editMode" class="far fa-trash-alt"
+                                        (click)="deleteParticipant(user.participantId)"></i> &nbsp;
+                                    <i *ngIf="editMode && user.position == 0" cdkDragHandle
+                                        class="fas fa-grip-vertical grabber"></i>
+                                </mat-panel-description>
+                            </mat-expansion-panel-header>
+                        </mat-expansion-panel>
+                    </ng-container>
+                </mat-accordion>
+            </div>
+
+        </div>
+    </ng-template>
 </div>

@@ -30,7 +30,8 @@ import { MatRadioModule } from '@angular/material/radio';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatSortModule } from '@angular/material/sort';
 import { MatExpansionModule } from '@angular/material/expansion';
-import {MatSliderModule} from '@angular/material/slider';
+import { MatSliderModule } from '@angular/material/slider';
+import { DragDropModule } from '@angular/cdk/drag-drop';
 
 import { CKEditorModule } from 'ckeditor4-angular';
 import { ConfirmDialogComponent } from './confirm-dialog/confirm-dialog.component';
@@ -64,6 +65,7 @@ import { AssignBadgesComponent } from './_modals/assign-badges/assign-badges.com
 import { TournamentStaffComponent } from './tournament-staff/tournament-staff.component';
 import { EditStaffComponent } from './_modals/edit-staff/edit-staff.component';
 import { OverlayControllerComponent } from './overlay-controller/overlay-controller.component';
+import { AddPlayerComponent } from './_modals/add-player/add-player.component';
 
 
 @NgModule({
@@ -108,7 +110,8 @@ import { OverlayControllerComponent } from './overlay-controller/overlay-control
         AssignBadgesComponent,
         TournamentStaffComponent,
         EditStaffComponent,
-        OverlayControllerComponent
+        OverlayControllerComponent,
+        AddPlayerComponent
     ],
     imports: [
         BrowserModule,
@@ -131,6 +134,7 @@ import { OverlayControllerComponent } from './overlay-controller/overlay-control
         MatRadioModule,
         MatExpansionModule,
         MatSliderModule,
+        DragDropModule,
         CKEditorModule,
         ToastrModule.forRoot({
             maxOpened: 3,

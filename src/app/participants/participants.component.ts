@@ -1,3 +1,4 @@
+import { CdkDrag, CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
 import { HttpClient } from '@angular/common/http';
 import { ChangeDetectorRef, Component, Inject, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
@@ -8,6 +9,8 @@ import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.compone
 import { User } from '../models/user.model';
 import { NotificationService } from '../services/toast.service';
 import { UserAuthService } from '../services/user-auth.service';
+import { AddPlayerComponent } from '../_modals/add-player/add-player.component';
+import { participant } from '../_models/participants';
 
 @Component({
     selector: 'app-participants',
@@ -17,11 +20,16 @@ import { UserAuthService } from '../services/user-auth.service';
 export class ParticipantsComponent implements OnInit {
 
     @Input() tournament;
-    @Input() participants: Array<any>;
+    @Input() participants: participant[];
     @Input() all: boolean = false;
 
     isAuthorised = false;
     curUser: User = null;
+    loading = true;
+
+    editMode = false;
+
+    nonQualified: participant[];
 
     linkOptions = {
         target: {
@@ -38,34 +46,39 @@ export class ParticipantsComponent implements OnInit {
         }
     }
 
-    updateParticipants() {
-        this.getParticipants()
-            .subscribe(data => {
-                if (this.tournament.state == 'main_stage' && !this.all) {
-                    if (this.tournament.type == 'battle_royale') {
-                        data.sort(this.royaleSort);
-                    } else {
-                        data.sort(this.seedSort);
-                    }
-                } else {
-                    if(this.tournament.sort_method == 'globalRank') {
-                        data.sort(this.orderGlobal);
-                    } else if (this.tournament.sort_method == 'date') {
-                        data.sort(this.dateSort);
-                    }
-                }
-                this.participants = data;
-                for (const member of this.participants) {
-                    if(member.avatar.includes('api') || member.avatar.includes('oculus')) {
-                        member.avatar = "https://new.scoresaber.com" + member.avatar;
-                    } else {
-                        member.avatar = `/${member.avatar}` + (member.avatar.substring(0, 2) == 'a_' ? '.gif' : '.webp');
-                        member.avatar = `https://cdn.discordapp.com/avatars/${member.discordId}${ member.avatar }`
-                    }
-                }
-                this.cd.detectChanges();
-                console.log(this.participants);
-            })
+    async updateParticipants() {
+        this.loading = true;
+        let info = await this.http.get<participant[]>(`/api/tournament/${this.tournament.tournamentId}/${this.all ? 'allParticipants' : 'participants'}`).toPromise();
+        for (let i = 0; i < info.length; i++) {
+            if (info[i].avatar.includes('api') || info[i].avatar.includes('oculus')) {
+                info[i].avatar = "https://new.scoresaber.com" + info[i].avatar;
+            } else {
+                // info[i].avatar = `/${info[i].avatar}` + (info[i].avatar.substring(0, 2) == 'a_' ? '.gif' : '.webp');
+                info[i].avatar = `https://cdn.discordapp.com/avatars/${info[i].discordId}/${info[i].avatar}` + (info[i].avatar.substring(0, 2) == 'a_' ? '.gif' : '.webp')
+            }
+        }
+        this.nonQualified = info.filter(x => x.seed == 0);
+        this.participants = info;
+        this.sortParticipants();
+        // console.log(this.nonQualified);
+        this.loading = false;
+    }
+
+    sortParticipants() {
+        if ((this.tournament.state == 'main_stage' || this.tournament.state == 'archived') && !this.all) {
+            this.participants = this.participants.filter(x => x.seed != 0);
+            if (this.tournament.type == 'battle_royale') {
+                this.participants.sort(this.royaleSort);
+            } else {
+                this.participants.sort(this.seedSort);
+            }
+        } else {
+            if (this.tournament.sort_method == 'globalRank') {
+                this.participants.sort(this.orderGlobal);
+            } else if (this.tournament.sort_method == 'date') {
+                this.participants.sort(this.dateSort);
+            }
+        }
     }
 
     orderGlobal(a, b) {
@@ -91,15 +104,12 @@ export class ParticipantsComponent implements OnInit {
     }
 
     royaleSort(a, b) {
-        if(a.position > b.position) return 1;
-        if(a.position < b.position) return -1;
-
         if (a.position == 0 && b.position == 0) {
             if (b.seed == 0) return -1;
             if (a.seed == 0) return 1;
             return a.seed - b.seed;
         } else {
-            return b.position - a.position;
+            return a.position - b.position;
         }
     }
 
@@ -226,10 +236,67 @@ export class ParticipantsComponent implements OnInit {
             })
     }
 
-    getParticipants(): Observable<any> {
-        return this.http.get(`/api/tournament/${this.tournament.tournamentId}/${ this.all ? 'allParticipants' : 'participants'}`);
+    canEdit() {
+        return this.participants.every(x => x.position == 0);
     }
 
+    getParticipants(): Observable<any> {
+        return this.http.get(`/api/tournament/${this.tournament.tournamentId}/${this.all ? 'allParticipants' : 'participants'}`);
+    }
+
+    addPlayer() {
+        const dialog = this.dialog.open(AddPlayerComponent, {
+            minWidth: '60vw',
+            maxHeight: '90vh',
+            maxWidth: '95vw',
+        });
+    }
+
+    recalc() {
+
+    }
+
+    async save() {
+        try {
+            await this.http.put(`/api/tournament/${this.tournament.tournamentId}/participants`, this.participants).toPromise();
+            this.notif.showSuccess('', 'Successfully updated participant');
+            this.updateParticipants();
+        } catch (error) {
+            console.error("Error: ", error);
+            this.notif.showError('', 'Error updating participants');
+        }
+    }
+
+    seedDragDrop(event: CdkDragDrop<participant>) {
+        // console.log(event);
+        if (event.previousContainer === event.container) {
+            // moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
+            if (this.participants[event.currentIndex].position == 0) {
+                moveItemInArray(this.participants, event.previousIndex, event.currentIndex);
+                for (let i = 0; i < this.participants.length; i++) {
+                    const user = this.participants[i];
+                    user.seed = i + 1;
+                }
+            }
+        } else {
+            if (this.participants.find(x => x == event.item.data)) {
+                transferArrayItem(this.participants,
+                    this.nonQualified,
+                    event.previousIndex,
+                    event.currentIndex);
+            } else {
+                transferArrayItem(this.nonQualified,
+                    this.participants,
+                    event.previousIndex,
+                    event.currentIndex);
+            }
+            for (let i = 0; i < this.participants.length; i++) {
+                const user = this.participants[i];
+                user.seed = i + 1;
+            }
+        }
+
+    }
 }
 
 @Component({

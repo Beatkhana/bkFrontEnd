@@ -155,6 +155,7 @@ export class TournamentComponent extends AppComponent implements OnInit {
                 this.isMapPool = false;
                 this.isInfo = false;
                 this.isSignedUp = false;
+                this.staffPage = false;
             } else if (this.router.url.includes('staff')) {
                 this.isMapPool = false;
                 this.isBracket = false;

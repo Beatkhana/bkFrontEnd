@@ -9,6 +9,7 @@ import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.compone
 import { User } from '../models/user.model';
 import { NotificationService } from '../services/toast.service';
 import { UserAuthService } from '../services/user-auth.service';
+import { staff } from '../_models/tournamentApi.model';
 
 @Component({
     selector: 'app-map-pool',
@@ -19,6 +20,7 @@ export class MapPoolComponent extends AppComponent implements OnInit {
 
     private url = '/api/tournament';
     @Input() tournament;
+    @Input() staff: staff[] = [];
     public tourneyId: string;
     loading = true;
 
@@ -32,24 +34,13 @@ export class MapPoolComponent extends AppComponent implements OnInit {
     curPoolLive = false;
     poolsLen = 0;
 
-    // public constructor(
-    //     public http: HttpClient,
-    //     public dialog: MatDialog,
-    //     private notif: NotificationService,
-    //     private sanitizer:DomSanitizer,
-    //     private userS: UserAuthService
-    // ) {
-    //     if (this.user == null) {
-    //         this.updateUser();
-    //     }
-    // }
-
     mapPools = [];
     poolValues = [];
 
     async ngOnInit(): Promise<void> {
+        let poolStaff = this.staff.filter(x => x.roles.some(x => x.id == 2));
         await this.userS.curUser();
-        if (this.user != null && (this.user['roleIds'].includes('1') || this.user.discordId == this.tournament.owner)) {
+        if (this.user != null && (this.user['roleIds'].includes('1') || this.user.discordId == this.tournament.owner || poolStaff.find(x => x.discordId == this.user.discordId))) {
             this.isAuthorised = true;
             this.columnsToDisplay.push('delete');
         }
@@ -226,6 +217,34 @@ export class MapPoolComponent extends AppComponent implements OnInit {
             .subscribe(async data => {
                 if (data) {
                     this.updatePools();
+                }
+            });
+    }
+
+    deletePool() {
+        const dialog = this.dialog.open(ConfirmDialogComponent, {
+            width: '400px',
+            data: {
+                cancelText: 'Cancel',
+                confirmText: 'Delete',
+                message: 'Are you sure you want to delete map pool?',
+                title: 'Delete Map Pool?'
+            }
+        });
+
+        dialog.afterClosed()
+            .subscribe(async data => {
+                if (data) {
+                    try {
+                        await this.http.delete(`api/tournament/${this.tournament.tournamentId}/map-pools/${this.curPoolId}`).toPromise();
+                        this.updatePools();
+                        this.curPoolId = Object.keys(this.mapPools)[0];
+                        this.poolsLen = Object.keys(this.mapPools).length;
+                        this.poolValues = Object.values(this.mapPools);
+                    } catch (error) {
+                        console.error("Error: ", data);
+                        this.notif.showError('', 'Error deleting song from map pool');
+                    }
                 }
             });
     }

@@ -47,9 +47,6 @@ export class ProfileComponent extends AppComponent implements OnInit {
         dialog.afterClosed()
             .subscribe(data => {
                 if (data) {
-                    // let i = this.users.findIndex(x => x.discordId == data.discordId);
-                    // this.users[i] = { ...this.users[i], ...data };
-                    // this.dataSource.data = this.users;
                     this.user = { ...this.user, ...data };
                 }
             });
@@ -84,9 +81,6 @@ export class editProfileDialog implements OnInit {
             discordId: [this.data.selUser.discordId, [
                 Validators.required
             ]],
-            // ssId: [this.data.selUser.ssId, [
-            //     Validators.required
-            // ]],
             name: [this.data.selUser.name, [
                 Validators.required
             ]],

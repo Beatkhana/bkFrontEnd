@@ -548,7 +548,7 @@ export class tournamentSettingsDialog implements OnInit {
         this.ws.subscribe(
             msg => {
                 if (msg.TA && !this.taConnected) {
-                    this.taConnected = msg.TA.Self?.Name == "BeatKhana!";
+                    this.taConnected = msg.TA.Self?.name == "BeatKhana!";
                 }
             },
             err => console.log(err)
@@ -594,17 +594,18 @@ export class tournamentSettingsDialog implements OnInit {
                     }
                 }
 
-                let req = await fetch(
-                    `https://beatsaver.com/api/maps/by-hash/${song.hash}`,
-                    {
-                        method: "GET",
-                        headers: {
-                            "User-Agent":
-                                "Beatkhana/1.0.0 (+https://github.com/Dannypoke03)",
-                        },
-                    }
-                );
-                let songData = await req.json();
+                // let req = await fetch(
+                //     `https://beatsaver.com/api/maps/by-hash/${song.hash}`,
+                //     {
+                //         method: "GET",
+                //         headers: {
+                //             "User-Agent":
+                //                 "Beatkhana/1.0.0 (+https://github.com/Dannypoke03)",
+                //         },
+                //     }
+                // );
+                // let songData = await req.json();
+                let songData: any = await this.http.get(`https://beatsaver.com/api/maps/by-hash/${song.hash}`).toPromise();
                 let characteristics: Characteristic[] = [];
                 for (const characteristic of songData.metadata.characteristics) {
                     let diffs: BeatmapDifficulty[] = [];

@@ -1,6 +1,6 @@
 export interface userAPI {
     discordId: string;
-    ssId: string;
+    ssId?: string;
     name: string;
     twitchName: string;
     avatar: string;

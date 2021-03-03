@@ -28,7 +28,7 @@ export class SignUpComponent implements OnInit {
         private notif: NotificationService
     ) { }
 
-    
+
 
     ngOnInit(): void {
         this.signUpForm = this.fb.group({
@@ -36,8 +36,8 @@ export class SignUpComponent implements OnInit {
                 Validators.required,
                 // Validators.pattern('^(?:https?:\/\/)?(?:www\.|go\.)?twitch\.tv\/([a-z0-9_]+)($|\?)'),
             ]],
-            scoreSaber: ['', [
-                Validators.required
+            scoreSaber: [null, [
+                // Validators.required
             ]],
             pronoun: ['He/Him', [
                 Validators.required
@@ -53,7 +53,7 @@ export class SignUpComponent implements OnInit {
         } catch (error) {
             console.error("Error: ", error);
             this.notif.showError('', 'Error creating profile');
-            
+
             if (error.error?.message?.includes('ER_DUP_ENTRY')) this.notif.showError('', 'Discord or Scoresaber account already in use');
         }
     }

@@ -102,7 +102,7 @@ export class OverlayComponent implements AfterViewInit {
                 if (event.Type == EventType.PlayerUpdated) {
                     let playerInfo: Player = event.ChangedObject;
                     // console.log(playerInfo, this.matchData);
-                    console.log(playerInfo.UserId == this.matchData.p1.ssId || playerInfo.UserId == this.matchData.p2.ssId)
+                    // console.log(playerInfo.UserId == this.matchData.p1.ssId || playerInfo.UserId == this.matchData.p2.ssId)
                     if (!(playerInfo.UserId == this.matchData.p1.ssId || playerInfo.UserId == this.matchData.p2.ssId)) return;
 
                     let curPlayer = this.matchData.p1.ssId == playerInfo.UserId ? this.matchData.p1 : this.matchData.p2;
@@ -223,14 +223,14 @@ export class OverlayComponent implements AfterViewInit {
             let stream1 = document.getElementById(`p1Stream`);
             let href1 = stream1.getAttribute('href').replace("#", '');
             let img1 = document.getElementById(href1);
-            let con1 = document.createElementNS("http://www.w3.org/2000/svg",'foreignObject');
+            let con1 = document.createElementNS("http://www.w3.org/2000/svg", 'foreignObject');
             con1.setAttribute('x', stream1.getAttribute('x'));
             con1.setAttribute('y', stream1.getAttribute('y'));
             con1.setAttribute('width', img1.getAttribute('width'));
             con1.setAttribute('height', img1.getAttribute('height'));
             let div1 = document.createElement('div');
             div1.classList.add('twitch');
-            div1.style.width = `${1.7778*(+img1.getAttribute('width'))}px`;
+            div1.style.width = `${1.7778 * (+img1.getAttribute('width'))}px`;
             div1.id = 'p1Twitch';
             con1.appendChild(div1);
             this.insertAfter(con1, stream1);
@@ -247,7 +247,7 @@ export class OverlayComponent implements AfterViewInit {
     pause() {
         this.player1.pause();
     }
-    
+
     play() {
         this.player1.play();
     }

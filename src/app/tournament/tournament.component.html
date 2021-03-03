@@ -45,7 +45,7 @@
                 </div>
 
                 <p class="card-text">
-                    *All times are in you local timezone <br> Date: {{ tournament.startDate | date: 'd/MM/yy, h:mm a'}}
+                    *All times are in your local timezone <br> Date: {{ tournament.startDate | date: 'd/MM/yy, h:mm a'}}
                     -> {{ tournament.endDate | date: 'd/MM/yy, h:mm a'}}<br />
                     <span *ngIf="tournament.info != null; else noPrize">
                         Prize pool: <span [innerHTML]="tournament.prize | linkify: linkOptions"></span> <br />

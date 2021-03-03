@@ -4,7 +4,7 @@ export interface signedUp {
 
 export interface staff {
     discordId: string;
-    ssId: string;
+    ssId?: string;
     name: string;
     twitchName: string;
     avatar: string;
@@ -18,6 +18,6 @@ export interface staff {
 }
 
 export interface role {
-    id: number, 
+    id: number,
     role: string
 }

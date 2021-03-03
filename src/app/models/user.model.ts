@@ -1,6 +1,6 @@
 export class User {
     discordId: string;
-    ssId: number;
+    ssId?: number;
     name: string;
     twitchName: string;
     avatar: string;

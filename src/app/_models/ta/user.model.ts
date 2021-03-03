@@ -1,6 +1,6 @@
 export class User {
     discordId: string;
-    ssId: string;
+    ssId?: string;
     name: string;
     twitchName: string;
     avatar: string;
@@ -11,5 +11,5 @@ export class User {
     roleIds?: number[];
     roleNames?: string[];
     region?: string;
-    permissions: number; 
+    permissions: number;
 }

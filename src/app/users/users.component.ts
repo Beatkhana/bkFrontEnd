@@ -150,7 +150,7 @@ export class editUserDialog implements OnInit {
                 Validators.required
             ]],
             ssId: [this.data.selUser.ssId, [
-                Validators.required
+                // Validators.required
             ]],
             name: [this.data.selUser.name, [
                 Validators.required

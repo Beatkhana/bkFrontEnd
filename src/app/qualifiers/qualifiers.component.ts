@@ -16,63 +16,68 @@ export class QualifiersComponent implements OnInit {
 	loading = true;
 
 	pools: any = [];
+	leaderboards = {};
+	qualsPool;
 
 
 	constructor(public http: HttpClient) { }
 
 	async ngOnInit(): Promise<void> {
 		let pools = await this.http.get(`api/tournament/${this.tournament.tournamentId}/map-pools`).toPromise();
-		let qualsPool = Object.values(pools).find(x => x.is_qualifiers == 1);
-
-		let leaderboards = {};
-
+		this.qualsPool = Object.values(pools).find(x => x.is_qualifiers == 1);
 
 		this.getQuals()
 			.subscribe(res => {
 				this.qualsScores = res;
 				for (const user of this.qualsScores) {
-					if(user.avatar.includes('api') || user.avatar.includes('oculus')) {
-                        user.avatar = "https://new.scoresaber.com" + user.avatar;
-                    } else {
-                        user.avatar = `/${user.avatar}` + (user.avatar.substring(0, 2) == 'a_' ? '.gif' : '.webp');
-                        user.avatar = `https://cdn.discordapp.com/avatars/${user.discordId}${ user.avatar }`
-                    }
+					if (user.avatar.includes('api') || user.avatar.includes('oculus')) {
+						user.avatar = "https://new.scoresaber.com" + user.avatar;
+					} else {
+						user.avatar = `/${user.avatar}` + (user.avatar.substring(0, 2) == 'a_' ? '.gif' : '.webp');
+						user.avatar = `https://cdn.discordapp.com/avatars/${user.discordId}${user.avatar}`
+					}
 					for (const score of user.scores) {
-						if (qualsPool.songs.find(x => x.hash == score.songHash)?.numNotes != 0) {
-							score.percentage = score.score / (qualsPool.songs.find(x => x.hash == score.songHash)?.numNotes * 920 - 7245)
+						if (this.qualsPool.songs.find(x => x.hash == score.songHash)?.numNotes != 0) {
+							score.percentage = score.score / (this.qualsPool.songs.find(x => x.hash == score.songHash)?.numNotes * 920 - 7245)
 						} else {
 							score.percentage = 0;
 						}
 						// score.score = Math.round(score.score / 2);
-						if (score.songHash in leaderboards) {
-							leaderboards[score.songHash].push({
+						if (score.songHash in this.leaderboards) {
+							this.leaderboards[score.songHash].push({
 								discordId: user.discordId,
-								score: score.score
+								name: user.name,
+								avatar: user.avatar,
+								score: score.score,
+								percentage: (score.percentage * 100).toFixed(2)
 							});
 						} else {
-							leaderboards[score.songHash] = [{
+							this.leaderboards[score.songHash] = [{
 								discordId: user.discordId,
-								score: score.score
+								name: user.name,
+								avatar: user.avatar,
+								score: score.score,
+								percentage: (score.percentage * 100).toFixed(2)
 							}];
 						}
 					}
-					
+
 				}
 				// leadboards.sort((a,b) => a.score)
-				for (const leaderboard of Object.keys(leaderboards)) {
-					leaderboards[leaderboard].sort((a, b) => b.score - a.score);
+				for (const leaderboard of Object.keys(this.leaderboards)) {
+					this.leaderboards[leaderboard].sort((a, b) => b.score - a.score);
 				}
 				for (const user of this.qualsScores) {
 					for (const score of user.scores) {
-						score.position = leaderboards[score.songHash].findIndex(x => x.discordId == user.discordId);
+						score.position = this.leaderboards[score.songHash].findIndex(x => x.discordId == user.discordId);
 					}
-					user.scores.sort((a,b) => (a.songHash > b.songHash) ? 1 : ((a.songHash < b.songHash) ? -1 : 0));
+					user.scores.sort((a, b) => (a.songHash > b.songHash) ? 1 : ((a.songHash < b.songHash) ? -1 : 0));
 				}
 
 				if (this.qualsScores.length == 1) {
 					let sumA = this.sumProperty(this.qualsScores[0].scores, 'score');
 					let sumAPer = this.sumProperty(this.qualsScores[0].scores, 'percentage');
-					this.qualsScores[0].avgPercentage = isNaN(sumAPer / qualsPool.songs.length * 100) ? 0 : (sumAPer / qualsPool.songs.length * 100).toFixed(2);
+					this.qualsScores[0].avgPercentage = isNaN(sumAPer / this.qualsPool.songs.length * 100) ? 0 : (sumAPer / this.qualsPool.songs.length * 100).toFixed(2);
 					this.qualsScores[0].scoreSum = sumA;
 				}
 
@@ -81,8 +86,8 @@ export class QualifiersComponent implements OnInit {
 					let sumB = this.sumProperty(b.scores, 'score');
 					let sumAPer = this.sumProperty(a.scores, 'percentage');
 					let sumBPer = this.sumProperty(b.scores, 'percentage');
-					a.avgPercentage = isNaN(sumAPer / qualsPool.songs.length * 100) ? 0 : (sumAPer / qualsPool.songs.length * 100).toFixed(2);
-					b.avgPercentage = isNaN(sumBPer / qualsPool.songs.length * 100) ? 0 : (sumBPer / qualsPool.songs.length * 100).toFixed(2);
+					a.avgPercentage = isNaN(sumAPer / this.qualsPool.songs.length * 100) ? 0 : (sumAPer / this.qualsPool.songs.length * 100).toFixed(2);
+					b.avgPercentage = isNaN(sumBPer / this.qualsPool.songs.length * 100) ? 0 : (sumBPer / this.qualsPool.songs.length * 100).toFixed(2);
 					a.scoreSum = sumA;
 					b.scoreSum = sumB;
 					if (b.avgPercentage == a.avgPercentage) {
@@ -119,6 +124,10 @@ export class QualifiersComponent implements OnInit {
 
 	async getPools() {
 		return await this.http.get(`api/tournament/${this.tournament.tournamentId}/map-pools`).toPromise();
+	}
+
+	findSong(hash: string) {
+		return this.qualsPool.songs.find(x => x.hash == hash);
 	}
 
 	sumProperty(items, prop) {

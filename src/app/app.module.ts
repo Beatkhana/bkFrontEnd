@@ -13,7 +13,7 @@ import { editProfileDialog, ProfileComponent } from './profile/profile.component
 import { UserComponent } from './user/user.component';
 
 
-import { ReactiveFormsModule } from "@angular/forms";
+import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { MatInputModule } from "@angular/material/input";
@@ -148,6 +148,7 @@ import { AddPlayerComponent } from './_modals/add-player/add-player.component';
         NgxMatDatetimePickerModule,
         NgxMatTimepickerModule,
         NgxMatNativeDateModule,
+        FormsModule
     ],
     providers: [],
     bootstrap: [AppComponent]

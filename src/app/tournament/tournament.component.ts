@@ -17,6 +17,7 @@ import { GameOptions } from '../_models/ta/gameplayModifiers';
 import { PlayerOptions } from '../_models/ta/playerSpecificSettnigs';
 import { Characteristic } from '../_models/ta/characteristic';
 import { BeatmapDifficulty } from '../_models/ta/match';
+import { qualifierSession } from '../_models/qualifiers';
 
 @Component({
     selector: 'app-tournament',
@@ -542,7 +543,8 @@ export class tournamentSettingsDialog implements OnInit {
             ta_url: this.data.tournament.ta_url,
             ta_password: this.data.tournament.ta_password,
             qual_attempts: this.data.tournament.qual_attempts,
-            ta_event_flags: this.data.tournament.ta_event_flags
+            ta_event_flags: this.data.tournament.ta_event_flags,
+            quals_method: this.data.tournament.quals_method
         });
         this.showQualsLimit = this.data.tournament.qual_attempts !== 0;
         this.ws.subscribe(
@@ -554,6 +556,7 @@ export class tournamentSettingsDialog implements OnInit {
             err => console.log(err)
         );
         this.ws.next({ setTournament: this.data.tournament.tournamentId });
+        this.qualSessions = await this.http.get<qualifierSession[]>(`/api/tournament/${this.data.tournament.tournamentId}/qualifiers/sessions`).toPromise();
 
         let pools = await this.http.get(`/api/tournament/${this.data.tournament.tournamentId}/map-pools`).toPromise();
         this.qualsPool = Object.values(pools).find(x => x.is_qualifiers == 1);
@@ -633,6 +636,8 @@ export class tournamentSettingsDialog implements OnInit {
                 if (song.difficulty) song.difficulty = song.difficulty.toString();
             }
         }
+
+
     }
 
     titleCase(str): string {
@@ -658,6 +663,10 @@ export class tournamentSettingsDialog implements OnInit {
 
     get quals() {
         return this.settingsForm.get('has_quals');
+    }
+
+    get qualsMethod() {
+        return this.settingsForm.get('quals_method').value;
     }
 
     get type() {
@@ -713,6 +722,13 @@ export class tournamentSettingsDialog implements OnInit {
         } catch (error) {
             console.error(error);
         }
+        if (this.newQualSessions.length > 0) {
+            try {
+                await this.http.post(`/api/tournament/${this.data.tournament.tournamentId}/qualifiers/sessions/add`, this.newQualSessions).toPromise();
+            } catch (error) {
+                console.error(error);
+            }
+        }
         this.updateSettings(info)
             .subscribe(async data => {
                 if (!data.flag) {
@@ -748,10 +764,28 @@ export class tournamentSettingsDialog implements OnInit {
         };
     }
 
-    private multiple8(control: FormControl): ValidationErrors | null {
-        const selection: any = control.value;
-        if (selection % 8 == 0) return null;
-        return { requireMatch: true };
+    qualSessions: qualifierSession[] = [];
+    newQualSessions: qualifierSession[] = [];
+    newQualsTime = new FormControl();
+    newQualsCap: number = 15;
+
+    async removeSession(session: qualifierSession) {
+        console.log(session);
+        if (session.id) {
+            // delete request
+            await this.http.delete(`/api/tournament/${this.data.tournament.tournamentId}/qualifiers/sessions/delete/${session.id}`).toPromise();
+        }
+        this.qualSessions.splice(this.qualSessions.findIndex(x => x === session), 1);
+        this.newQualSessions.splice(this.newQualSessions.findIndex(x => x === session), 1);
+    }
+
+    createSession() {
+        this.qualSessions.push({ time: this.newQualsTime.value, limit: this.newQualsCap, allocated: 0, tournamentId: this.data.tournament.tournamentId });
+        this.newQualSessions.push({ time: this.newQualsTime.value, limit: this.newQualsCap, allocated: 0, tournamentId: this.data.tournament.tournamentId });
+    }
+
+    displayTime(dateString: string) {
+        return new Date(dateString).toLocaleString();
     }
 }
 

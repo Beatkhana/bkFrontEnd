@@ -1,8 +1,8 @@
 <h1>Tournament Settings</h1>
 <form [formGroup]="settingsForm" novalidate (ngSubmit)="onSubmit()">
-    <!-- Value: {{ settingdForm.value | json }} -->
+  <!-- Value: {{ settingsForm.value | json }} -->
 
-    <!-- <br>
+  <!-- <br>
     <br>
 
 
@@ -12,236 +12,289 @@
     <br><br> -->
 
 
-    <mat-tab-group dynamicHeight>
-        <mat-tab label="General">
-            <br>
-            <mat-checkbox formControlName="public_signups">
-                Public Signups?
-            </mat-checkbox>
-            <br>
-            <mat-checkbox formControlName="public">
-                Is public?
-            </mat-checkbox>
-            <br>
-            <mat-checkbox formControlName="has_quals" [attr.disabled]="!taConnected">
-                Has qualifiers? <span *ngIf="!taConnected">Requires TA Connection</span>
-            </mat-checkbox>
-            <br>
-            <mat-checkbox formControlName="has_bracket">
-                Has Bracket?
-            </mat-checkbox>
-            <br>
-            <mat-checkbox formControlName="has_map_pool">
-                Has Map Pool?
-            </mat-checkbox>
-        </mat-tab>
+  <mat-tab-group dynamicHeight>
+    <mat-tab label="General">
+      <br>
+      <mat-checkbox formControlName="public_signups">
+        Public Signups?
+      </mat-checkbox>
+      <br>
+      <mat-checkbox formControlName="public">
+        Is public?
+      </mat-checkbox>
+      <br>
+      <mat-checkbox formControlName="has_quals">
+        Has qualifiers?
+      </mat-checkbox>
+      <br>
+      <mat-checkbox formControlName="has_bracket">
+        Has Bracket?
+      </mat-checkbox>
+      <br>
+      <mat-checkbox formControlName="has_map_pool">
+        Has Map Pool?
+      </mat-checkbox>
+    </mat-tab>
 
-        <mat-tab label="Tournament Staging">
-            <br>
-            <mat-form-field appearance="fill">
-                <mat-label>State</mat-label>
-                <mat-select formControlName="state">
-                    <mat-option value="awaiting_start">Awaiting Start</mat-option>
-                    <mat-option value="qualifiers" *ngIf="quals.value == true">Qualifiers</mat-option>
-                    <mat-option value="main_stage">Main Stage</mat-option>
-                    <mat-option value="archived">Archived</mat-option>
-                </mat-select>
+    <mat-tab label="Tournament Staging">
+      <br>
+      <mat-form-field appearance="fill">
+        <mat-label>State</mat-label>
+        <mat-select formControlName="state">
+          <mat-option value="awaiting_start">Awaiting Start</mat-option>
+          <mat-option value="qualifiers" *ngIf="quals.value == true">Qualifiers</mat-option>
+          <mat-option value="main_stage">Main Stage</mat-option>
+          <mat-option value="archived">Archived</mat-option>
+        </mat-select>
+      </mat-form-field>
+      <br>
+      <mat-form-field appearance="fill">
+        <mat-label>Type</mat-label>
+        <mat-select formControlName="type">
+          <mat-option value="single_elim">Single Elimination</mat-option>
+          <mat-option value="double_elim">Double Elimination</mat-option>
+          <mat-option value="round_robin">Round Robin</mat-option>
+          <mat-option value="battle_royale">Battle Royale</mat-option>
+        </mat-select>
+      </mat-form-field>
+      <br>
+      <ng-container *ngIf="type.value == 'battle_royale'">
+        <mat-form-field appearance="fill">
+          <mat-label>Player sort order</mat-label>
+          <mat-select formControlName="sort_method">
+            <mat-option value="globalRank">Global Rank</mat-option>
+            <mat-option value="date">Sign Up Order</mat-option>
+            <mat-option value="random">Random</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <br>
+        <mat-form-field class="fill">
+          <input matInput placeholder="Number of players in tournament" formControlName="standard_cutoff">
+        </mat-form-field>
+      </ng-container>
+
+    </mat-tab>
+
+    <mat-tab label="Signup">
+      <br>
+      <mat-checkbox formControlName="show_signups">
+        Publicly show signups?
+      </mat-checkbox>
+      <br>
+      <mat-checkbox formControlName="comment_required">
+        Comment Required?
+      </mat-checkbox>
+      <br><br>
+      <mat-form-field class="fill">
+        <input matInput placeholder="Sign up Comment Label" formControlName="signup_comment">
+      </mat-form-field>
+      <br>
+      <mat-form-field class="fill">
+        <input matInput placeholder="Whitelisted countries (country code seperated by commas e.g. au, gb, us)"
+          formControlName="countries">
+      </mat-form-field>
+    </mat-tab>
+
+    <mat-tab label="Qualifiers" *ngIf="quals.value == true">
+      <br>
+      <h2>Qualifiers Method</h2>
+
+      <mat-radio-group aria-label="Qualifiers Method" class="radio" formControlName="quals_method">
+        <mat-radio-button class="radio-button" value="ta_quals">TA Qualifiers</mat-radio-button>
+        <mat-radio-button class="radio-button" value="live_quals">Live Qualifiers</mat-radio-button>
+      </mat-radio-group>
+      <ng-container *ngIf="taConnected && qualsMethod == 'ta_quals'">
+        <p>
+          Qualifiers will be run through the Qualifiers tab in Tournament Assistant. The name of the even will be
+          "{{data.tournament.name}} Qualifiers". <br> The event will only be available in TA while the tournament
+          stage is set to Qualifiers.
+          <br>
+          <ng-container *ngIf="!qualsPool">Before setting up qualifiers ensure that you have created a map pool
+            marked as the qualifiers pool. (*Note: only one pool can be marked as the qualifiers pool)
+          </ng-container>
+        </p>
+        <ng-container *ngIf="qualsPool">
+          <br>
+          <mat-form-field class="fill">
+            <input matInput placeholder="Cut Off point for qualifiers" formControlName="quals_cutoff">
+          </mat-form-field>
+          <br>
+          <mat-checkbox formControlName="show_quals">
+            Show Qualifiers
+          </mat-checkbox>
+          <br>
+          <mat-checkbox [checked]="showQualsLimit" (change)="showQualsLimit = !showQualsLimit">
+            Limit Attempts
+          </mat-checkbox>
+          <br>
+          <ng-container *ngIf="showQualsLimit">
+            *Note: 0 attempts means there is no limit.
+            <mat-form-field>
+              <input matInput placeholder="Number of attempts allowed" formControlName="qual_attempts">
             </mat-form-field>
+          </ng-container>
+          <div style="margin-top:15px">
+            <h3>TA Settings</h3>
             <br>
-            <mat-form-field appearance="fill">
-                <mat-label>Type</mat-label>
-                <mat-select formControlName="type">
-                    <mat-option value="single_elim">Single Elimination</mat-option>
-                    <mat-option value="double_elim">Double Elimination</mat-option>
-                    <mat-option value="round_robin">Round Robin</mat-option>
-                    <mat-option value="battle_royale">Battle Royale</mat-option>
-                </mat-select>
-            </mat-form-field>
+            <p>
+              Base Settings:
+            </p>
+            <div class="checkboxes">
+              <mat-checkbox *ngFor="let setting of baseTaSettings" [checked]="setting.isSelected"
+                (change)="setting.isSelected = !setting.isSelected">
+                {{setting.name}}
+              </mat-checkbox>
+            </div>
             <br>
-            <ng-container *ngIf="type.value == 'battle_royale'">
-                <mat-form-field appearance="fill">
-                    <mat-label>Player sort order</mat-label>
-                    <mat-select formControlName="sort_method">
-                        <mat-option value="globalRank">Global Rank</mat-option>
-                        <mat-option value="date">Sign Up Order</mat-option>
-                        <mat-option value="random">Random</mat-option>
+
+            <p>
+              Maps
+            </p>
+            <section>
+              <details *ngFor="let song of qualsPool.songs">
+                <summary>
+                  <img class="songImg" src="https://scoresaber.com/imports/images/songs/{{song.hash}}.png">
+                  <div>
+                    <a href="{{song.ssLink}}" target="_blank">
+                      {{song.name}} - {{song.songAuthor}}
+                    </a>
+                    <span class="mapperName">[{{song.levelAuthor}}]</span>
+                  </div>
+                </summary>
+                <div *ngIf="song.characteristics">
+                  <mat-form-field>
+                    <mat-label>Characteristic</mat-label>
+                    <mat-select [(value)]="song.selectedCharacteristic">
+                      <mat-option *ngFor="let characteristic of song.characteristics"
+                        value="{{characteristic.SerializedName}}">{{characteristic.SerializedName}}
+                      </mat-option>
                     </mat-select>
-                </mat-form-field>
-                <br>
-                <mat-form-field class="fill">
-                    <input matInput placeholder="Number of players in tournament" formControlName="standard_cutoff">
-                </mat-form-field>
-            </ng-container>
-
-        </mat-tab>
-
-        <mat-tab label="Signup">
-            <br>
-            <mat-checkbox formControlName="show_signups">
-                Publicly show signups?
-            </mat-checkbox>
-            <br>
-            <mat-checkbox formControlName="comment_required">
-                Comment Required?
-            </mat-checkbox>
-            <br><br>
-            <mat-form-field class="fill">
-                <input matInput placeholder="Sign up Comment Label" formControlName="signup_comment">
-            </mat-form-field>
-            <br>
-            <mat-form-field class="fill">
-                <input matInput placeholder="Whitelisted countries (country code seperated by commas e.g. au, gb, us)"
-                    formControlName="countries">
-            </mat-form-field>
-        </mat-tab>
-
-        <mat-tab label="Qualifiers" *ngIf="quals.value == true && taConnected">
-            <br>
-            <p>
-                Qualifiers will be run through the Qualifiers tab in Tournament Assistant. The name of the even will be
-                "{{data.tournament.name}} Qualifiers". <br> The event will only be available in TA while the tournament
-                stage is set to Qualifiers.
-                <br>
-                <ng-container *ngIf="!qualsPool">Before setting up qualifiers ensure that you have created a map pool
-                    marked as the qualifiers pool. (*Note: only one pool can be marked as the qualifiers pool)
-                </ng-container>
-            </p>
-            <ng-container *ngIf="qualsPool">
-                <br>
-                <mat-form-field class="fill">
-                    <input matInput placeholder="Cut Off point for qualifiers" formControlName="quals_cutoff">
-                </mat-form-field>
-                <br>
-                <mat-checkbox formControlName="show_quals">
-                    Show Qualifiers
-                </mat-checkbox>
-                <br>
-                <mat-checkbox [checked]="showQualsLimit" (change)="showQualsLimit = !showQualsLimit">
-                    Limit Attempts
-                </mat-checkbox>
-                <br>
-                <ng-container *ngIf="showQualsLimit">
-                    *Note: 0 attempts means there is no limit.
-                    <mat-form-field>
-                        <input matInput placeholder="Number of attempts allowed" formControlName="qual_attempts">
-                    </mat-form-field>
-                </ng-container>
-                <div style="margin-top:15px">
-                    <h3>TA Settings</h3>
-                    <br>
-                    <p>
-                        Base Settings:
-                    </p>
+                  </mat-form-field>
+                  <mat-form-field *ngIf="song.selectedCharacteristic">
+                    <mat-label>Difficulty</mat-label>
+                    <mat-select [(value)]="song.difficulty">
+                      <mat-option *ngFor="let diff of getSongDiffs(song)" value="{{diff}}">
+                        {{diffString(diff)}}</mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                  <br>
+                  <div style="display: flex; flex-direction: row;">
                     <div class="checkboxes">
-                        <mat-checkbox *ngFor="let setting of baseTaSettings" [checked]="setting.isSelected"
-                            (change)="setting.isSelected = !setting.isSelected">
-                            {{setting.name}}
-                        </mat-checkbox>
+                      <mat-checkbox *ngFor="let setting of song.mapOptions" [checked]="setting.isSelected"
+                        (change)="setting.isSelected = !setting.isSelected">
+                        {{setting.name}}
+                      </mat-checkbox>
                     </div>
-                    <br>
-
-                    <p>
-                        Maps
-                    </p>
-                    <section>
-                        <details *ngFor="let song of qualsPool.songs">
-                            <summary>
-                                <img class="songImg"
-                                    src="https://scoresaber.com/imports/images/songs/{{song.hash}}.png">
-                                <div>
-                                    <a href="{{song.ssLink}}" target="_blank">
-                                        {{song.name}} - {{song.songAuthor}}
-                                    </a>
-                                    <span class="mapperName">[{{song.levelAuthor}}]</span>
-                                </div>
-                            </summary>
-                            <div *ngIf="song.characteristics">
-                                <mat-form-field>
-                                    <mat-label>Characteristic</mat-label>
-                                    <mat-select [(value)]="song.selectedCharacteristic">
-                                        <mat-option *ngFor="let characteristic of song.characteristics"
-                                            value="{{characteristic.SerializedName}}">{{characteristic.SerializedName}}
-                                        </mat-option>
-                                    </mat-select>
-                                </mat-form-field>
-                                <mat-form-field *ngIf="song.selectedCharacteristic">
-                                    <mat-label>Difficulty</mat-label>
-                                    <mat-select [(value)]="song.difficulty">
-                                        <mat-option *ngFor="let diff of getSongDiffs(song)" value="{{diff}}">
-                                            {{diffString(diff)}}</mat-option>
-                                    </mat-select>
-                                </mat-form-field>
-                                <br>
-                                <div style="display: flex; flex-direction: row;">
-                                    <div class="checkboxes">
-                                        <mat-checkbox *ngFor="let setting of song.mapOptions"
-                                            [checked]="setting.isSelected"
-                                            (change)="setting.isSelected = !setting.isSelected">
-                                            {{setting.name}}
-                                        </mat-checkbox>
-                                    </div>
-                                    <div class="checkboxes">
-                                        <mat-checkbox *ngFor="let setting of song.pOptions"
-                                            [checked]="setting.isSelected"
-                                            (change)="setting.isSelected = !setting.isSelected">
-                                            {{setting.name}}
-                                        </mat-checkbox>
-                                    </div>
-                                </div>
-                            </div>
-                        </details>
-                    </section>
+                    <div class="checkboxes">
+                      <mat-checkbox *ngFor="let setting of song.pOptions" [checked]="setting.isSelected"
+                        (change)="setting.isSelected = !setting.isSelected">
+                        {{setting.name}}
+                      </mat-checkbox>
+                    </div>
+                  </div>
                 </div>
+              </details>
+            </section>
+          </div>
+        </ng-container>
+      </ng-container>
+      <ng-container *ngIf="!taConnected && qualsMethod == 'ta_quals'">
+        <p>
+          This requires a TA connetion, please set it up under the "Tournament Assistant" tab.
+        </p>
+      </ng-container>
+      <ng-container *ngIf="qualsMethod == 'live_quals'">
+        <p>
+          Current Sessions:
+        </p>
+        <p *ngIf="qualSessions.length == 0">
+          There currently aren't any sessions.
+        </p>
+        <div class="sessions">
+          <div class="session" *ngFor="let session of qualSessions">
+            <span>
+              {{displayTime(session.time)}}
+            </span>
+            <span>
+              {{session.allocated}}/{{session.limit}}
+            </span>
+            <span>
+              <button mat-button color="warn" type="button" (click)="removeSession(session)">Remove</button>
+            </span>
+          </div>
+        </div>
+        <!-- <ul>
+          <li *ngFor="let session of qualSessions">
+            {{session.time}} - {{session.cap}}
+          </li>
+        </ul> -->
+        <br>
+        <p>Create Session</p>
+        <mat-form-field style="width: 60%;">
+          <mat-label>Start Date (local)</mat-label>
 
-            </ng-container>
-        </mat-tab>
+          <input matInput [ngxMatDatetimePicker]="picker" readonly [formControl]="newQualsTime" (focus)="picker.open()"
+            (click)="picker.open()">
+          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+          <ngx-mat-datetime-picker #picker [showSeconds]="false" [defaultTime]="[12,0,0]">
+          </ngx-mat-datetime-picker>
+        </mat-form-field>
+        &nbsp;
+        <mat-form-field style="width: 20%;">
+          <input matInput placeholder="Player Limit" [value]="newQualsCap" (change)="newQualsCap=$event.target.value">
+        </mat-form-field>
+        &nbsp;
+        <button mat-stroked-button color="primary" type="button" (click)="createSession()"
+          [disabled]="!newQualsTime.value">Add session</button>
+      </ng-container>
+    </mat-tab>
 
-        <mat-tab label="Bracket" *ngIf="bracket.value == true">
-            <br>
-            <mat-form-field class="fill">
-                <input matInput placeholder="Number of players in bracket" formControlName="bracket_limit">
-                <mat-error *ngIf="limit.invalid && limit.touched">
-                    Must be a multiple of 8
-                </mat-error>
-            </mat-form-field>
-            <br>
-            <mat-form-field appearance="fill">
-                <mat-label>Player sort order</mat-label>
-                <mat-select formControlName="bracket_sort_method">
-                    <mat-option value="globalRank">Global Rank</mat-option>
-                    <mat-option value="tournamentRank">Tournament Rank</mat-option>
-                    <mat-option value="seed" *ngIf="quals.value == true">Qualifiers Seed</mat-option>
-                    <mat-option value="random">Random</mat-option>
-                </mat-select>
-            </mat-form-field>
-        </mat-tab>
+    <mat-tab label="Bracket" *ngIf="bracket.value == true">
+      <br>
+      <mat-form-field class="fill">
+        <input matInput placeholder="Number of players in bracket" formControlName="bracket_limit">
+        <mat-error *ngIf="limit.invalid && limit.touched">
+          Must be a multiple of 8
+        </mat-error>
+      </mat-form-field>
+      <br>
+      <mat-form-field appearance="fill">
+        <mat-label>Player sort order</mat-label>
+        <mat-select formControlName="bracket_sort_method">
+          <mat-option value="globalRank">Global Rank</mat-option>
+          <mat-option value="tournamentRank">Tournament Rank</mat-option>
+          <mat-option value="seed" *ngIf="quals.value == true">Qualifiers Seed</mat-option>
+          <mat-option value="random">Random</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </mat-tab>
 
-        <mat-tab label="Tournament Assistant">
-            <br>
-            <p>
-                This currently only works with compatable TA servers, <br> TA server must also be configured with a
-                valid password.
-                <br>
-                <br> Current Status:
-                <span *ngIf="taConnected" style="color: #89C057">Connected</span>
-                <span *ngIf="!taConnected" style="color: #B33A3A">Not Connected</span>
-            </p>
-            <br>
-            <mat-form-field class="fill">
-                <input matInput placeholder="Tournament Assistant URL:PORT" formControlName="ta_url">
-            </mat-form-field>
-            <br>
-            <mat-form-field class="fill">
-                <input matInput placeholder="Tournament Assistant Password" formControlName="ta_password">
-            </mat-form-field>
-            <label>Overlay SVG</label><br>
-            <input type="file" (change)="onFileChanged($event)" #fileInput accept="image/svg+xml">
-        </mat-tab>
-    </mat-tab-group>
+    <mat-tab label="Tournament Assistant">
+      <br>
+      <p>
+        This currently only works with compatable TA servers, <br> TA server must also be configured with a
+        valid password.
+        <br>
+        <br> Current Status:
+        <span *ngIf="taConnected" style="color: #89C057">Connected</span>
+        <span *ngIf="!taConnected" style="color: #B33A3A">Not Connected</span>
+      </p>
+      <br>
+      <mat-form-field class="fill">
+        <input matInput placeholder="Tournament Assistant URL:PORT" formControlName="ta_url">
+      </mat-form-field>
+      <br>
+      <mat-form-field class="fill">
+        <input matInput placeholder="Tournament Assistant Password" formControlName="ta_password">
+      </mat-form-field>
+      <label>Overlay SVG</label><br>
+      <input type="file" (change)="onFileChanged($event)" #fileInput accept="image/svg+xml">
+    </mat-tab>
+  </mat-tab-group>
 
-    <div mat-dialog-actions>
-        <button mat-raised-button color="warn" mat-dialog-close>Close</button>
-        <button mat-raised-button color="primary" type="submit" [disabled]="settingsForm.invalid">Update
-            Settings</button>
-    </div>
+  <div mat-dialog-actions>
+    <button mat-raised-button color="warn" mat-dialog-close>Close</button>
+    <button mat-raised-button color="primary" type="submit" [disabled]="settingsForm.invalid">Update
+      Settings</button>
+  </div>
 </form>

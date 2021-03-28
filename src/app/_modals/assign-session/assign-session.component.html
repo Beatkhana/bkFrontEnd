@@ -1,0 +1,26 @@
+<h1>Qualifiers Session</h1>
+<div *ngIf="loading">
+  <img src="/assets/svg/BeatKhana Logo RGB animated.svg" style="display: block;
+          margin-left: auto;
+          margin-right: auto;
+          width: 100px;">
+</div>
+<div class="sessions" *ngIf="!loading">
+  <div class="session" *ngFor="let session of qualSessions">
+    <span>
+      {{displayTime(session.time)}}
+    </span>
+    <span>
+      {{session.allocated}}/{{session.limit}}
+    </span>
+    <span>
+      <button mat-button color="accent" type="button" (click)="selectSession(session)"
+        [disabled]="selectedSession.id == session.id || session.allocated >= session.limit">{{selectedSession.id == session.id ? 'Selected' : 'Select'}}</button>
+    </span>
+  </div>
+</div>
+<div mat-dialog-actions>
+  <button mat-raised-button color="warn" mat-dialog-close>Close</button>
+  <button mat-raised-button color="primary" type="submit" (click)="update()"
+    [disabled]="!selectedSession">Update</button>
+</div>

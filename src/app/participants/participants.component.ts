@@ -10,7 +10,9 @@ import { User } from '../models/user.model';
 import { NotificationService } from '../services/toast.service';
 import { UserAuthService } from '../services/user-auth.service';
 import { AddPlayerComponent } from '../_modals/add-player/add-player.component';
+import { AssignSessionComponent } from '../_modals/assign-session/assign-session.component';
 import { participant } from '../_models/participants';
+import { qualifierSession } from '../_models/qualifiers';
 
 @Component({
     selector: 'app-participants',
@@ -37,6 +39,8 @@ export class ParticipantsComponent implements OnInit {
         }
     }
 
+    userSession: qualifierSession;
+
     constructor(public http: HttpClient, public dialog: MatDialog, private notif: NotificationService, public cd: ChangeDetectorRef, public router: Router, private userS: UserAuthService) { }
 
     ngOnInit(): void {
@@ -60,8 +64,16 @@ export class ParticipantsComponent implements OnInit {
         this.nonQualified = info.filter(x => x.seed == 0);
         this.participants = info;
         this.sortParticipants();
-        // console.log(this.nonQualified);
+        try {
+            this.userSession = await this.http.get<qualifierSession>(`/api/tournament/${this.tournament.tournamentId}/qualifiers/sessions/current`).toPromise();
+        } catch (error) {
+
+        }
         this.loading = false;
+    }
+
+    displayTime(dateString: string) {
+        return new Date(dateString).toLocaleString();
     }
 
     sortParticipants() {
@@ -212,6 +224,29 @@ export class ParticipantsComponent implements OnInit {
                     let userIndex = this.participants.findIndex(x => x.participantId == data.participantId);
                     // console.log(this.participants[userIndex])
                     this.participants[userIndex] = { ...this.participants[userIndex], ...data }
+                    // console.log(this.participants[userIndex])
+                    // console.log(data)
+                }
+            });
+    }
+
+    updateQualSession() {
+        const dialog = this.dialog.open(AssignSessionComponent, {
+            minWidth: '60vw',
+            maxHeight: '90vh',
+            maxWidth: '95vw',
+            data: {
+                tournament: this.tournament,
+                session: this.userSession
+            }
+        });
+
+        dialog.afterClosed()
+            .subscribe(data => {
+                if (data) {
+                    // let userIndex = this.participants.findIndex(x => x.participantId == data.participantId);
+                    // // console.log(this.participants[userIndex])
+                    // this.participants[userIndex] = { ...this.participants[userIndex], ...data }
                     // console.log(this.participants[userIndex])
                     // console.log(data)
                 }

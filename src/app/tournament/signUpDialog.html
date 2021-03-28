@@ -1,17 +1,40 @@
 <h1>Sign up</h1>
-<form [formGroup]="signUpForm" novalidate (ngSubmit)="onSubmit()">
-    <!-- Value: {{ signUpForm.value | json }} -->
-    <br>
-    <mat-form-field>
-        <mat-label>{{signUpComment}}</mat-label>
-        <textarea matInput formControlName="comment"></textarea>
-        <mat-error *ngIf="comment.invalid && comment.touched">
-            This tournament requires you to provide: {{signUpComment}} in order to sign up
-        </mat-error>
-    </mat-form-field>
+<div *ngIf="loading">
+  <img src="/assets/svg/BeatKhana Logo RGB animated.svg" style="display: block;
+        margin-left: auto;
+        margin-right: auto;
+        width: 100px;">
+</div>
+<form *ngIf="!loading" [formGroup]="signUpForm" (ngSubmit)="onSubmit()">
+  <!-- Value: {{ signUpForm.value | json }} -->
+  <br>
+  <mat-form-field>
+    <mat-label>{{signUpComment}}</mat-label>
+    <textarea matInput formControlName="comment"></textarea>
+    <mat-error *ngIf="comment.invalid && comment.touched">
+      This tournament requires you to provide: {{signUpComment}} in order to sign up
+    </mat-error>
+  </mat-form-field>
 
-    <div mat-dialog-actions>
-        <button mat-raised-button color="warn" mat-dialog-close>Close</button>
-        <button mat-raised-button color="primary" type="submit" [disabled]="signUpForm.invalid">Sign Up</button>
+  <div class="sessions" *ngIf="data.tournament.quals_method == 'live_quals'">
+    <div class="session" *ngFor="let session of qualSessions">
+      <span>
+        {{displayTime(session.time)}}
+      </span>
+      <span>
+        {{session.allocated}}/{{session.limit}}
+      </span>
+      <span>
+        <button mat-button color="accent" type="button" (click)="selectSession(session)"
+          [disabled]="selectedSession === session || session.allocated >= session.limit">{{selectedSession === session ? 'Selected' : 'Select'}}</button>
+      </span>
     </div>
+  </div>
+
+  <div mat-dialog-actions>
+    <button mat-raised-button color="warn" mat-dialog-close>Close</button>
+    <button mat-raised-button color="primary" type="submit"
+      [disabled]="signUpForm.invalid || (data.tournament.quals_method == 'live_quals' && !selectedSession)">Sign
+      Up</button>
+  </div>
 </form>

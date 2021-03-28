@@ -40,6 +40,7 @@ export class TournamentComponent extends AppComponent implements OnInit {
     isQuals = false;
     isSignedUp = false;
     staffPage = false;
+    sessions: boolean = false;
 
     isAuth = false;
 
@@ -64,6 +65,7 @@ export class TournamentComponent extends AppComponent implements OnInit {
                 this.isQuals = false;
                 this.isSignedUp = false;
                 this.staffPage = false;
+                this.sessions = false;
             } else if (this.router.url.includes('allParticipants')) {
                 this.isSignedUp = true;
                 this.isQuals = false;
@@ -72,6 +74,7 @@ export class TournamentComponent extends AppComponent implements OnInit {
                 this.isMapPool = false;
                 this.staffPage = false;
                 this.isInfo = false;
+                this.sessions = false;
             } else if (this.router.url.includes('bracket')) {
                 this.isBracket = true;
                 this.isMapPool = false;
@@ -80,6 +83,7 @@ export class TournamentComponent extends AppComponent implements OnInit {
                 this.isQuals = false;
                 this.isSignedUp = false;
                 this.staffPage = false;
+                this.sessions = false;
             } else if (this.router.url.includes('participants')) {
                 this.isParticipants = true;
                 this.isBracket = false;
@@ -88,6 +92,7 @@ export class TournamentComponent extends AppComponent implements OnInit {
                 this.isQuals = false;
                 this.isSignedUp = false;
                 this.staffPage = false;
+                this.sessions = false;
             } else if (this.router.url.includes('qualifiers')) {
                 this.isQuals = true;
                 this.isParticipants = false;
@@ -96,6 +101,7 @@ export class TournamentComponent extends AppComponent implements OnInit {
                 this.isInfo = false;
                 this.isSignedUp = false;
                 this.staffPage = false;
+                this.sessions = false;
             } else if (this.router.url.includes('staff')) {
                 this.isMapPool = false;
                 this.isBracket = false;
@@ -104,6 +110,16 @@ export class TournamentComponent extends AppComponent implements OnInit {
                 this.isQuals = false;
                 this.isSignedUp = false;
                 this.staffPage = true;
+                this.sessions = false;
+            } else if (this.router.url.includes('sessions')) {
+                this.isMapPool = false;
+                this.isBracket = false;
+                this.isInfo = false;
+                this.isParticipants = false;
+                this.isQuals = false;
+                this.isSignedUp = false;
+                this.staffPage = false;
+                this.sessions = true;
             } else {
                 this.isMapPool = false;
                 this.isBracket = false;
@@ -112,6 +128,7 @@ export class TournamentComponent extends AppComponent implements OnInit {
                 this.isQuals = false;
                 this.isSignedUp = false;
                 this.staffPage = false;
+                this.sessions = false;
             }
         });
         this.main();
@@ -125,14 +142,16 @@ export class TournamentComponent extends AppComponent implements OnInit {
                 this.isQuals = false;
                 this.isSignedUp = false;
                 this.staffPage = false;
+                this.sessions = false;
             } else if (this.router.url.includes('allParticipants')) {
                 this.isSignedUp = true;
                 this.isQuals = false;
                 this.isParticipants = false;
                 this.isBracket = false;
                 this.isMapPool = false;
-                this.isInfo = false;
                 this.staffPage = false;
+                this.isInfo = false;
+                this.sessions = false;
             } else if (this.router.url.includes('bracket')) {
                 this.isBracket = true;
                 this.isMapPool = false;
@@ -141,6 +160,7 @@ export class TournamentComponent extends AppComponent implements OnInit {
                 this.isQuals = false;
                 this.isSignedUp = false;
                 this.staffPage = false;
+                this.sessions = false;
             } else if (this.router.url.includes('participants')) {
                 this.isParticipants = true;
                 this.isBracket = false;
@@ -149,6 +169,7 @@ export class TournamentComponent extends AppComponent implements OnInit {
                 this.isQuals = false;
                 this.isSignedUp = false;
                 this.staffPage = false;
+                this.sessions = false;
             } else if (this.router.url.includes('qualifiers')) {
                 this.isQuals = true;
                 this.isParticipants = false;
@@ -157,6 +178,7 @@ export class TournamentComponent extends AppComponent implements OnInit {
                 this.isInfo = false;
                 this.isSignedUp = false;
                 this.staffPage = false;
+                this.sessions = false;
             } else if (this.router.url.includes('staff')) {
                 this.isMapPool = false;
                 this.isBracket = false;
@@ -165,6 +187,16 @@ export class TournamentComponent extends AppComponent implements OnInit {
                 this.isQuals = false;
                 this.isSignedUp = false;
                 this.staffPage = true;
+                this.sessions = false;
+            } else if (this.router.url.includes('sessions')) {
+                this.isMapPool = false;
+                this.isBracket = false;
+                this.isInfo = false;
+                this.isParticipants = false;
+                this.isQuals = false;
+                this.isSignedUp = false;
+                this.staffPage = false;
+                this.sessions = true;
             } else {
                 this.isMapPool = false;
                 this.isBracket = false;
@@ -173,6 +205,7 @@ export class TournamentComponent extends AppComponent implements OnInit {
                 this.isQuals = false;
                 this.isSignedUp = false;
                 this.staffPage = false;
+                this.sessions = false;
             }
         });
     }
@@ -801,6 +834,8 @@ export class signUpDialog implements OnInit {
     signUpComment: string = '';
 
     filteredOptions: Observable<any>;
+    qualSessions: qualifierSession[];
+    selectedSession: qualifierSession;
 
     constructor(
         private fb: FormBuilder,
@@ -813,7 +848,11 @@ export class signUpDialog implements OnInit {
 
     }
 
-    ngOnInit() {
+    loading = false;
+
+    async ngOnInit() {
+        this.loading = true;
+        console.log(this.data);
         this.id = this.data.tournament.tournamentId;
         this.signUpComment = this.data.tournament.signup_comment;
         this.signUpForm = this.fb.group({
@@ -824,6 +863,8 @@ export class signUpDialog implements OnInit {
             this.signUpForm.controls['comment'].setValidators([Validators.required]);
             this.signUpForm.controls['comment'].updateValueAndValidity();
         }
+        this.qualSessions = await this.http.get<qualifierSession[]>(`/api/tournament/${this.data.tournament.tournamentId}/qualifiers/sessions`).toPromise();
+        this.loading = false;
     }
 
     get comment() {
@@ -833,6 +874,9 @@ export class signUpDialog implements OnInit {
     async onSubmit() {
         try {
             await this.http.post(`/api/tournament/${this.id}/signUp`, this.signUpForm.value).toPromise();
+            if (this.data.tournament.quals_method == 'live_quals' && this.selectedSession) {
+                await this.http.post(`/api/tournament/${this.id}/qualifiers/sessions/assign`, { sessionId: this.selectedSession.id }).toPromise();
+            }
             this.notif.showInfo('', 'Successfully signed up');
             this.dialogRef.close(true);
         } catch (error) {
@@ -844,6 +888,14 @@ export class signUpDialog implements OnInit {
 
     signUp(data: any): Observable<any> {
         return this.http.post(`/api/tournament/${this.id}/signUp`, data);
+    }
+
+    selectSession(session: qualifierSession) {
+        this.selectedSession = session;
+    }
+
+    displayTime(dateString: string) {
+        return new Date(dateString).toLocaleString();
     }
 }
 

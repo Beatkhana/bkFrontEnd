@@ -66,6 +66,8 @@ import { TournamentStaffComponent } from './tournament-staff/tournament-staff.co
 import { EditStaffComponent } from './_modals/edit-staff/edit-staff.component';
 import { OverlayControllerComponent } from './overlay-controller/overlay-controller.component';
 import { AddPlayerComponent } from './_modals/add-player/add-player.component';
+import { AssignSessionComponent } from './_modals/assign-session/assign-session.component';
+import { SessionsComponent } from './sessions/sessions.component';
 
 
 @NgModule({
@@ -111,7 +113,9 @@ import { AddPlayerComponent } from './_modals/add-player/add-player.component';
         TournamentStaffComponent,
         EditStaffComponent,
         OverlayControllerComponent,
-        AddPlayerComponent
+        AddPlayerComponent,
+        AssignSessionComponent,
+        SessionsComponent
     ],
     imports: [
         BrowserModule,

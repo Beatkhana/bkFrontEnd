@@ -1,0 +1,42 @@
+<div class="card-body">
+  <h1>{{tournament.name}}</h1>
+  <h3>Qualifier Sessions</h3>
+
+  <div *ngIf="loading else loaded">
+    <img src="/assets/svg/BeatKhana Logo RGB animated.svg" style="display: block;
+            margin-left: auto;
+            margin-right: auto;
+            width: 70px;
+            border: none;">
+  </div>
+
+  <ng-template #loaded>
+    <br>
+    <mat-accordion>
+      <mat-expansion-panel hideToggle *ngFor="let session of qualSessions; let i = index">
+        <mat-expansion-panel-header>
+
+          <mat-panel-title>
+            {{displayTime(session.time)}}
+          </mat-panel-title>
+          <mat-panel-description>
+            <span>
+              {{session.allocated}}/{{session.limit}}
+            </span>
+          </mat-panel-description>
+        </mat-expansion-panel-header>
+        <p class="card-text">
+
+        </p>
+        <div class="sesssionPlayers">
+          <div *ngFor="let user of session.users" class="player">
+            <img class="participantImgSmall" src="https://cdn.discordapp.com/avatars/{{user.userId}}{{user.avatar}}">
+            <a routerLink="/user/{{user.userId}}">{{user.name}}</a>
+          </div>
+        </div>
+      </mat-expansion-panel>
+
+    </mat-accordion>
+
+  </ng-template>
+</div>

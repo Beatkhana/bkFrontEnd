@@ -24,6 +24,7 @@ import { BadgesComponent } from './badges/badges.component';
 import { Awards2020Component } from './awards2020/awards2020.component';
 import { TournamentStaffComponent } from './tournament-staff/tournament-staff.component';
 import { OverlayControllerComponent } from './overlay-controller/overlay-controller.component';
+import { SessionsComponent } from './sessions/sessions.component';
 
 
 const routes: Routes = [
@@ -39,6 +40,7 @@ const routes: Routes = [
             { path: 'participants', component: ParticipantsComponent },
             { path: 'allParticipants', component: ParticipantsComponent },
             { path: 'qualifiers', component: QualifiersComponent },
+            { path: 'sessions', component: SessionsComponent },
             { path: 'staff', component: TournamentStaffComponent },
         ]
     },

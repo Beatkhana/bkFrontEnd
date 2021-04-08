@@ -583,7 +583,7 @@ export class tournamentSettingsDialog implements OnInit {
         this.ws.subscribe(
             msg => {
                 if (msg.TA && !this.taConnected) {
-                    this.taConnected = msg.TA.Self?.name == "BeatKhana!";
+                    this.taConnected = msg.TA.Self?.Name == "BeatKhana!";
                 }
             },
             err => console.log(err)

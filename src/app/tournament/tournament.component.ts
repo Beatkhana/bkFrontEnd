@@ -719,7 +719,7 @@ export class tournamentSettingsDialog implements OnInit {
     }
 
     async onSubmit() {
-        if (this.qualsPool && this.quals.value == true && this.taConnected) {
+        if (this.qualsPool && this.quals.value == true && this.taConnected && this.settingsForm.value.quals_method == "ta_quals") {
             this.settingsForm.value.ta_event_flags = 0;
             for (const modifier of this.baseTaSettings) {
                 if (modifier.isSelected) {
@@ -751,7 +751,7 @@ export class tournamentSettingsDialog implements OnInit {
             await this.http.post(`/api/tournament/${info.tournamentId}/overlay`, { img: this.base64 }).toPromise();
         }
         try {
-            if (this.qualsPool) await this.http.put(`/api/tournament/${info.tournamentId}/updateFlags`, this.qualsPool.songs).toPromise();
+            if (this.qualsPool && this.settingsForm.value.quals_method == "ta_quals") await this.http.put(`/api/tournament/${info.tournamentId}/updateFlags`, this.qualsPool.songs).toPromise();
         } catch (error) {
             console.error(error);
         }

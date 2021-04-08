@@ -205,6 +205,13 @@
       </ng-container>
       <ng-container *ngIf="qualsMethod == 'live_quals'">
         <p>
+          Upon signup players will have to select one of sessions. If this tournament is connected to a TA server then
+          it will automatically grab those players scores when a qualifier map is played through the "Tournament"
+          section of TA (Not "Qualifiers"). For this to work player must ensure that they have the correct Score Saber
+          account linked and the scores must be completed within two hours of the session start time, outside these
+          times scores will not be recorded.
+        </p>
+        <p>
           Current Sessions:
         </p>
         <p *ngIf="qualSessions.length == 0">

@@ -18,6 +18,7 @@ import { PlayerOptions } from '../_models/ta/playerSpecificSettnigs';
 import { Characteristic } from '../_models/ta/characteristic';
 import { BeatmapDifficulty } from '../_models/ta/match';
 import { qualifierSession } from '../_models/qualifiers';
+import { Beatsaver } from '../models/beatsaver.model';
 
 @Component({
     selector: 'app-tournament',
@@ -629,41 +630,45 @@ export class tournamentSettingsDialog implements OnInit {
                         });
                     }
                 }
-
-                // let req = await fetch(
-                //     `https://beatsaver.com/api/maps/by-hash/${song.hash}`,
-                //     {
-                //         method: "GET",
-                //         headers: {
-                //             "User-Agent":
-                //                 "Beatkhana/1.0.0 (+https://github.com/Dannypoke03)",
-                //         },
-                //     }
-                // );
-                // let songData = await req.json();
-                let songData: any = await this.http.get(`https://beatsaver.com/api/maps/by-hash/${song.hash}`).toPromise();
+                let songData: Beatsaver.map = await this.http.get<Beatsaver.map>(`https://beatsaver.com/api/maps/hash/${song.hash}`).toPromise();
                 let characteristics: Characteristic[] = [];
-                for (const characteristic of songData.metadata.characteristics) {
-                    let diffs: BeatmapDifficulty[] = [];
-                    for (const diffLabel in characteristic.difficulties) {
-                        if (
-                            Object.prototype.hasOwnProperty.call(
-                                characteristic.difficulties,
-                                diffLabel
-                            )
-                        ) {
-                            if (characteristic.difficulties[diffLabel] != null) {
-                                let diff: BeatmapDifficulty = (<any>BeatmapDifficulty)[
-                                    this.titleCase(diffLabel)
-                                ];
-                                diffs.push(diff);
-                            }
-                        }
+                let curVersion = songData.versions.reduce((a, b) => (new Date(a.createdAt) > new Date(b.createdAt) ? a : b));
+                for (const characteristic of curVersion.diffs) {
+                    let curCharacteristic = characteristics.find(x => x.SerializedName === characteristic.characteristic);
+                    if (curCharacteristic) {
+                        let diff: BeatmapDifficulty = (<any>BeatmapDifficulty)[
+                            this.titleCase(characteristic.difficulty)
+                        ];
+                        curCharacteristic.Difficulties.push(diff);
+                    } else {
+                        let diff: BeatmapDifficulty = (<any>BeatmapDifficulty)[
+                            this.titleCase(characteristic.difficulty)
+                        ];
+                        characteristics.push({
+                            SerializedName: characteristic.characteristic,
+                            Difficulties: [diff],
+                        });
                     }
-                    characteristics.push({
-                        SerializedName: characteristic.name,
-                        Difficulties: diffs,
-                    });
+                    // let diffs: BeatmapDifficulty[] = [];
+                    // for (const diffLabel in characteristic.difficulties) {
+                    //     if (
+                    //         Object.prototype.hasOwnProperty.call(
+                    //             characteristic.difficulties,
+                    //             diffLabel
+                    //         )
+                    //     ) {
+                    //         if (characteristic.difficulties[diffLabel] != null) {
+                    //             let diff: BeatmapDifficulty = (<any>BeatmapDifficulty)[
+                    //                 this.titleCase(diffLabel)
+                    //             ];
+                    //             diffs.push(diff);
+                    //         }
+                    //     }
+                    // }
+                    // characteristics.push({
+                    //     SerializedName: characteristic.name,
+                    //     Difficulties: diffs,
+                    // });
                 }
                 song.characteristics = characteristics;
                 if (song.difficulty) song.difficulty = song.difficulty.toString();

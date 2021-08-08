@@ -68,6 +68,7 @@ import { OverlayControllerComponent } from './overlay-controller/overlay-control
 import { AddPlayerComponent } from './_modals/add-player/add-player.component';
 import { AssignSessionComponent } from './_modals/assign-session/assign-session.component';
 import { SessionsComponent } from './sessions/sessions.component';
+import { EditBracketMatchComponent } from './_modals/edit-bracket-match/edit-bracket-match.component';
 
 
 @NgModule({
@@ -115,7 +116,8 @@ import { SessionsComponent } from './sessions/sessions.component';
         OverlayControllerComponent,
         AddPlayerComponent,
         AssignSessionComponent,
-        SessionsComponent
+        SessionsComponent,
+        EditBracketMatchComponent
     ],
     imports: [
         BrowserModule,

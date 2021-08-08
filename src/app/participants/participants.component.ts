@@ -54,6 +54,7 @@ export class ParticipantsComponent implements OnInit {
         this.loading = true;
         let info = await this.http.get<participant[]>(`/api/tournament/${this.tournament.tournamentId}/${this.all ? 'allParticipants' : 'participants'}`).toPromise();
         for (let i = 0; i < info.length; i++) {
+            if (!info[i].avatar) info[i].avatar = "";
             if (info[i].avatar.includes('api') || info[i].avatar.includes('oculus')) {
                 info[i].avatar = "https://new.scoresaber.com" + info[i].avatar;
             } else {

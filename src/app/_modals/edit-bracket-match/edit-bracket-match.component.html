@@ -1,0 +1,32 @@
+<h3>Update Bracket Match Players</h3>
+
+<div class="addUser">
+  <mat-form-field>
+    <mat-label>Player 1</mat-label>
+    <input type="text" (input)="updateFilter($event.target.value)" matInput [matAutocomplete]="auto"
+      [value]="data.p1.id">
+    <mat-autocomplete #auto="matAutocomplete" (optionSelected)="updatePlayers($event, 'p1')"
+      [displayWith]="displayFn.bind(this)">
+      <mat-option *ngFor="let option of filteredOptions" [value]="option.discordId">
+        {{option.name}}
+      </mat-option>
+    </mat-autocomplete>
+  </mat-form-field>
+  <mat-form-field>
+    <mat-label>Player 2</mat-label>
+    <input type="text" (input)="updateFilter($event.target.value)" matInput [matAutocomplete]="auto2"
+      [value]="data.p2.id">
+    <mat-autocomplete #auto2="matAutocomplete" (optionSelected)="updatePlayers($event, 'p2')"
+      [displayWith]="displayFn.bind(this)">
+      <mat-option *ngFor="let option of filteredOptions" [value]="option.discordId">
+        {{option.name}}
+      </mat-option>
+    </mat-autocomplete>
+  </mat-form-field>
+  <!-- <button mat-stroked-button color="accent">Add User</button> &nbsp; -->
+</div>
+<br>
+<hr>
+<br>
+<button mat-raised-button color="warn" mat-dialog-close>Close</button> &nbsp;
+<button mat-raised-button color="primary" (click)="update()">Save Changes</button> &nbsp;

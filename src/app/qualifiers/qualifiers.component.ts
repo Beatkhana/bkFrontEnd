@@ -1,14 +1,19 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, Input, OnInit } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { Observable } from 'rxjs';
+import { AppComponent } from '../app.component';
+import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
 import { addSongDialog } from '../map-pool/map-pool.component';
+import { NotificationService } from '../services/toast.service';
+import { staff } from '../_models/tournamentApi.model';
 
 @Component({
     selector: 'app-qualifiers',
     templateUrl: './qualifiers.component.html',
     styleUrls: ['./qualifiers.component.scss']
 })
-export class QualifiersComponent implements OnInit {
+export class QualifiersComponent extends AppComponent implements OnInit {
 
     @Input() tournament;
 
@@ -19,8 +24,11 @@ export class QualifiersComponent implements OnInit {
     leaderboards = {};
     qualsPool;
 
+    isAuth = false;
+    staff: staff[];
 
-    constructor(public http: HttpClient) { }
+
+    // constructor(public http: HttpClient, public dialog: MatDialog, private notif: NotificationService) { }
 
     async ngOnInit(): Promise<void> {
         let pools = await this.http.get(`api/tournament/${this.tournament.tournamentId}/map-pools`).toPromise();
@@ -31,11 +39,16 @@ export class QualifiersComponent implements OnInit {
                 this.qualsPool.songs = [...this.qualsPool.songs, ...pool.songs];
             }
         }
+        this.staff = await this.http.get<staff[]>(`/api/tournament/${this.tournament.tournamentId}/staff`).toPromise();
+        if (this.user) {
+            this.isAuth = this.tournament.owner == this.user.discordId || this.user['roleIds'].includes('1') || !!this.staff.find(x => x.discordId == this.user.discordId && x.roles.map(x => x.id).includes(1));
+        }
 
         this.getQuals()
             .subscribe(res => {
                 this.qualsScores = res;
                 for (const user of this.qualsScores) {
+                    if (!user.avatar) user.avatar = "";
                     if (user.avatar.includes('api') || user.avatar.includes('oculus')) {
                         user.avatar = "https://new.scoresaber.com" + user.avatar;
                     } else {
@@ -122,6 +135,32 @@ export class QualifiersComponent implements OnInit {
                 }
                 this.loading = false;
             })
+    }
+
+    taSync() {
+        const dialog = this.dialog.open(ConfirmDialogComponent, {
+            // height: '400px',
+            width: '400px',
+            data: {
+                cancelText: 'Cancel',
+                confirmText: 'Sync',
+                message: 'Syncing scores with TA will remove all current scores and ensure that they match the TA leaderboards, this will bypass elements such as qualifier attempt limits or remove old scores that are no longer saved within TA.',
+                title: 'Sync Scores With TA'
+            }
+        });
+
+        dialog.afterClosed()
+            .subscribe(async data => {
+                if (data) {
+                    try {
+                        await this.http.put(`/api/tournament/${this.tournament.tournamentId}/qualifiers/sync`, {}).toPromise();
+                        this.notif.showInfo('', 'Scores are being synced. Please refresh in a minute');
+                    } catch (error) {
+                        console.error("Error: ", error);
+                        this.notif.showError('', 'Error syncing scores');
+                    }
+                }
+            });
     }
 
     public getQuals(): Observable<any> {

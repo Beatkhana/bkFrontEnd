@@ -10,6 +10,7 @@ import { NotificationService } from '../services/toast.service';
 import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
 import { bracketMatch } from '../_models/bracket.model';
 import { map, startWith } from 'rxjs/operators';
+import { EditBracketMatchComponent } from '../_modals/edit-bracket-match/edit-bracket-match.component';
 
 @Component({
     selector: 'app-bracket',
@@ -121,6 +122,13 @@ export class BracketComponent extends AppComponent implements OnInit {
             panelClass: 'matchPanel',
             data: { ...this.bracketData.find(x => x.id == id), isAuth: this.isAuth }
         });
+
+        dialog.afterClosed()
+            .subscribe(data => {
+                if (data) {
+                    this.initSettings();
+                }
+            })
     }
 
     updateDrawnMatch(data: bracketMatch) {
@@ -619,7 +627,8 @@ export class updateMatchDialog implements OnInit {
         public http: HttpClient,
         @Inject(MAT_DIALOG_DATA) public data: any,
         private dialogRef: MatDialogRef<updateMatchDialog>,
-        private notif: NotificationService
+        private notif: NotificationService,
+        public dialog: MatDialog,
     ) {
 
     }
@@ -677,6 +686,24 @@ export class updateMatchDialog implements OnInit {
                 console.error("Error: ", error);
             });
         if (status == 'complete') this.dialogRef.close(false);
+    }
+
+    editMatch() {
+        const dialog = this.dialog.open(EditBracketMatchComponent, {
+            minWidth: '60vw',
+            width: '60vw',
+            maxHeight: '90vh',
+            maxWidth: '95vw',
+            panelClass: 'matchPanel',
+            data: this.data
+        });
+
+        dialog.afterClosed()
+            .subscribe(data => {
+                if (data) {
+                    this.dialogRef.close(true);
+                }
+            })
     }
 
     updateScore(data: any): Observable<any> {

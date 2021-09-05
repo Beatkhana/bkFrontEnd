@@ -36,7 +36,7 @@ export class OverlayComponent implements AfterViewInit {
     constructor(private route: ActivatedRoute, private http: HttpClient, public dialog: MatDialog) { }
 
     bkWS: WebSocketSubject<any> = webSocket(`${location.protocol == 'http:' ? 'ws' : 'wss'}://` + location.host + '/api/ws');
-    taWS: WebSocketSubject<any>;
+    // taWS: WebSocketSubject<any>;
 
     async ngAfterViewInit(): Promise<void> {
         let node = document.createElement('script');
@@ -73,12 +73,12 @@ export class OverlayComponent implements AfterViewInit {
                             break;
                     }
                 }
+                if (msg.TA) this.handlePacket(msg.TA);
             },
             err => console.log('err: ', err),
             () => console.log('complete')
         );
-
-        // console.log(this.router.url)
+        this.bkWS.next({ setTournament: this.tourneyId });
     }
 
     async draw(url: string) {
@@ -181,14 +181,14 @@ export class OverlayComponent implements AfterViewInit {
         let settings: any = await this.http.get(`/api/tournament/${this.tourneyId}`).toPromise();
         settings = settings[0];
         if (settings.ta_url) {
-            this.taWS = webSocket(`wss://` + settings.ta_url);
-            this.taWS.subscribe(
-                msg => {
-                    this.handlePacket(msg)
-                },
-                err => console.log('err: ', err),
-                () => console.log('complete')
-            );
+            // this.taWS = webSocket(`wss://` + settings.ta_url);
+            // this.taWS.subscribe(
+            //     msg => {
+            //         this.handlePacket(msg)
+            //     },
+            //     err => console.log('err: ', err),
+            //     () => console.log('complete')
+            // );
         }
         this.matchData = data;
         console.log(data);

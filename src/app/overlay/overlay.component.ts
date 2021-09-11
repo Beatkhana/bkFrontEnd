@@ -122,7 +122,7 @@ export class OverlayComponent implements AfterViewInit {
     }
 
     animateValue(player: Player, property, start = 0, end, duration) {
-        // console.log
+        console.log(player)
         let startTimestamp = null;
         const step = (timestamp) => {
             if (!startTimestamp) startTimestamp = timestamp;
@@ -220,27 +220,27 @@ export class OverlayComponent implements AfterViewInit {
             }
 
             // Stream stuff
-            let stream1 = document.getElementById(`p1Stream`);
-            let href1 = stream1.getAttribute('href').replace("#", '');
-            let img1 = document.getElementById(href1);
-            let con1 = document.createElementNS("http://www.w3.org/2000/svg", 'foreignObject');
-            con1.setAttribute('x', stream1.getAttribute('x'));
-            con1.setAttribute('y', stream1.getAttribute('y'));
-            con1.setAttribute('width', img1.getAttribute('width'));
-            con1.setAttribute('height', img1.getAttribute('height'));
-            let div1 = document.createElement('div');
-            div1.classList.add('twitch');
-            div1.style.width = `${1.7778 * (+img1.getAttribute('width'))}px`;
-            div1.id = 'p1Twitch';
-            con1.appendChild(div1);
-            this.insertAfter(con1, stream1);
+            // let stream1 = document.getElementById(`p1Stream`);
+            // let href1 = stream1.getAttribute('href').replace("#", '');
+            // let img1 = document.getElementById(href1);
+            // let con1 = document.createElementNS("http://www.w3.org/2000/svg", 'foreignObject');
+            // con1.setAttribute('x', stream1.getAttribute('x'));
+            // con1.setAttribute('y', stream1.getAttribute('y'));
+            // con1.setAttribute('width', img1.getAttribute('width'));
+            // con1.setAttribute('height', img1.getAttribute('height'));
+            // let div1 = document.createElement('div');
+            // div1.classList.add('twitch');
+            // div1.style.width = `${1.7778 * (+img1.getAttribute('width'))}px`;
+            // div1.id = 'p1Twitch';
+            // con1.appendChild(div1);
+            // this.insertAfter(con1, stream1);
 
-            var options1 = {
-                channel: 'snow_rme',
-                theme: 'dark',
-            };
-            this.player1 = new Twitch.Player("p1Twitch", options1);
-            this.player1.setVolume(0.5);
+            // var options1 = {
+            //     channel: 'snow_rme',
+            //     theme: 'dark',
+            // };
+            // this.player1 = new Twitch.Player("p1Twitch", options1);
+            // this.player1.setVolume(0.5);
         }
     }
 

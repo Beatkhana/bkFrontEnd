@@ -25,6 +25,7 @@ import { Awards2020Component } from './awards2020/awards2020.component';
 import { TournamentStaffComponent } from './tournament-staff/tournament-staff.component';
 import { OverlayControllerComponent } from './overlay-controller/overlay-controller.component';
 import { SessionsComponent } from './sessions/sessions.component';
+import { Awards2021Component } from './awards2021/awards2021.component';
 
 
 const routes: Routes = [
@@ -56,6 +57,7 @@ const routes: Routes = [
     { path: 'ta', component: TaComponent },
     { path: 'badges', component: BadgesComponent },
     { path: 'awards/2020', component: Awards2020Component },
+    { path: 'awards/2021', component: Awards2021Component },
     // { path: 'badges', component: BadgesComponent, canActivate: [AuthGuardGuard] },
 ];
 

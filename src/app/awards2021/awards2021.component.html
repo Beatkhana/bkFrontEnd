@@ -1,0 +1,31 @@
+<section class="awards-title">
+    <h1>Beat Saber Awards 2021</h1>
+    <h4>Hosted by BeatKhana</h4>
+</section>
+<section class="awards-container">
+    <div class="awards-nav">
+        <ul>
+            <li *ngFor="let award of awards | keyvalue" (click)="scroll(award.key)">
+                {{award.key}}
+            </li>
+        </ul>
+    </div>
+    <div class="awards-section">
+        <div *ngFor="let award of awards | keyvalue" id="{{award.key}}">
+            <h2>{{award.key}}</h2>
+            <div class="mapNominees">
+                <ng-container *ngFor="let nom of award.value">
+                    <a [href]="linkSanitizer(nom.link ? nom.link : 'javascript:void(0)')">
+                        <div class="nominee" [class.winner]="nom.winner" [class.noImg]="!nom.image">
+                            <div *ngIf="nom.image" class="imgWrapper" style="background-image: url({{nom.image}});">
+                            </div>
+                            <p>
+                                {{nom.label}}
+                            </p>
+                        </div>
+                    </a>
+                </ng-container>
+            </div>
+        </div>
+    </div>
+</section>

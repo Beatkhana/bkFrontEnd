@@ -69,6 +69,7 @@ import { AddPlayerComponent } from './_modals/add-player/add-player.component';
 import { AssignSessionComponent } from './_modals/assign-session/assign-session.component';
 import { SessionsComponent } from './sessions/sessions.component';
 import { EditBracketMatchComponent } from './_modals/edit-bracket-match/edit-bracket-match.component';
+import { Awards2021Component } from './awards2021/awards2021.component';
 
 
 @NgModule({
@@ -117,7 +118,8 @@ import { EditBracketMatchComponent } from './_modals/edit-bracket-match/edit-bra
         AddPlayerComponent,
         AssignSessionComponent,
         SessionsComponent,
-        EditBracketMatchComponent
+        EditBracketMatchComponent,
+        Awards2021Component
     ],
     imports: [
         BrowserModule,

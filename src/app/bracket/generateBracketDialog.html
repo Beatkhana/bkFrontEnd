@@ -27,8 +27,10 @@
     <ng-container *ngIf="bracketGenForm.value.manual">
         <mat-form-field *ngFor="let item of [].constructor(bracketGenForm.value.users?.length + 1); let i = index;">
             <mat-label>Seed {{i+1}}</mat-label>
-            <input type="text" (focus)="updateLastEvent($event.target.value)" (input)="updateFilter($event.target.value)" matInput [matAutocomplete]="auto">
-            <mat-autocomplete #auto="matAutocomplete" (optionSelected)="updatePlayers($event)" [displayWith]="displayFn.bind(this)">
+            <input type="text" (focus)="updateLastEvent($event.target)" (input)="updateFilter($event.target)" matInput
+                [matAutocomplete]="auto">
+            <mat-autocomplete #auto="matAutocomplete" (optionSelected)="updatePlayers($event)"
+                [displayWith]="displayFn.bind(this)">
                 <mat-option *ngFor="let option of filteredOptions" [value]="option.discordId">
                     {{option.name}}
                 </mat-option>

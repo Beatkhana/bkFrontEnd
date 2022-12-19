@@ -70,6 +70,7 @@ import { AssignSessionComponent } from './_modals/assign-session/assign-session.
 import { SessionsComponent } from './sessions/sessions.component';
 import { EditBracketMatchComponent } from './_modals/edit-bracket-match/edit-bracket-match.component';
 import { Awards2021Component } from './awards2021/awards2021.component';
+import { SafePipe } from './_pipes/safe/safe.pipe';
 
 
 @NgModule({
@@ -119,7 +120,8 @@ import { Awards2021Component } from './awards2021/awards2021.component';
         AssignSessionComponent,
         SessionsComponent,
         EditBracketMatchComponent,
-        Awards2021Component
+        Awards2021Component,
+        SafePipe
     ],
     imports: [
         BrowserModule,

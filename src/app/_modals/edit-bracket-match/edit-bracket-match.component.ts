@@ -7,22 +7,25 @@ import { editUserDialog } from 'src/app/users/users.component';
 @Component({
     selector: 'app-edit-bracket-match',
     templateUrl: './edit-bracket-match.component.html',
-    styleUrls: ['./edit-bracket-match.component.scss']
+    styleUrls: ['./edit-bracket-match.component.scss'],
 })
 export class EditBracketMatchComponent implements OnInit {
-
     constructor(
         @Inject(MAT_DIALOG_DATA) public data: any,
         private http: HttpClient,
         private dialogRef: MatDialogRef<editUserDialog>,
         private notif: NotificationService
-    ) { }
+    ) {}
 
     participants: any[];
 
     async ngOnInit(): Promise<void> {
         console.log(this.data);
-        this.participants = await this.http.get<any[]>(`/api/tournament/${this.data.tournamentId}/allParticipants`).toPromise();
+        this.participants = await this.http
+            .get<any[]>(
+                `/api/tournament/${this.data.tournamentId}/allParticipants`
+            )
+            .toPromise();
         console.log(this.participants);
     }
 
@@ -44,17 +47,20 @@ export class EditBracketMatchComponent implements OnInit {
         // }
     }
 
-    updateFilter($val) {
-        this.filteredOptions = this._filter($val);
+    updateFilter(event: EventTarget) {
+        if (event instanceof HTMLInputElement)
+            this.filteredOptions = this._filter(event.value);
     }
 
     private _filter(name: string) {
         const filterValue = name.toLowerCase();
-        return this.participants.filter(option => option.name.toLowerCase().indexOf(filterValue) === 0);
+        return this.participants.filter(
+            (option) => option.name.toLowerCase().indexOf(filterValue) === 0
+        );
     }
 
     displayFn(id): string {
-        let user = this.participants.find(x => x.discordId == id);
+        let user = this.participants.find((x) => x.discordId == id);
         return user && user.name ? user.name : '';
     }
 
@@ -63,17 +69,21 @@ export class EditBracketMatchComponent implements OnInit {
         let postData = {
             matchId: this.data.id,
             p1: this.data.p1.id,
-            p2: this.data.p2.id
-        }
+            p2: this.data.p2.id,
+        };
         try {
-            await this.http.put(`/api/tournament/${this.data.tournamentId}/bracket/update/${this.data.id}`, postData).toPromise();
-            this.notif.showSuccess("", "Successfully Updated Staff");
+            await this.http
+                .put(
+                    `/api/tournament/${this.data.tournamentId}/bracket/update/${this.data.id}`,
+                    postData
+                )
+                .toPromise();
+            this.notif.showSuccess('', 'Successfully Updated Staff');
             this.dialogRef.close(true);
         } catch (error) {
             console.error(error);
-            this.notif.showError("", "Error Updating Staff");
+            this.notif.showError('', 'Error Updating Staff');
             this.dialogRef.close(false);
         }
     }
-
 }

@@ -7,9 +7,8 @@
     </div>
     <ng-template #loaded>
         <div class="card archiveCard" *ngFor="let tournament of tournaments">
-            <a [title]="tournament.name" [routerLink]="['/tournament',tournament.tournamentId]">
+            <a [title]="tournament.name" [routerLink]="['/tournament',tournament.id]">
                 <div>
-                    <!-- <img src="https://beatkhanas3.s3.us-east-1.amazonaws.com/{{tournament.image}}" class="card-img"> -->
                     <img src="/assets/images/{{tournament.image}}" class="card-img">
                 </div>
                 <div class="card-body">
@@ -21,7 +20,7 @@
                     </p>
                 </div>
                 <div class="card-body cardLeft">
-                    <p class="card-text">{{tournament.startDate | date: 'dd/MM/yyyy'}}</p>
+                    <p class="card-text">{{tournament.date | date: 'dd/MM/yyyy'}}</p>
                 </div>
             </a>
         </div>

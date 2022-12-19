@@ -26,7 +26,8 @@
       </span>
       <span>
         <button mat-button color="accent" type="button" (click)="selectSession(session)"
-          [disabled]="selectedSession === session || session.allocated >= session.limit">{{selectedSession === session ? 'Selected' : 'Select'}}</button>
+          [disabled]="selectedSession === session || session.allocated >= session.limit">{{selectedSession === session ?
+          'Selected' : 'Select'}}</button>
       </span>
     </div>
   </div>

@@ -12,25 +12,26 @@
         routerLinkActive="isActive">
         <h3>Info</h3>
       </div>
-      <div *ngIf="tournament.show_signups == 1" [routerLink]="['participants']" routerLinkActive="isActive">
+      <div *ngIf="tournament.tournament_settings.show_signups" [routerLink]="['participants']"
+        routerLinkActive="isActive">
         <h3>Participants</h3>
       </div>
-      <div *ngIf="user && (tournament.owner == user.discordId || user['roleIds'].includes('1'))"
-        [routerLink]="['allParticipants']" routerLinkActive="isActive">
+      <div *ngIf="user && (tournament.owner == user.discordId || hasRole(1))" [routerLink]="['allParticipants']"
+        routerLinkActive="isActive">
         <h3>Signed Up</h3>
       </div>
-      <div *ngIf="tournament.has_map_pool == 1" [routerLink]="['map-pool']" routerLinkActive="isActive">
+      <div *ngIf="tournament.tournament_settings.has_map_pool" [routerLink]="['map-pool']" routerLinkActive="isActive">
         <h3>Map Pool</h3>
       </div>
       <div
-        *ngIf="user && (tournament.owner == user.discordId || user['roleIds'].includes('1')) && tournament.quals_method == 'live_quals'"
+        *ngIf="user && (tournament.owner == user.discordId || hasRole(1)) && tournament.tournament_settings.quals_method == 'live_quals'"
         [routerLink]="['sessions']" routerLinkActive="isActive">
         <h3>Sessions</h3>
       </div>
-      <div *ngIf="tournament.show_quals == 1" [routerLink]="['qualifiers']" routerLinkActive="isActive">
+      <div *ngIf="tournament.tournament_settings.show_quals" [routerLink]="['qualifiers']" routerLinkActive="isActive">
         <h3>Qualifiers</h3>
       </div>
-      <div *ngIf="tournament.has_bracket == 1" [routerLink]="['bracket']" routerLinkActive="isActive">
+      <div *ngIf="tournament.tournament_settings.has_bracket" [routerLink]="['bracket']" routerLinkActive="isActive">
         <h3>Bracket</h3>
       </div>
       <div [routerLink]="['staff']" routerLinkActive="isActive">
@@ -42,15 +43,15 @@
         <img class="tourneyImg" src="/assets/images/{{tournament.image}}" alt="" />
         <h1>{{ tournament.name }}</h1>
 
-        <p class="card-text" style="color: #c8825a" *ngIf="tournament.archived == 1">
+        <p class="card-text" style="color: #c8825a" *ngIf="tournament.archived">
           <b>Archived <br /></b>
         </p>
 
-        <div class="card-text infoText" *ngIf="tournament.safeInfo != null" [innerHTML]="tournament.safeInfo">
+        <div class="card-text infoText" *ngIf="tournament.info != null" [innerHTML]="tournament.info | safe: 'html'">
         </div>
 
         <p class="card-text">
-          *All times are in your local timezone <br> Date: {{ tournament.startDate | date: 'd/MM/yy, h:mm a'}}
+          *All times are in your local timezone <br> Date: {{ tournament.date | date: 'd/MM/yy, h:mm a'}}
           -> {{ tournament.endDate | date: 'd/MM/yy, h:mm a'}}<br />
           <span *ngIf="tournament.info != null; else noPrize">
             Prize pool: <span [innerHTML]="tournament.prize | linkify: linkOptions"></span> <br />
@@ -61,17 +62,19 @@
           <a *ngIf="tournament.twitchLink != null" href="{{ tournament.twitchLink }}" target="new">Twitch</a>
           <br />
         </p>
-        <p class="card-text" *ngIf="tournament.first != null && tournament.archived == 1">
+        <p class="card-text" *ngIf="tournament.first != null && tournament.archived">
           <b>Tournament Results:</b> <br> #1 {{tournament.first}} <br> #2 {{tournament.second}} <br> #3
           {{tournament.third}} <br>
         </p>
-        <p *ngIf="tournament.public_signups == 1 && user != null && !isParticipant && canSignup" class="card-text">
+        <p *ngIf="tournament.tournament_settings.public_signups && user != null && !isParticipant && canSignup"
+          class="card-text">
           <button mat-stroked-button color="accent" (click)="signUp()">Sign Up!</button>
         </p>
-        <p *ngIf="tournament.public_signups == 1 && user != null && isParticipant && canSignup" class="card-text">
+        <p *ngIf="tournament.tournament_settings.public_signups && user != null && isParticipant && canSignup"
+          class="card-text">
           You have successfully signed up for this tournament!
         </p>
-        <p *ngIf="tournament.public_signups == 1 && user == null" class="card-text">
+        <p *ngIf="tournament.tournament_settings.public_signups && user == null" class="card-text">
           Please login to signup for this tournament.
         </p>
         <ng-container *ngIf="isAuth">
@@ -80,12 +83,12 @@
             <button mat-stroked-button color="primary" (click)="tourneySettings()">Tournament
               Settings</button> &nbsp;
             <button mat-stroked-button color="primary" (click)="addPlayer()">Add Player</button> &nbsp;
-            <button *ngIf="user && user['roleIds'].includes('1')" mat-stroked-button color="warn"
-              (click)="delete()">Delete Tournament</button>
+            <button *ngIf="user && hasRole(1)" mat-stroked-button color="warn" (click)="delete()">Delete
+              Tournament</button>
           </p>
         </ng-container>
 
-        <!-- <p *ngIf="user && tournament.owner == user.discordId && !user['roleIds'].includes('1')" class="card-text">
+        <!-- <p *ngIf="user && tournament.owner == user.discordId && !hasRole(1)" class="card-text">
                     
                     
                 </p>
@@ -98,13 +101,15 @@
       </div>
       <!-- <router-outlet></router-outlet> -->
       <app-participants [tournament]="tournament" [participants]="participants"
-        *ngIf="isParticipants && tournament.public_signups == 1"></app-participants>
+        *ngIf="isParticipants && tournament.tournament_settings.public_signups"></app-participants>
       <app-participants [tournament]="tournament" [participants]="participants" [all]="true"
-        *ngIf="isSignedUp && user && (tournament.owner == user.discordId || user['roleIds'].includes('1'))">
+        *ngIf="isSignedUp && user && (tournament.owner == user.discordId || hasRole(1))">
       </app-participants>
-      <app-map-pool [tournament]="tournament" [staff]="staff" *ngIf="isMapPool && tournament.has_map_pool == 1">
+      <app-map-pool [tournament]="tournament" [staff]="staff"
+        *ngIf="isMapPool && tournament.tournament_settings.has_map_pool">
       </app-map-pool>
-      <app-bracket [tournament]="tournament" *ngIf="isBracket && tournament.has_bracket == 1"></app-bracket>
+      <app-bracket [tournament]="tournament" *ngIf="isBracket && tournament.tournament_settings.has_bracket">
+      </app-bracket>
       <app-qualifiers [tournament]="tournament" *ngIf="isQuals"></app-qualifiers>
       <app-sessions [tournament]="tournament" *ngIf="sessions"></app-sessions>
       <app-tournament-staff [tournament]="tournament" *ngIf="staffPage"></app-tournament-staff>

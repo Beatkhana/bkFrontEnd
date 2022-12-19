@@ -1,27 +1,35 @@
-import { Component, OnInit, HostListener, ElementRef, ChangeDetectorRef } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Title, DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import {
+    ChangeDetectorRef,
+    Component,
+    ElementRef,
+    HostListener,
+    OnInit,
+} from '@angular/core';
+import { DomSanitizer, SafeHtml, Title } from '@angular/platform-browser';
 import { ActivatedRoute, NavigationStart, Router } from '@angular/router';
 
-import { User } from './models/user.model'
-import { Observable } from 'rxjs';
-import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import {
+    MatDialog,
+    MatDialogRef,
+    MAT_DIALOG_DATA,
+} from '@angular/material/dialog';
 
-import { NotificationService } from './services/toast.service';
+import { IUser } from './models/user';
 import { MetaTagService } from './services/meta-tag.service';
+import { NotificationService } from './services/toast.service';
 import { UserAuthService } from './services/user-auth.service';
 import { TournamentsComponent } from './tournaments/tournaments.component';
 
 @Component({
     selector: 'app-root',
     templateUrl: './app.component.html',
-    styleUrls: ['./app.component.scss']
+    styleUrls: ['./app.component.scss'],
 })
 export class AppComponent implements OnInit {
-
     title = 'BeatKhana!';
 
-    user: User = null;
+    user: IUser.User = null;
     updatedUser = false;
 
     discordSvg: SafeHtml;
@@ -44,20 +52,26 @@ export class AppComponent implements OnInit {
             this.burgerActive = false;
         });
 
-        // if (this.constructor == AppComponent) {
-        //     this.updateUser(); 
-        // }
         if (!this.user) this.updateUser();
 
         router.events.forEach((event) => {
             if (event instanceof NavigationStart) {
-                this.showDefault = !(event.url.includes('overlay') || event.url.includes('coordinator') || event.url.includes('/ta'));
+                this.showDefault = !(
+                    event.url.includes('overlay') ||
+                    event.url.includes('coordinator') ||
+                    event.url.includes('/ta')
+                );
             }
         });
     }
 
     ngOnInit(): void {
-        this.metaTags.defineTags('/', 'BeatKhana!', 'The one stop spot for all Beat Saber tournament information', 'assets/images/icon/BeatKhana Logo RGB.png');
+        this.metaTags.defineTags(
+            '/',
+            'BeatKhana!',
+            'The one stop spot for all Beat Saber tournament information',
+            'assets/images/icon/BeatKhana Logo RGB.png'
+        );
     }
 
     public async updateUser() {

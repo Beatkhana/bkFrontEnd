@@ -90,7 +90,7 @@
   <mat-form-field style="width:30%">
     <input matInput [ngxMatDatetimePicker]="picker" id="matchTime" placeholder="Choose a date" (focus)="picker.open()"
       (click)="picker.open()" readonly>
-    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+    <mat-datepicker-toggle matSuffix [for]="$any(picker)"></mat-datepicker-toggle>
     <ngx-mat-datetime-picker #picker [defaultTime]="[12,0,0]">
     </ngx-mat-datetime-picker>
   </mat-form-field> &nbsp;
@@ -98,7 +98,7 @@
   <br><br>
   <mat-form-field class="fill" style="width: 10%">
     <mat-label>Best of</mat-label>
-    <input matInput [value]="bestOf" (input)="bestOf = $event.target.value" autocomplete="off">
+    <input matInput [value]="bestOf" (input)="setBestOf($event.target)" autocomplete="off">
   </mat-form-field> &nbsp;
   <button mat-stroked-button color="primary" type="button" (click)="updateBestOf()">Update</button> &nbsp;
   <br>

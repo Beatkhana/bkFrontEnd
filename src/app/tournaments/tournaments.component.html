@@ -8,27 +8,29 @@
 
     <ng-template #loaded>
         <div class="card tournamentCard" *ngFor="let tournament of tournaments">
-            <a [title]="tournament.name" [routerLink]="['/tournament',tournament.tournamentId]">
-                <!-- <img src="https://beatkhanas3.s3.us-east-1.amazonaws.com/{{tournament.image}}" class="card-img-top"> -->
+            <a [title]="tournament.name" [routerLink]="['/tournament',tournament.id]">
                 <img src="/assets/images/{{tournament.image}}" class="card-img-top">
                 <h5 class="card-title">
                     {{tournament.name}}
                 </h5>
             </a>
             <p class="card-text">
-                Date: {{tournament.startDate | date: 'd/MM/yy, h:mm a'}} <br> Prize: <span [innerHTML]="tournament.prize | linkify: linkOptions"></span> <br>
+                Date: {{tournament.date | date: 'd/MM/yy, h:mm a'}} <br> Prize: <span
+                    [innerHTML]="tournament.prize | linkify: linkOptions"></span> <br>
                 <a href="{{tournament.discord}}">Discord</a><br>
                 <a href="{{tournament.twitchLink}}">Twitch</a><br>
-                <span *ngIf="tournament.public == 0" style="color:rgb(209, 23, 23);font-style: italic;">*Private</span>
+                <span *ngIf="tournament.tournament_settings.public"
+                    style="color:rgb(209, 23, 23);font-style: italic;">*Private</span>
             </p>
-            <p *ngIf="user && (user['roleIds'].includes('1') || user['roleIds'].includes('2'))" class="card-text">
-                <button mat-button color="primary" (click)="archive(tournament.tournamentId)">Archive Tournament</button>
+            <p *ngIf="user && (hasRole(1) || hasRole(2))" class="card-text">
+                <button mat-button color="primary" (click)="archive(tournament.id)">Archive Tournament</button>
             </p>
         </div>
 
-        <div *ngIf="user && (user['roleIds'].includes('1') || user['roleIds'].includes('3'))" class="card">
+        <div *ngIf="user && (hasRole(1) || hasRole(3))" class="card">
             <a (click)="openDialog()" style="cursor: pointer;">
-                <i class="fas fa-plus-circle card-img-top" style="font-size: 200px;border: 2px solid #c8825a; text-align: center;"></i>
+                <i class="fas fa-plus-circle card-img-top"
+                    style="font-size: 200px;border: 2px solid #c8825a; text-align: center;"></i>
                 <h5 class="card-title">
                     Add new tournament
                 </h5>

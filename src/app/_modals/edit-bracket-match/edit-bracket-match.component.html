@@ -3,8 +3,7 @@
 <div class="addUser">
   <mat-form-field>
     <mat-label>Player 1</mat-label>
-    <input type="text" (input)="updateFilter($event.target.value)" matInput [matAutocomplete]="auto"
-      [value]="data.p1.id">
+    <input type="text" (input)="updateFilter($event.target)" matInput [matAutocomplete]="auto" [value]="data.p1.id">
     <mat-autocomplete #auto="matAutocomplete" (optionSelected)="updatePlayers($event, 'p1')"
       [displayWith]="displayFn.bind(this)">
       <mat-option *ngFor="let option of filteredOptions" [value]="option.discordId">
@@ -14,8 +13,7 @@
   </mat-form-field>
   <mat-form-field>
     <mat-label>Player 2</mat-label>
-    <input type="text" (input)="updateFilter($event.target.value)" matInput [matAutocomplete]="auto2"
-      [value]="data.p2.id">
+    <input type="text" (input)="updateFilter($event.target)" matInput [matAutocomplete]="auto2" [value]="data.p2.id">
     <mat-autocomplete #auto2="matAutocomplete" (optionSelected)="updatePlayers($event, 'p2')"
       [displayWith]="displayFn.bind(this)">
       <mat-option *ngFor="let option of filteredOptions" [value]="option.discordId">

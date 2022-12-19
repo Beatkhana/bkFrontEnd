@@ -1,12 +1,28 @@
-import { CdkDrag, CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
+import {
+    CdkDrag,
+    CdkDragDrop,
+    moveItemInArray,
+    transferArrayItem,
+} from '@angular/cdk/drag-drop';
 import { HttpClient } from '@angular/common/http';
-import { ChangeDetectorRef, Component, Inject, Input, OnInit } from '@angular/core';
+import {
+    ChangeDetectorRef,
+    Component,
+    Inject,
+    Input,
+    OnInit,
+} from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import {
+    MatDialog,
+    MatDialogRef,
+    MAT_DIALOG_DATA,
+} from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
-import { User } from '../models/user.model';
+import { ITournament } from '../models/tournament';
+import { IUser } from '../models/user';
 import { NotificationService } from '../services/toast.service';
 import { UserAuthService } from '../services/user-auth.service';
 import { AddPlayerComponent } from '../_modals/add-player/add-player.component';
@@ -17,16 +33,15 @@ import { qualifierSession } from '../_models/qualifiers';
 @Component({
     selector: 'app-participants',
     templateUrl: './participants.component.html',
-    styleUrls: ['./participants.component.scss']
+    styleUrls: ['./participants.component.scss'],
 })
 export class ParticipantsComponent implements OnInit {
-
-    @Input() tournament;
+    @Input() tournament: ITournament.Tournament;
     @Input() participants: participant[];
     @Input() all: boolean = false;
 
     isAuthorised = false;
-    curUser: User = null;
+    curUser: IUser.User = null;
     loading = true;
 
     editMode = false;
@@ -35,16 +50,23 @@ export class ParticipantsComponent implements OnInit {
 
     linkOptions = {
         target: {
-            url: "_blank"
-        }
-    }
+            url: '_blank',
+        },
+    };
 
     userSession: qualifierSession;
 
-    constructor(public http: HttpClient, public dialog: MatDialog, private notif: NotificationService, public cd: ChangeDetectorRef, public router: Router, private userS: UserAuthService) { }
+    constructor(
+        public http: HttpClient,
+        public dialog: MatDialog,
+        private notif: NotificationService,
+        public cd: ChangeDetectorRef,
+        public router: Router,
+        private userS: UserAuthService
+    ) {}
 
     ngOnInit(): void {
-        this.updateParticipants()
+        this.updateParticipants();
         if (this.curUser == null) {
             this.updateUser();
         }
@@ -52,24 +74,37 @@ export class ParticipantsComponent implements OnInit {
 
     async updateParticipants() {
         this.loading = true;
-        let info = await this.http.get<participant[]>(`/api/tournament/${this.tournament.tournamentId}/${this.all ? 'allParticipants' : 'participants'}`).toPromise();
+        let info = await this.http
+            .get<participant[]>(
+                `/api/tournament/${this.tournament.id}/${
+                    this.all ? 'allParticipants' : 'participants'
+                }`
+            )
+            .toPromise();
         for (let i = 0; i < info.length; i++) {
-            if (!info[i].avatar) info[i].avatar = "";
-            if (info[i].avatar.includes('api') || info[i].avatar.includes('oculus')) {
-                info[i].avatar = "https://new.scoresaber.com" + info[i].avatar;
+            if (!info[i].avatar) info[i].avatar = '';
+            if (
+                info[i].avatar.includes('api') ||
+                info[i].avatar.includes('oculus')
+            ) {
+                info[i].avatar = 'https://new.scoresaber.com' + info[i].avatar;
             } else {
                 // info[i].avatar = `/${info[i].avatar}` + (info[i].avatar.substring(0, 2) == 'a_' ? '.gif' : '.webp');
-                info[i].avatar = `https://cdn.discordapp.com/avatars/${info[i].discordId}/${info[i].avatar}` + (info[i].avatar.substring(0, 2) == 'a_' ? '.gif' : '.webp')
+                info[i].avatar =
+                    `https://cdn.discordapp.com/avatars/${info[i].discordId}/${info[i].avatar}` +
+                    (info[i].avatar.substring(0, 2) == 'a_' ? '.gif' : '.webp');
             }
         }
-        this.nonQualified = info.filter(x => x.seed == 0);
+        this.nonQualified = info.filter((x) => x.seed == 0);
         this.participants = info;
         this.sortParticipants();
         try {
-            this.userSession = await this.http.get<qualifierSession>(`/api/tournament/${this.tournament.tournamentId}/qualifiers/sessions/current`).toPromise();
-        } catch (error) {
-
-        }
+            this.userSession = await this.http
+                .get<qualifierSession>(
+                    `/api/tournament/${this.tournament.id}/qualifiers/sessions/current`
+                )
+                .toPromise();
+        } catch (error) {}
         this.loading = false;
     }
 
@@ -78,17 +113,25 @@ export class ParticipantsComponent implements OnInit {
     }
 
     sortParticipants() {
-        if ((this.tournament.state == 'main_stage' || this.tournament.state == 'archived') && !this.all) {
-            this.participants = this.participants.filter(x => x.seed != 0);
-            if (this.tournament.type == 'battle_royale') {
+        if (
+            (this.tournament.tournament_settings.state == 'main_stage' ||
+                this.tournament.tournament_settings.state == 'archived') &&
+            !this.all
+        ) {
+            this.participants = this.participants.filter((x) => x.seed != 0);
+            if (this.tournament.tournament_settings.type == 'battle_royale') {
                 this.participants.sort(this.royaleSort);
             } else {
                 this.participants.sort(this.seedSort);
             }
         } else {
-            if (this.tournament.sort_method == 'globalRank') {
+            if (
+                this.tournament.tournament_settings.sort_method == 'globalRank'
+            ) {
                 this.participants.sort(this.orderGlobal);
-            } else if (this.tournament.sort_method == 'date') {
+            } else if (
+                this.tournament.tournament_settings.sort_method == 'date'
+            ) {
                 this.participants.sort(this.dateSort);
             }
         }
@@ -128,7 +171,11 @@ export class ParticipantsComponent implements OnInit {
 
     async updateUser() {
         this.curUser = await this.userS.curUser();
-        if (this.curUser != null && (this.curUser['roleIds'].includes('1') || this.curUser.discordId == this.tournament.owner)) {
+        if (
+            this.curUser != null &&
+            (this.curUser.roles.find((x) => x.roleId === 1) ||
+                this.curUser.discordId == this.tournament.owner)
+        ) {
             this.isAuthorised = true;
         }
     }
@@ -140,27 +187,40 @@ export class ParticipantsComponent implements OnInit {
             data: {
                 cancelText: 'Cancel',
                 confirmText: 'Confirm',
-                message: 'Are you sure you want to remove this user from this tournament?',
-                title: 'Remove Participant?'
-            }
+                message:
+                    'Are you sure you want to remove this user from this tournament?',
+                title: 'Remove Participant?',
+            },
         });
 
-        dialog.afterClosed()
-            .subscribe(async data => {
-                if (data) {
-                    let info = {
-                        participantId: participantId
-                    }
-                    try {
-                        await this.http.post(`/api/tournament/${this.tournament.tournamentId}/deleteParticipant`, info).toPromise();
-                        this.notif.showSuccess('', 'Successfully removed participant');
-                        this.participants.splice(this.participants.findIndex(x => x.participantId == participantId), 1);
-                    } catch (error) {
-                        console.error("Error: ", error);
-                        this.notif.showError('', 'Error removing participant');
-                    }
+        dialog.afterClosed().subscribe(async (data) => {
+            if (data) {
+                let info = {
+                    participantId: participantId,
+                };
+                try {
+                    await this.http
+                        .post(
+                            `/api/tournament/${this.tournament.id}/deleteParticipant`,
+                            info
+                        )
+                        .toPromise();
+                    this.notif.showSuccess(
+                        '',
+                        'Successfully removed participant'
+                    );
+                    this.participants.splice(
+                        this.participants.findIndex(
+                            (x) => x.participantId == participantId
+                        ),
+                        1
+                    );
+                } catch (error) {
+                    console.error('Error: ', error);
+                    this.notif.showError('', 'Error removing participant');
                 }
-            });
+            }
+        });
     }
 
     eliminateParticipant(participantId) {
@@ -171,40 +231,47 @@ export class ParticipantsComponent implements OnInit {
                 cancelText: 'Cancel',
                 confirmText: 'Confirm',
                 message: 'Are you sure you want to eliminate this user?',
-                title: 'Eliminate Participant?'
-            }
+                title: 'Eliminate Participant?',
+            },
         });
 
-        dialog.afterClosed()
-            .subscribe(async data => {
-                if (data) {
-                    let info = {
-                        participantId: participantId
-                    }
-                    try {
-                        await this.http.post(`/api/tournament/${this.tournament.tournamentId}/elimParticipant`, info).toPromise();
-                        this.notif.showSuccess('', 'Successfully eliminated participant');
-                        this.updateParticipants();
-                    } catch (error) {
-                        console.error("Error: ", error);
-                        this.notif.showError('', 'Error eliminating participant');
-                    }
-                    // this.elimParticipant(info)
-                    //     .subscribe(data => {
-                    //         if (!data.flag) {
-                    //             this.notif.showSuccess('', 'Successfully eliminated participant');
-                    //             // this.participants.splice(this.participants.findIndex(x => x.participantId == participantId), 1);
-                    //             this.updateParticipants();
-                    //         } else {
-                    //             console.error("Error: ", data);
-                    //             this.notif.showError('', 'Error eliminating participant');
-                    //         }
-                    //     }, error => {
-                    //         this.notif.showError('', 'Error eliminating participant');
-                    //         console.error("Error: ", error);
-                    //     });
+        dialog.afterClosed().subscribe(async (data) => {
+            if (data) {
+                let info = {
+                    participantId: participantId,
+                };
+                try {
+                    await this.http
+                        .post(
+                            `/api/tournament/${this.tournament.id}/elimParticipant`,
+                            info
+                        )
+                        .toPromise();
+                    this.notif.showSuccess(
+                        '',
+                        'Successfully eliminated participant'
+                    );
+                    this.updateParticipants();
+                } catch (error) {
+                    console.error('Error: ', error);
+                    this.notif.showError('', 'Error eliminating participant');
                 }
-            });
+                // this.elimParticipant(info)
+                //     .subscribe(data => {
+                //         if (!data.flag) {
+                //             this.notif.showSuccess('', 'Successfully eliminated participant');
+                //             // this.participants.splice(this.participants.findIndex(x => x.participantId == participantId), 1);
+                //             this.updateParticipants();
+                //         } else {
+                //             console.error("Error: ", data);
+                //             this.notif.showError('', 'Error eliminating participant');
+                //         }
+                //     }, error => {
+                //         this.notif.showError('', 'Error eliminating participant');
+                //         console.error("Error: ", error);
+                //     });
+            }
+        });
     }
 
     editComment(participantId) {
@@ -215,20 +282,26 @@ export class ParticipantsComponent implements OnInit {
             data: {
                 participantId: participantId,
                 tournament: this.tournament,
-                curUser: this.participants.find(x => x.participantId == participantId)
-            }
+                curUser: this.participants.find(
+                    (x) => x.participantId == participantId
+                ),
+            },
         });
 
-        dialog.afterClosed()
-            .subscribe(data => {
-                if (data) {
-                    let userIndex = this.participants.findIndex(x => x.participantId == data.participantId);
-                    // console.log(this.participants[userIndex])
-                    this.participants[userIndex] = { ...this.participants[userIndex], ...data }
-                    // console.log(this.participants[userIndex])
-                    // console.log(data)
-                }
-            });
+        dialog.afterClosed().subscribe((data) => {
+            if (data) {
+                let userIndex = this.participants.findIndex(
+                    (x) => x.participantId == data.participantId
+                );
+                // console.log(this.participants[userIndex])
+                this.participants[userIndex] = {
+                    ...this.participants[userIndex],
+                    ...data,
+                };
+                // console.log(this.participants[userIndex])
+                // console.log(data)
+            }
+        });
     }
 
     updateQualSession() {
@@ -238,46 +311,54 @@ export class ParticipantsComponent implements OnInit {
             maxWidth: '95vw',
             data: {
                 tournament: this.tournament,
-                session: this.userSession
-            }
+                session: this.userSession,
+            },
         });
 
-        dialog.afterClosed()
-            .subscribe(data => {
-                if (data) {
-                    // let userIndex = this.participants.findIndex(x => x.participantId == data.participantId);
-                    // // console.log(this.participants[userIndex])
-                    // this.participants[userIndex] = { ...this.participants[userIndex], ...data }
-                    // console.log(this.participants[userIndex])
-                    // console.log(data)
-                }
-            });
+        dialog.afterClosed().subscribe((data) => {
+            if (data) {
+                // let userIndex = this.participants.findIndex(x => x.participantId == data.participantId);
+                // // console.log(this.participants[userIndex])
+                // this.participants[userIndex] = { ...this.participants[userIndex], ...data }
+                // console.log(this.participants[userIndex])
+                // console.log(data)
+            }
+        });
     }
 
     removeParticipant(data: any): Observable<any> {
-        return this.http.post(`/api/tournament/${this.tournament.tournamentId}/deleteParticipant`, data);
+        return this.http.post(
+            `/api/tournament/${this.tournament.tournament_settings.tournamentId}/deleteParticipant`,
+            data
+        );
     }
 
     elimParticipant(data: any): Observable<any> {
-        return this.http.post(`/api/tournament/${this.tournament.tournamentId}/elimParticipant`, data);
+        return this.http.post(
+            `/api/tournament/${this.tournament.tournament_settings.tournamentId}/elimParticipant`,
+            data
+        );
     }
 
     setParticpants() {
-        this.getParticipants()
-            .subscribe(data => {
-                this.participants = data;
-                this.participants.sort(this.orderGlobal);
-                this.cd.detectChanges();
-                // console.log(this.participants);
-            })
+        this.getParticipants().subscribe((data) => {
+            this.participants = data;
+            this.participants.sort(this.orderGlobal);
+            this.cd.detectChanges();
+            // console.log(this.participants);
+        });
     }
 
     canEdit() {
-        return this.participants.every(x => x.position == 0);
+        return this.participants.every((x) => x.position == 0);
     }
 
     getParticipants(): Observable<any> {
-        return this.http.get(`/api/tournament/${this.tournament.tournamentId}/${this.all ? 'allParticipants' : 'participants'}`);
+        return this.http.get(
+            `/api/tournament/${
+                this.tournament.tournament_settings.tournamentId
+            }/${this.all ? 'allParticipants' : 'participants'}`
+        );
     }
 
     addPlayer() {
@@ -288,50 +369,60 @@ export class ParticipantsComponent implements OnInit {
         });
     }
 
-    recalc() {
-
-    }
+    recalc() {}
 
     async save() {
         try {
-            await this.http.put(`/api/tournament/${this.tournament.tournamentId}/participants`, this.participants).toPromise();
+            await this.http
+                .put(
+                    `/api/tournament/${this.tournament.tournament_settings.tournamentId}/participants`,
+                    this.participants
+                )
+                .toPromise();
             this.notif.showSuccess('', 'Successfully updated participant');
             this.updateParticipants();
         } catch (error) {
-            console.error("Error: ", error);
+            console.error('Error: ', error);
             this.notif.showError('', 'Error updating participants');
         }
     }
 
-    seedDragDrop(event: CdkDragDrop<participant>) {
+    seedDragDrop(event: CdkDragDrop<participant[]>) {
         // console.log(event);
         if (event.previousContainer === event.container) {
             // moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
             if (this.participants[event.currentIndex].position == 0) {
-                moveItemInArray(this.participants, event.previousIndex, event.currentIndex);
+                moveItemInArray(
+                    this.participants,
+                    event.previousIndex,
+                    event.currentIndex
+                );
                 for (let i = 0; i < this.participants.length; i++) {
                     const user = this.participants[i];
                     user.seed = i + 1;
                 }
             }
         } else {
-            if (this.participants.find(x => x == event.item.data)) {
-                transferArrayItem(this.participants,
+            if (this.participants.find((x) => x == event.item.data)) {
+                transferArrayItem(
+                    this.participants,
                     this.nonQualified,
                     event.previousIndex,
-                    event.currentIndex);
+                    event.currentIndex
+                );
             } else {
-                transferArrayItem(this.nonQualified,
+                transferArrayItem(
+                    this.nonQualified,
                     this.participants,
                     event.previousIndex,
-                    event.currentIndex);
+                    event.currentIndex
+                );
             }
             for (let i = 0; i < this.participants.length; i++) {
                 const user = this.participants[i];
                 user.seed = i + 1;
             }
         }
-
     }
 }
 
@@ -340,7 +431,6 @@ export class ParticipantsComponent implements OnInit {
     templateUrl: './editCommentDialog.html',
 })
 export class editCommentDialog implements OnInit {
-
     signUpForm: FormGroup;
     id: number;
     signUpComment: string = '';
@@ -353,19 +443,19 @@ export class editCommentDialog implements OnInit {
         @Inject(MAT_DIALOG_DATA) public data: any,
         private dialogRef: MatDialogRef<editCommentDialog>,
         private notif: NotificationService
-    ) {
-
-    }
+    ) {}
 
     ngOnInit() {
         // console.log(this.data)
         this.id = this.data.tournament.tournamentId;
         this.signUpComment = this.data.tournament.signup_comment;
         this.signUpForm = this.fb.group({
-            comment: this.data.curUser.comment
+            comment: this.data.curUser.comment,
         });
         if (!!this.data.tournament.comment_required) {
-            this.signUpForm.controls['comment'].setValidators([Validators.required]);
+            this.signUpForm.controls['comment'].setValidators([
+                Validators.required,
+            ]);
             this.signUpForm.controls['comment'].updateValueAndValidity();
         }
     }
@@ -391,17 +481,28 @@ export class editCommentDialog implements OnInit {
         //         this.dialogRef.close(false);
         //     });
         try {
-            await this.http.put(`/api/updateParticipant/${this.id}/${this.data.participantId}`, this.signUpForm.value).toPromise();
+            await this.http
+                .put(
+                    `/api/updateParticipant/${this.id}/${this.data.participantId}`,
+                    this.signUpForm.value
+                )
+                .toPromise();
             this.notif.showInfo('', 'Successfully updated sign up');
-            this.dialogRef.close({ ...this.signUpForm.value, participantId: this.data.participantId });
+            this.dialogRef.close({
+                ...this.signUpForm.value,
+                participantId: this.data.participantId,
+            });
         } catch (error) {
             this.notif.showError('', 'Error updaing sign up');
-            console.error("Error: ", error);
+            console.error('Error: ', error);
             this.dialogRef.close(false);
         }
     }
 
     editSignup(data: any): Observable<any> {
-        return this.http.put(`/api/updateParticipant/${this.id}/${this.data.participantId}`, data);
+        return this.http.put(
+            `/api/updateParticipant/${this.id}/${this.data.participantId}`,
+            data
+        );
     }
 }

@@ -82,9 +82,8 @@
         <p class="card-text">
             <!-- <a mat-stroked-button color="primary" (click)="downloadPool()"
                 *ngIf="poolsLen > 0 && mapPools[curPoolId].songs.length > 0">Download Pool</a> &nbsp; -->
-            <a mat-stroked-button color="primary"
-                href="/api/tournament/{{tournament.tournamentId}}/download-pool/{{curPoolId}}" target="_blank"
-                *ngIf="poolsLen > 0 && mapPools[curPoolId].songs.length > 0">Download Pool</a> &nbsp;
+            <a mat-stroked-button color="primary" href="/api/tournament/{{tournament.id}}/download-pool/{{curPoolId}}"
+                target="_blank" *ngIf="poolsLen > 0 && mapPools[curPoolId].songs.length > 0">Download Pool</a> &nbsp;
             <button *ngIf="isAuthorised && curPoolId" mat-stroked-button color="warn" (click)="deletePool()">Delete
                 Pool</button> &nbsp;
             <button *ngIf="isAuthorised && poolsLen > 0" mat-stroked-button color="primary" (click)="addSong()">Add

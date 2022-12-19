@@ -26,8 +26,9 @@
         <mat-datepicker-toggle matSuffix [for]="dp3"></mat-datepicker-toggle>
         <mat-datepicker #dp3 disabled="false"></mat-datepicker> -->
 
-        <input matInput [ngxMatDatetimePicker]="picker" readonly formControlName="date" (focus)="picker.open()" (click)="picker.open()">
-        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+        <input matInput [ngxMatDatetimePicker]="picker" readonly formControlName="date" (focus)="picker.open()"
+            (click)="picker.open()">
+        <mat-datepicker-toggle matSuffix [for]="$any(picker)"></mat-datepicker-toggle>
         <ngx-mat-datetime-picker #picker [showSeconds]="false" [defaultTime]="[12,0,0]">
         </ngx-mat-datetime-picker>
     </mat-form-field>
@@ -37,15 +38,17 @@
         <!-- <input matInput [matDatepicker]="dp1" readonly formControlName="endDate" (focus)="dp1.open()" (click)="dp1.open()">
         <mat-datepicker-toggle matSuffix [for]="dp1"></mat-datepicker-toggle>
         <mat-datepicker #dp1 disabled="false"></mat-datepicker> -->
-        <input matInput [ngxMatDatetimePicker]="picker2" readonly formControlName="endDate" (focus)="picker2.open()" (click)="picker2.open()">
-        <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+        <input matInput [ngxMatDatetimePicker]="picker2" readonly formControlName="endDate" (focus)="picker2.open()"
+            (click)="picker2.open()">
+        <mat-datepicker-toggle matSuffix [for]="$any(picker2)"></mat-datepicker-toggle>
         <ngx-mat-datetime-picker #picker2 [showSeconds]="false" [defaultTime]="[12,0,0]">
         </ngx-mat-datetime-picker>
     </mat-form-field>
 
     <br>
     <mat-form-field class="fill">
-        <input matInput placeholder="Discord Link" formControlName="discord" pattern="^(?:https?:\/\/)?(?:www\.)?discord\.gg\/([a-zA-Z0-9]+)($|\?)">
+        <input matInput placeholder="Discord Link" formControlName="discord"
+            pattern="^(?:https?:\/\/)?(?:www\.)?discord\.gg\/([a-zA-Z0-9]+)($|\?)">
         <mat-error *ngIf="discord.invalid && discord.touched">
             Please enter a valid link, Format: https://discord.gg/[code]
         </mat-error>
@@ -65,7 +68,8 @@
 
     <br>
     <mat-form-field class="fill">
-        <input matInput placeholder="Twitch Link" formControlName="twitchLink" pattern="^(?:https?:\/\/)?(?:www\.)?twitch\.tv\/([a-z0-9_]+)($|\?)">
+        <input matInput placeholder="Twitch Link" formControlName="twitchLink"
+            pattern="^(?:https?:\/\/)?(?:www\.)?twitch\.tv\/([a-z0-9_]+)($|\?)">
         <mat-error *ngIf="twitch.invalid && (twitch.dirty || twitch.touched)">
             Please enter a valid twitch link, Format: https://twitch.tv/[channel name]
         </mat-error>
@@ -82,7 +86,8 @@
     <ckeditor formControlName="info" [config]="{ extraPlugins: ['colorbutton', 'iframe']}"></ckeditor>
 
     <br>
-    <input type="file" (change)="onFileChanged($event)" #fileInput accept="image/png, image/jpeg, image/gif, image/webp, image/svg+xml, image/tiff">
+    <input type="file" (change)="onFileChanged($event)" #fileInput
+        accept="image/png, image/jpeg, image/gif, image/webp, image/svg+xml, image/tiff">
     <br>
     <mat-checkbox formControlName="is_mini">
         Is mini tournament?
@@ -91,6 +96,7 @@
 
     <div mat-dialog-actions>
         <button mat-raised-button color="warn" mat-dialog-close>Close</button>
-        <button mat-raised-button color="primary" type="submit" [disabled]="tournamentForm.invalid || isSubmitted">Update Tournament</button>
+        <button mat-raised-button color="primary" type="submit"
+            [disabled]="tournamentForm.invalid || isSubmitted">Update Tournament</button>
     </div>
 </form>

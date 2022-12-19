@@ -13,7 +13,7 @@
   <ng-template #loaded>
     <!-- Base participant display -->
     <div class="participantGrid"
-      *ngIf="tournament.state == 'qualifiers' || tournament.state == 'awaiting_start' || all">
+      *ngIf="tournament.tournament_settings.state == 'qualifiers' || tournament.tournament_settings.state == 'awaiting_start' || all">
       <mat-accordion *ngFor="let user of participants">
         <mat-expansion-panel hideToggle class="playerPanel">
           <mat-expansion-panel-header>
@@ -44,7 +44,7 @@
               *ngIf="(curUser != null && user.discordId == curUser.discordId) || isAuthorised"
               (click)="editComment(user.participantId)">Edit comment</button> &nbsp;
             <button mat-stroked-button color="accent"
-              *ngIf="(curUser != null && user.discordId == curUser.discordId) && tournament.state == 'awaiting_start'"
+              *ngIf="(curUser != null && user.discordId == curUser.discordId) && tournament.tournament_settings.state == 'awaiting_start'"
               (click)="updateQualSession()">Change Session</button> &nbsp;
           </p>
         </mat-expansion-panel>
@@ -52,7 +52,7 @@
     </div>
 
     <!-- Seeded display -->
-    <p class="card-text" *ngIf="(tournament.state == 'main_stage' || tournament.state == 'archived') && tournament.type != 'battle_royale' && !all 
+    <p class="card-text" *ngIf="(tournament.tournament_settings.state == 'main_stage' || tournament.tournament_settings.state == 'archived') && tournament.tournament_settings.type != 'battle_royale' && !all 
             && isAuthorised
             && canEdit()">
       <mat-checkbox [checked]="editMode" (change)="editMode = !editMode" style="display: block;">
@@ -69,7 +69,7 @@
       </ng-container>
     </p>
     <div class="participantGrid" [ngClass]="{'battleRoyale' : editMode}"
-      *ngIf="(tournament.state == 'main_stage' || tournament.state == 'archived') && tournament.type != 'battle_royale' && !all"
+      *ngIf="(tournament.tournament_settings.state == 'main_stage' || tournament.tournament_settings.state == 'archived') && tournament.tournament_settings.type != 'battle_royale' && !all"
       cdkDropListGroup>
       <ng-container *ngIf="!editMode">
         <ng-container *ngFor="let user of participants">
@@ -157,7 +157,7 @@
     </div>
 
     <!-- Battle royale -->
-    <p class="card-text" *ngIf="(tournament.state == 'main_stage' || tournament.state == 'archived') && tournament.type == 'battle_royale' 
+    <p class="card-text" *ngIf="(tournament.tournament_settings.state == 'main_stage' || tournament.tournament_settings.state == 'archived') && tournament.tournament_settings.type == 'battle_royale' 
             && !all 
             && isAuthorised
             && canEdit()">
@@ -175,8 +175,8 @@
       </ng-container>
     </p>
     <div class="participantGrid"
-      *ngIf="(tournament.state == 'main_stage' || tournament.state == 'archived') && tournament.type == 'battle_royale' && !all"
-      [ngClass]="{'battleRoyale' : tournament.type == 'battle_royale'}" cdkDropListGroup>
+      *ngIf="(tournament.tournament_settings.state == 'main_stage' || tournament.tournament_settings.state == 'archived') && tournament.tournament_settings.type == 'battle_royale' && !all"
+      [ngClass]="{'battleRoyale' : tournament.tournament_settings.type == 'battle_royale'}" cdkDropListGroup>
       <mat-accordion [cdkDropListData]="participants" cdkDropList (cdkDropListDropped)="seedDragDrop($event)">
         <span *ngIf="editMode">Qualified</span>
         <ng-container *ngFor="let user of participants; let i = index">

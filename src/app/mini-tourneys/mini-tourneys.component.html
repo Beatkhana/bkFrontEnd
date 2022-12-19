@@ -8,7 +8,7 @@
 
     <ng-template #loaded>
         <div class="card tournamentCard" *ngFor="let tournament of tournaments">
-            <a [title]="tournament.name" [routerLink]="['/tournament',tournament.tournamentId]">
+            <a [title]="tournament.name" [routerLink]="['/tournament',tournament.id]">
                 <!-- <img src="https://beatkhanas3.s3.us-east-1.amazonaws.com/{{tournament.image}}" class="card-img-top"> -->
                 <img src="/assets/images/{{tournament.image}}" class="card-img-top">
                 <h5 class="card-title">
@@ -16,13 +16,15 @@
                 </h5>
             </a>
             <p class="card-text">
-                Date: {{tournament.startDate | date: 'd/MM/yy, h:mm a'}} <br> Prize: {{tournament.prize}} <br>
+                Date: {{tournament.date | date: 'd/MM/yy, h:mm a'}} <br> Prize: {{tournament.prize}} <br>
                 <a href="{{tournament.discord}}">Discord</a><br>
                 <a href="{{tournament.twitchLink}}">Twitch</a><br>
-                <span *ngIf="tournament.public == 0" style="color:rgb(209, 23, 23);font-style: italic;">*Private</span>
+                <span *ngIf="tournament.tournament_settings.public"
+                    style="color:rgb(209, 23, 23);font-style: italic;">*Private</span>
             </p>
-            <p *ngIf="user && (user['roleIds'].includes('1') || user['roleIds'].includes('2'))" class="card-text">
-                <button mat-button color="primary" (click)="archive(tournament.tournamentId)">Archive Tournament</button>
+            <p *ngIf="user && (hasRole(1) || hasRole(2))" class="card-text">
+                <button mat-button color="primary" (click)="archive(tournament.id)">Archive
+                    Tournament</button>
             </p>
         </div>
         <h4 *ngIf="tournaments.length == 0">There are currently no active tournaments please check back later</h4>
